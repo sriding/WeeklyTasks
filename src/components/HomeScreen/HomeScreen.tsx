@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, Component} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,35 +16,48 @@ import { Provider as PaperProvider } from "react-native-paper";
 //Components
 import DayCard from "./../DayCard";
 
-const HomeScreen = (props) => {
-  return (
-    <PaperProvider>
-      <SafeAreaView>
-        <View style={styles.mainContainer}>
-          <ScrollView style={styles.leftPaneContainer}>
-            <FlatList
-            data={[{text: "Mon", day: Date.now(), key: "One"}, {text: "Tue", day: Date.now(), key: "Two"}, {text: "Wed", day: Date.now(), key: "Three"}, {text: "Thur", day: Date.now(), key: "Four"}, {text: "Fri", day: Date.now(), key: "Five"}, {text: "Sat", day: Date.now(), key: "Six"}, {text: "Sun", day: Date.now(), key: "Seven"}]}
-            renderItem={({item}) => {
-              return <Text style={styles.leftPaneText}>{item.text}</Text>
-            }}
-            >
-            </FlatList>
-          </ScrollView>
-          <ScrollView style={styles.middlePaneContainer}>
-            <DayCard navigation={props.navigation}/>
-            <DayCard navigation={props.navigation}/>
-            <DayCard navigation={props.navigation}/>
-            <DayCard navigation={props.navigation}/>
-            <DayCard navigation={props.navigation}/>
-            <DayCard navigation={props.navigation}/>
-            <DayCard navigation={props.navigation}/>
-          </ScrollView>
-          <ScrollView style={styles.rightPaneContainer} />
-        </View>
-      </SafeAreaView>
-    </PaperProvider>
-  );
-};
+import {DaySchema, TaskSchema, NoteSchema, createInitialDays} from "./../../schemas/testSchema";
+
+class HomeScreen extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount = () => {
+    console.log("Mounted.");
+    createInitialDays(DaySchema, TaskSchema, NoteSchema);
+  }
+
+  render() {
+    return (
+      <PaperProvider>
+        <SafeAreaView>
+          <View style={styles.mainContainer}>
+            <ScrollView style={styles.leftPaneContainer}>
+              <FlatList
+              data={[{text: "Mon", day: Date.now(), key: "One"}, {text: "Tue", day: Date.now(), key: "Two"}, {text: "Wed", day: Date.now(), key: "Three"}, {text: "Thur", day: Date.now(), key: "Four"}, {text: "Fri", day: Date.now(), key: "Five"}, {text: "Sat", day: Date.now(), key: "Six"}, {text: "Sun", day: Date.now(), key: "Seven"}]}
+              renderItem={({item}) => {
+                return <Text style={styles.leftPaneText}>{item.text}</Text>
+              }}
+              >
+              </FlatList>
+            </ScrollView>
+            <ScrollView style={styles.middlePaneContainer}>
+              <DayCard navigation={this.props.navigation}/>
+              <DayCard navigation={this.props.navigation}/>
+              <DayCard navigation={this.props.navigation}/>
+              <DayCard navigation={this.props.navigation}/>
+              <DayCard navigation={this.props.navigation}/>
+              <DayCard navigation={this.props.navigation}/>
+              <DayCard navigation={this.props.navigation}/>
+            </ScrollView>
+            <ScrollView style={styles.rightPaneContainer} />
+          </View>
+        </SafeAreaView>
+      </PaperProvider>
+      );
+    }
+  };
 
 const styles = StyleSheet.create({
   mainContainer: {
