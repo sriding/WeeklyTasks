@@ -8,30 +8,56 @@ import {
   StatusBar,
   FlatList,
   Button,
+  TextInput,
 } from 'react-native';
 
 //React Native Paper, Material Design
 import { Provider as PaperProvider } from "react-native-paper";
 
 //Components
-import DayCard from "./../DayCard";
+import DayCard from "../DayCard/DayCard";
 
-import {DaySchema, TaskSchema, NoteSchema, createInitialDays} from "./../../schemas/testSchema";
+import createInitialDays from "./../../functionsInteractingWithRealm/createInitialDays";
+import { addTask } from "./../../functionsInteractingWithRealm/tasks";
+import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDaysData";
 
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      taskInput: "",
+      noteInput: "",
+    }
   }
 
   componentDidMount = () => {
     console.log("Mounted.");
-    createInitialDays(DaySchema, TaskSchema, NoteSchema);
+    createInitialDays();
+    getAllDaysData.then((data) => {
+      this.setState({
+        dayInformation: data
+      })
+    })
+  }
+
+  taskInputChange = (text) => {
+    this.setState({ taskInput: text})
+  }
+
+  submittingTaskInput = () => {
+    addTask(this.state.taskInput, "Monday");
+    this.setState({taskInput: ""});
   }
 
   render() {
     return (
       <PaperProvider>
         <SafeAreaView>
+          <TextInput style={{height: 40, borderLeftWidth: 1, marginLeft: 15}} 
+          onChangeText={this.taskInputChange} 
+          value={this.state.taskInput}
+          onSubmitEditing={this.submittingTaskInput}
+          />
           <View style={styles.mainContainer}>
             <ScrollView style={styles.leftPaneContainer}>
               <FlatList
@@ -43,13 +69,13 @@ class HomeScreen extends Component {
               </FlatList>
             </ScrollView>
             <ScrollView style={styles.middlePaneContainer}>
-              <DayCard navigation={this.props.navigation}/>
-              <DayCard navigation={this.props.navigation}/>
-              <DayCard navigation={this.props.navigation}/>
-              <DayCard navigation={this.props.navigation}/>
-              <DayCard navigation={this.props.navigation}/>
-              <DayCard navigation={this.props.navigation}/>
-              <DayCard navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[0]} navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[1]} navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[2]} navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[3]} navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[4]} navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[5]} navigation={this.props.navigation}/>
+              <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[6]} navigation={this.props.navigation}/>
             </ScrollView>
             <ScrollView style={styles.rightPaneContainer} />
           </View>

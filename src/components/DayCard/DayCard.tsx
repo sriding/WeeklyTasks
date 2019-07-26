@@ -8,16 +8,20 @@ import { Avatar, Button, Card, Title, Paragraph, Subheading } from 'react-native
 
 export default function DayCard(props) {
     return (
-    <Card onPress={() => {props.navigation.navigate("DayScreen")}} style={styles.cardContainer}>
+    <Card onPress={() => {props.navigation.navigate("Day"), {
+      id: props.dayInformation.id
+    }}} 
+    style={styles.cardContainer}>
         <Card.Content>
-          <Title>Monday</Title>
+          <Title>{props.dayInformation && props.dayInformation.id}</Title>
           <Subheading>Tasks</Subheading>
-          <Paragraph>Number one.</Paragraph>
-          <Paragraph>Number two.</Paragraph>
+          {props.dayInformation && props.dayInformation.tasks.map((task) => {
+            return <Paragraph key={task.id}>{task.text}</Paragraph>
+          })}
         </Card.Content>
         <Card.Content>
           <Subheading>Note</Subheading>
-          <Paragraph>There will be one note available per card/per day.</Paragraph>
+          <Paragraph>{props.dayInformation && props.dayInformation.note.text}</Paragraph>
         </Card.Content>
     </Card>
     )
