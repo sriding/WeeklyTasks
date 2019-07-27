@@ -31,7 +31,8 @@ export default function DayCard(props) {
 const styles = StyleSheet.create({
     cardContainer: {
         marginTop: 20,
-        shadowColor: "blue",
+        marginBottom: 8,
+        shadowColor: "#4d4dff",
         shadowRadius: 3,
         shadowOffset: {
           width: 0,

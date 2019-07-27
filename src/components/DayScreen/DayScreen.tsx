@@ -6,6 +6,8 @@ import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASi
 import { addTask, updateTask, checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
 import { addNote, updateNote, deleteNote } from "./../../functionsInteractingWithRealm/notes";
 
+import Header from "./../Header/Header";
+
 export default class DayScreen extends Component {
     constructor(props) {
         super(props);
@@ -78,15 +80,10 @@ export default class DayScreen extends Component {
     render() {
         return (
             <SafeAreaView style={styles.mainContainer}>
-                <View style={styles.goBackButtonViewContainer}>
-                    <Button mode="contained" color="#EDF0FF" contentStyle={styles.goBackButton} onPress={() => this.props.navigation.goBack()}>
-                        Go Back
-                    </Button>
-                </View>
-                <ScrollView contentContainerStyle={styles.cardContainerViewContainer}>
+                <Header title={this.state.id} navigation={this.props.navigation}/>
+                <ScrollView contentContainerStyle={styles.cardContainerViewContainer} showsVerticalScrollIndicator={false}>
                     <Card style={styles.cardContainer}>
                         <Card.Content>
-                            <Button mode="contained" style={styles.headingText}>{this.state.Day && this.state.Day.id}</Button>
                             <Button mode="outlined" style={styles.subHeadingText}>Tasks</Button>
                             {this.state.Day && this.state.Day.tasks.map((task) => {
                                 return (
@@ -161,29 +158,32 @@ const styles = StyleSheet.create({
     },
     buttonCombiner: {
         flexDirection: "row",
-        alignContent: "center"
+        alignContent: "center",
+        marginBottom: 20,
+        marginTop: 10
     },
     buttonStyle: {
-        width: 100
+        width: 100,
+        marginBottom: 20,
+        marginTop: 10
     },
     headingText: {
         maxWidth: "100%"
     },
     subHeadingText: {
-        maxWidth: 150,
-        marginTop: 25,
+        maxWidth: 130,
+        marginTop: 5,
         marginBottom: 10,
     },
     paragraphText: {
         fontSize: 20,
-        marginBottom: 15,
-        marginTop: 15
+        marginTop: 20
     },
     chipStyles: {
+        position: "relative",
         flexGrow: 1,
         flexDirection: "row",
         justifyContent: "space-evenly",
-        marginTop: 50,
         maxHeight: 50
     }
 });

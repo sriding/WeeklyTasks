@@ -8,16 +8,17 @@ import {
   StatusBar,
   FlatList,
   Button,
-  TextInput,
 } from 'react-native';
 
 //React Native Paper, Material Design
-import { Provider as PaperProvider } from "react-native-paper";
+import { Provider as PaperProvider, FAB, Portal, Dialog, Paragraph, TextInput, Menu } from "react-native-paper";
 
 import moment from 'moment';
 
 //Components
 import DayCard from "../DayCard/DayCard";
+import Header from "../Header/Header";
+import SideBar from "../SideBar/SideBar";
 
 import createInitialDays from "./../../functionsInteractingWithRealm/createInitialDays";
 import { addTask } from "./../../functionsInteractingWithRealm/tasks";
@@ -28,16 +29,19 @@ class HomeScreen extends Component {
     super(props);
     this.state = {
       taskInput: "",
-      noteInput: "",
+      sideBarToggle: false,
+      dialogToggle: false,
+      menuToggle: false,
+      theWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     }
   }
 
   componentDidMount = () => {
-    console.log(moment().format('dddd'));
     createInitialDays();
     getAllDaysData.then((data) => {
       this.setState({
-        dayInformation: data
+        dayInformation: data,
+        dayOfTheWeek: moment().format('dddd')
       })
     })
     .catch((err) => {
@@ -50,30 +54,54 @@ class HomeScreen extends Component {
   }
 
   submittingTaskInput = () => {
-    addTask(this.state.taskInput, "Monday");
+    const dayOfTheWeek = moment().format('dddd');
+    addTask(this.state.taskInput, dayOfTheWeek);
     this.setState({taskInput: ""});
+  }
+
+  sideBarIconClicked = () => {
+    this.setState({ 
+        sideBarToggle: !this.state.sideBarToggle,
+    })
+  }
+
+  dialogToggleClick = () => {
+    this.setState({
+      dialogToggle: true
+    })
+  }
+
+  dialogToggleDismiss = () => {
+    this.setState({
+      dialogToggle: false
+    })
+  }
+
+  toggleMenu = () => {
+    this.setState({
+      menuToggle: true
+    })
+  }
+
+  dismissMenu = () => {
+    this.setState({
+      menuToggle: false
+    })
   }
 
   render() {
     return (
       <PaperProvider>
         <SafeAreaView>
-          <TextInput style={{height: 40, borderLeftWidth: 1, marginLeft: 15}} 
-            onChangeText={this.taskInputChange} 
-            value={this.state.taskInput}
-            onSubmitEditing={this.submittingTaskInput}
-          />
+          <Header title="Home" sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer}>
-            <ScrollView style={styles.leftPaneContainer}>
-              <FlatList
-                data={[{text: "Mon", day: Date.now(), key: "One"}, {text: "Tue", day: Date.now(), key: "Two"}, {text: "Wed", day: Date.now(), key: "Three"}, {text: "Thur", day: Date.now(), key: "Four"}, {text: "Fri", day: Date.now(), key: "Five"}, {text: "Sat", day: Date.now(), key: "Six"}, {text: "Sun", day: Date.now(), key: "Seven"}]}
-                renderItem={({item}) => {
-                  return <Text style={styles.leftPaneText}>{item.text}</Text>
-                }}
-              >
-              </FlatList>
-            </ScrollView>
-            <ScrollView style={styles.middlePaneContainer}>
+            {this.state.sideBarToggle !== false ?
+              <ScrollView style={styles.leftPaneContainer} showsVerticalScrollIndicator={false}>
+                <SideBar />
+              </ScrollView>
+              : <ScrollView style={styles.leftPaneContainerNoText} />
+            } 
+            <ScrollView style={styles.middlePaneContainer} showsVerticalScrollIndicator={false}>
               <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[0]} navigation={this.props.navigation}/>
               <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[1]} navigation={this.props.navigation}/>
               <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[2]} navigation={this.props.navigation}/>
@@ -82,7 +110,44 @@ class HomeScreen extends Component {
               <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[5]} navigation={this.props.navigation}/>
               <DayCard dayInformation={this.state.dayInformation && this.state.dayInformation[6]} navigation={this.props.navigation}/>
             </ScrollView>
-            <ScrollView style={styles.rightPaneContainer} />
+            <ScrollView style={styles.rightPaneContainer} showsVerticalScrollIndicator={false} />
+            <FAB style={styles.fabButton} icon="add" onPress={() => {
+              this.dialogToggleClick()
+            }} />
+            <Portal>
+              <Dialog
+                visible={this.state.dialogToggle}
+                onDismiss={this.dialogToggleDismiss}>
+                <Dialog.Title>Task</Dialog.Title>
+                <Dialog.Content>
+                  <TextInput 
+                    mode="outlined"
+                    placeholder="Input"
+                    multiline={true}
+                    onChangeText={this.taskInputChange}
+                    value={this.state.taskInput}
+                    onSubmitEditing={this.submittingTaskInput}
+                  />
+                </Dialog.Content>
+                <Dialog.Title>Day</Dialog.Title>
+                <Dialog.Content>
+                  <Menu            
+                    visible={this.state.menuToggle}
+                    onDismiss={this.dismissMenu}
+                    anchor={<Button title={this.state.dayOfTheWeek} onPress={this.toggleMenu} />
+                  }>
+                    {this.state.theWeek.map((day) => {
+                      return (
+                        <Menu.Item onPress={() => {}} title={day} />
+                      )
+                    })}
+                  </Menu>
+                </Dialog.Content>
+                <Dialog.Actions>
+                  <Button title="Done" onPress={this.dialogToggleDismiss}>Done</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
           </View>
         </SafeAreaView>
       </PaperProvider>
@@ -92,31 +157,39 @@ class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    borderTopWidth: 1,
     borderBottomWidth: 1,
     flexDirection: "row",
     backgroundColor: "#EDF0FF",
-    color: "#3A4890"
+    color: "#3A4890",
+    minHeight: "100%",
+    paddingBottom: 150
   },
   leftPaneContainer: {
     flexGrow: 0.3,
     borderStyle: "solid",
-    borderRightWidth: 1,
+    borderRightWidth: 0.5,
     marginRight: 20,
     minWidth: 100,
     backgroundColor: "#fff"
   },
-  leftPaneText: {
-    textAlign: "center",
-    fontSize: 22,
-    padding: 20
+  leftPaneContainerNoText: {
+    flexGrow: 0.3,
+    minWidth: 18
   },
   middlePaneContainer: {
-    flexGrow: 1.4
+    flexGrow: 1.4,
   },
   rightPaneContainer: {
     flexGrow: 0.3,
     minWidth: 18
+  },
+  fabButton: {
+    position: "absolute",
+    margin: 20,
+    right: 0,
+    bottom: 140,
+    backgroundColor: "#4d4dff",
+    color: "white"
   }
 });
 

@@ -1,7 +1,7 @@
 const Realm = require("realm");
 import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
 
-export const addTask = (text, dayID, day) => {
+export const addTask = (text, dayID) => {
     Realm.open({schema: [DaySchema, TaskSchema, NoteSchema]})
     .then((realm) => {
         const arrayOfIds = [];
@@ -11,7 +11,7 @@ export const addTask = (text, dayID, day) => {
         realm.write(() => {
             const newTask = realm.create("Task", {
                 id: Math.max(...arrayOfIds) + 1,
-                day,
+                dayID,
                 text,
                 isChecked: false
             })
