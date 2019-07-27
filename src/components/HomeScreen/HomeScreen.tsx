@@ -14,6 +14,8 @@ import {
 //React Native Paper, Material Design
 import { Provider as PaperProvider } from "react-native-paper";
 
+import moment from 'moment';
+
 //Components
 import DayCard from "../DayCard/DayCard";
 
@@ -31,12 +33,15 @@ class HomeScreen extends Component {
   }
 
   componentDidMount = () => {
-    console.log("Mounted.");
+    console.log(moment().format('dddd'));
     createInitialDays();
     getAllDaysData.then((data) => {
       this.setState({
         dayInformation: data
       })
+    })
+    .catch((err) => {
+      console.log("There was an error.");
     })
   }
 
@@ -54,17 +59,17 @@ class HomeScreen extends Component {
       <PaperProvider>
         <SafeAreaView>
           <TextInput style={{height: 40, borderLeftWidth: 1, marginLeft: 15}} 
-          onChangeText={this.taskInputChange} 
-          value={this.state.taskInput}
-          onSubmitEditing={this.submittingTaskInput}
+            onChangeText={this.taskInputChange} 
+            value={this.state.taskInput}
+            onSubmitEditing={this.submittingTaskInput}
           />
           <View style={styles.mainContainer}>
             <ScrollView style={styles.leftPaneContainer}>
               <FlatList
-              data={[{text: "Mon", day: Date.now(), key: "One"}, {text: "Tue", day: Date.now(), key: "Two"}, {text: "Wed", day: Date.now(), key: "Three"}, {text: "Thur", day: Date.now(), key: "Four"}, {text: "Fri", day: Date.now(), key: "Five"}, {text: "Sat", day: Date.now(), key: "Six"}, {text: "Sun", day: Date.now(), key: "Seven"}]}
-              renderItem={({item}) => {
-                return <Text style={styles.leftPaneText}>{item.text}</Text>
-              }}
+                data={[{text: "Mon", day: Date.now(), key: "One"}, {text: "Tue", day: Date.now(), key: "Two"}, {text: "Wed", day: Date.now(), key: "Three"}, {text: "Thur", day: Date.now(), key: "Four"}, {text: "Fri", day: Date.now(), key: "Five"}, {text: "Sat", day: Date.now(), key: "Six"}, {text: "Sun", day: Date.now(), key: "Seven"}]}
+                renderItem={({item}) => {
+                  return <Text style={styles.leftPaneText}>{item.text}</Text>
+                }}
               >
               </FlatList>
             </ScrollView>

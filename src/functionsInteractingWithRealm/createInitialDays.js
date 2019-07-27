@@ -15,7 +15,7 @@ export default function createInitialDays() {
                     for (let i = 0; i < daysOfTheWeek.length; i++) {
                         realm.create('Day', {
                             id: daysOfTheWeek[i],
-                            tasks: [{id: i, text: "Create tasks for the day here.", isChecked: false}],
+                            tasks: [{id: i, day: daysOfTheWeek[i], text: "Create tasks for the day here.", isChecked: false}],
                             note: {id: i, text: "Create a note for the day here."}
                         });
                     }

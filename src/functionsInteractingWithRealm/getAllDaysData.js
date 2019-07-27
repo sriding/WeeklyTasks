@@ -11,6 +11,7 @@ export const getAllDaysData = new Promise((resolve, reject) => {
                 for (let j = 0; j < dayObject[i].tasks.length; j++) {
                     taskObjects.push({
                         id: dayObject[i].tasks[j].id, 
+                        day: dayObject[i].tasks[j].day,
                         text: dayObject[i].tasks[j].text, 
                         isChecked: dayObject[i].tasks[j].isChecked
                     });

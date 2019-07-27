@@ -8,10 +8,11 @@ import { Avatar, Button, Card, Title, Paragraph, Subheading } from 'react-native
 
 export default function DayCard(props) {
     return (
-    <Card onPress={() => {props.navigation.navigate("Day"), {
-      id: props.dayInformation.id
-    }}} 
-    style={styles.cardContainer}>
+    <Card onPress={() => {
+        props.navigation.navigate("Day", {
+          id: props.dayInformation.id
+        })
+      }} style={styles.cardContainer}>
         <Card.Content>
           <Title>{props.dayInformation && props.dayInformation.id}</Title>
           <Subheading>Tasks</Subheading>

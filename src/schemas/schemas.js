@@ -15,6 +15,7 @@ export const TaskSchema = {
     primaryKey: 'id',
     properties: {
       id: 'int',
+      day: 'string',
       text:  'string',
       isChecked: "bool",
     }
