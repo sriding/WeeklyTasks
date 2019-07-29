@@ -1,17 +1,14 @@
-import React, {Fragment, Component} from 'react';
+import React, {Component} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
-  Text,
-  StatusBar,
-  FlatList,
-  Button,
+  Dimensions
 } from 'react-native';
 
 //React Native Paper, Material Design
-import { Provider as PaperProvider, FAB, Portal, Dialog, Paragraph, TextInput, Menu } from "react-native-paper";
+import { Provider as PaperProvider, FAB, Portal, Dialog, TextInput, List, Button } from "react-native-paper";
 
 import moment from 'moment';
 
@@ -19,26 +16,32 @@ import moment from 'moment';
 import DayCard from "../DayCard/DayCard";
 import Header from "../Header/Header";
 import SideBar from "../SideBar/SideBar";
+import SnackBarPopup from "../SnackBarPopup/SnackBarPopup";
 
 import createInitialDays from "./../../functionsInteractingWithRealm/createInitialDays";
 import { addTask } from "./../../functionsInteractingWithRealm/tasks";
 import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDaysData";
+import theWeek from "./../../utilities/theWeek";
 
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       taskInput: "",
+      snackBarVisibility: false,
+      snackBarIsError: false,
+      snackBarText: "",
       sideBarToggle: false,
       dialogToggle: false,
-      menuToggle: false,
-      theWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      listToggle: false,
+      dayInformation: null,
+      dayOfTheWeek: null
     }
   }
 
   componentDidMount = () => {
     createInitialDays();
-    getAllDaysData.then((data) => {
+    getAllDaysData().then((data) => {
       this.setState({
         dayInformation: data,
         dayOfTheWeek: moment().format('dddd')
@@ -47,16 +50,29 @@ class HomeScreen extends Component {
     .catch((err) => {
       console.log("There was an error.");
     })
-  }
+  } 
 
   taskInputChange = (text) => {
     this.setState({ taskInput: text})
   }
 
-  submittingTaskInput = () => {
-    const dayOfTheWeek = moment().format('dddd');
-    addTask(this.state.taskInput, dayOfTheWeek);
-    this.setState({taskInput: ""});
+  creatingTask = () => {
+    addTask(this.state.taskInput, this.state.dayOfTheWeek)
+      .then(() => {
+        getAllDaysData().then((data) => {
+          this.setState({
+            dayInformation: data,
+          })
+          this.dismissDialogToggle();
+          this.toggleSnackBarVisibility();
+        })
+        .catch(() => {
+          console.log("Something went wrong with the getAllDaysData function")
+        })
+      })
+      .catch(() => {
+        console.log("Something went wrong with the addTask function");
+      })
   }
 
   sideBarIconClicked = () => {
@@ -65,27 +81,42 @@ class HomeScreen extends Component {
     })
   }
 
-  dialogToggleClick = () => {
+  toggleDialogToggle = () => {
     this.setState({
       dialogToggle: true
     })
   }
 
-  dialogToggleDismiss = () => {
+  dismissDialogToggle = () => {
     this.setState({
-      dialogToggle: false
+      dialogToggle: false,
+      taskInput: "",
+      listToggle: false,
+      dayOfTheWeek: moment().format('dddd')
     })
   }
 
-  toggleMenu = () => {
+  toggleList = () => {
     this.setState({
-      menuToggle: true
+      listToggle: !this.state.listToggle
     })
   }
 
-  dismissMenu = () => {
+  dismissList = () => {
     this.setState({
-      menuToggle: false
+      listToggle: false,
+    })
+  }
+
+  setDayOfTheWeek = (day) => {
+    this.setState({
+      dayOfTheWeek: day
+    })
+  }
+
+  toggleSnackBarVisibility = () => {
+    this.setState({
+      snackBarVisibility: !this.state.snackBarVisibility
     })
   }
 
@@ -93,11 +124,11 @@ class HomeScreen extends Component {
     return (
       <PaperProvider>
         <SafeAreaView>
-          <Header title="Home" sideBarIconClicked={this.sideBarIconClicked}/>
+          <Header title="Home" date={moment().format('MM/DD/YYYY')} sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer}>
             {this.state.sideBarToggle !== false ?
               <ScrollView style={styles.leftPaneContainer} showsVerticalScrollIndicator={false}>
-                <SideBar />
+                <SideBar navigation={this.props.navigation}/>
               </ScrollView>
               : <ScrollView style={styles.leftPaneContainerNoText} />
             } 
@@ -112,42 +143,62 @@ class HomeScreen extends Component {
             </ScrollView>
             <ScrollView style={styles.rightPaneContainer} showsVerticalScrollIndicator={false} />
             <FAB style={styles.fabButton} icon="add" onPress={() => {
-              this.dialogToggleClick()
+              this.toggleDialogToggle()
             }} />
             <Portal>
               <Dialog
                 visible={this.state.dialogToggle}
-                onDismiss={this.dialogToggleDismiss}>
+                onDismiss={this.dismissDialogToggle}
+                style={{maxHeight: Dimensions.get('window').height - 50 }}
+                >
                 <Dialog.Title>Task</Dialog.Title>
                 <Dialog.Content>
                   <TextInput 
                     mode="outlined"
-                    placeholder="Input"
+                    label="Input"
                     multiline={true}
+                    style={{maxHeight: 350}}
                     onChangeText={this.taskInputChange}
                     value={this.state.taskInput}
-                    onSubmitEditing={this.submittingTaskInput}
                   />
                 </Dialog.Content>
                 <Dialog.Title>Day</Dialog.Title>
                 <Dialog.Content>
-                  <Menu            
-                    visible={this.state.menuToggle}
-                    onDismiss={this.dismissMenu}
-                    anchor={<Button title={this.state.dayOfTheWeek} onPress={this.toggleMenu} />
-                  }>
-                    {this.state.theWeek.map((day) => {
+                  <List.Accordion
+                    title={this.state.dayOfTheWeek}
+                    expanded={this.state.listToggle}
+                    onPress={this.toggleList}
+                  >
+                    <ScrollView style={{height: 200, borderRightWidth: 1}}>
+                    {Object.keys(theWeek).map((day, index) => {
                       return (
-                        <Menu.Item onPress={() => {}} title={day} />
+                        <List.Item 
+                          key={index}
+                          onPress={() => {
+                            this.dismissList();
+                            this.setDayOfTheWeek(day);
+                          }} 
+                          title={day} />
                       )
                     })}
-                  </Menu>
+                    </ScrollView>
+                    </List.Accordion>
                 </Dialog.Content>
-                <Dialog.Actions>
-                  <Button title="Done" onPress={this.dialogToggleDismiss}>Done</Button>
+                <Dialog.Actions style={styles.dialogButtons}>
+                  <Button mode="contained" 
+                      onPress={this.dismissDialogToggle}
+                      color="#C00000">Cancel
+                  </Button>
+                  <Button mode="contained" 
+                    onPress={this.creatingTask}>Create
+                  </Button>
                 </Dialog.Actions>
               </Dialog>
             </Portal>
+            <SnackBarPopup visibility={this.state.snackBarVisibility}
+            toggleSnackBarVisibility={this.toggleSnackBarVisibility}
+            snackBarIsError={this.state.snackBarIsError}
+            snackBarText={this.state.snackBarText} />
           </View>
         </SafeAreaView>
       </PaperProvider>
@@ -190,6 +241,10 @@ const styles = StyleSheet.create({
     bottom: 140,
     backgroundColor: "#4d4dff",
     color: "white"
+  },
+  dialogButtons: {
+    flexDirection: "row",
+    justifyContent: "space-evenly"
   }
 });
 

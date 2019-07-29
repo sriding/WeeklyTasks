@@ -5,17 +5,23 @@ import { Button, Card, Title, Subheading, Paragraph, Chip } from "react-native-p
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
 import { addTask, updateTask, checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
 import { addNote, updateNote, deleteNote } from "./../../functionsInteractingWithRealm/notes";
+import theWeek from "./../../utilities/theWeek";
 
 import Header from "./../Header/Header";
+
+import moment from 'moment';
 
 export default class DayScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: null,
+            Day: null
         }
     }
 
     componentDidMount = () => {
+        console.log(moment().startOf('week').add('days', 3).format('MM/DD/YYYY'));
         getASingleDaysData(this.props.navigation.getParam("id", "no-id"))
         .then((data) => {
             this.setState({
@@ -80,15 +86,15 @@ export default class DayScreen extends Component {
     render() {
         return (
             <SafeAreaView style={styles.mainContainer}>
-                <Header title={this.state.id} navigation={this.props.navigation}/>
+                <Header title={this.state.id} date={moment().startOf('week').add('days', theWeek[this.state.id]).format('MM/DD/YYYY')} navigation={this.props.navigation}/>
                 <ScrollView contentContainerStyle={styles.cardContainerViewContainer} showsVerticalScrollIndicator={false}>
                     <Card style={styles.cardContainer}>
                         <Card.Content>
-                            <Button mode="outlined" style={styles.subHeadingText}>Tasks</Button>
+                            <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
                             {this.state.Day && this.state.Day.tasks.map((task) => {
                                 return (
                                     <Fragment key={task.id}>
-                                        <Paragraph style={styles.paragraphText}>{task.text}</Paragraph>
+                                        <Paragraph style={styles.paragraphText}>{`\u2022 ${task.text}`}</Paragraph>
                                         <View style={styles.buttonCombiner}>
                                             <Button style={styles.buttonStyle} icon="check-circle" onPress={() => {
                                                 checkTask(task.id)
@@ -102,14 +108,14 @@ export default class DayScreen extends Component {
                             })}
                         </Card.Content>
                         <Card.Content>
-                            <Button mode="outlined" style={styles.subHeadingText}>Note</Button>
-                            <Paragraph style={styles.paragraphText}>{this.state.Day && this.state.Day.note.text}</Paragraph>
-                            <Button style={styles.buttonStyle} icon="highlight-off" onPress={() => {
+                            <Button mode="contained" style={styles.subHeadingText}>Note</Button>
+                            <Paragraph style={styles.paragraphText}>{this.state.Day && `\u2022 ${this.state.Day.note.text}`}</Paragraph>
+                            <Button mode="outlined" compact={true} style={styles.buttonStyle} icon="highlight-off" onPress={() => {
                                 deleteNote(this.state.Day.note.id);
                             }}>Delete</Button>
                         </Card.Content>
                         <Card.Content style={styles.chipStyles}>
-                            <Chip icon="done" onPress={() => {
+                            <Chip textStyle={{color: "white"}} style={{backgroundColor: "#4d4dff"}}icon="done" onPress={() => {
                                 checkAllTasks(this.state.Day.tasks)
                             }}>Check All</Chip>
                             <Chip icon="not-interested" onPress={() => {
@@ -160,12 +166,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignContent: "center",
         marginBottom: 20,
-        marginTop: 10
+        marginTop: 5
     },
     buttonStyle: {
         width: 100,
-        marginBottom: 20,
-        marginTop: 10
     },
     headingText: {
         maxWidth: "100%"
@@ -173,17 +177,16 @@ const styles = StyleSheet.create({
     subHeadingText: {
         maxWidth: 130,
         marginTop: 5,
-        marginBottom: 10,
+        marginBottom: 25,
     },
     paragraphText: {
-        fontSize: 20,
-        marginTop: 20
+        fontSize: 19,
+        lineHeight: 30,
+        marginBottom: 3
     },
     chipStyles: {
-        position: "relative",
-        flexGrow: 1,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
+        position: "absolute",
+        bottom: 100,
         maxHeight: 50
     }
 });

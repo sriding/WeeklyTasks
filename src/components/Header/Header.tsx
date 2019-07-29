@@ -19,6 +19,7 @@ export default function Header(props) {
             <Appbar.Content
                 title={props.title}
                 titleStyle={{fontSize: 19}}
+                subtitle={props.date}
             />
         </Appbar.Header>
         );

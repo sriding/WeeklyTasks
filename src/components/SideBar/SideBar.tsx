@@ -3,7 +3,7 @@ import React, { Fragment } from 'react'
 import { ScrollView, FlatList, Text, StyleSheet } from "react-native"
 import { List } from "react-native-paper"
 
-export default function SideBar() {
+export default function SideBar(props) {
     const daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
     "Saturday", "Sunday"]
 
@@ -15,6 +15,11 @@ export default function SideBar() {
                 <List.Item 
                     key={index}
                     title={day}
+                    onPress={() => {
+                        props.navigation.navigate("Day", {
+                            id: day
+                        })
+                    }}
                 />
             )
             })}
