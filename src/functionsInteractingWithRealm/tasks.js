@@ -1,11 +1,12 @@
 const Realm = require("realm");
 import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
-import { getAllDaysData } from "./getAllDaysData";
 
 export const addTask = (text, dayID) => { 
     return new Promise((resolve, reject) => {
-        if (text.length === 0 || text.length > 250) {
-            return reject(null);
+        if (text.length === 0) {
+            return reject("No text!");
+        } else if (text.length > 250) {
+            return reject("Cannot exceed 250 characters.")
         }
         Realm.open({schema: [DaySchema, TaskSchema, NoteSchema]})
         .then((realm) => {
@@ -34,14 +35,16 @@ export const addTask = (text, dayID) => {
 }
 
 export const updateTask = (text, taskID) => {
-    Realm.open({ schema: TaskSchema})
-    .then((realm) => {
-        realm.write(() => {
-            realm.create("Task", {id: taskID, text}, true);
+    return new Promise((resolve, reject) => {
+        Realm.open({ schema: TaskSchema})
+        .then((realm) => {
+            realm.write(() => {
+                resolve(realm.create("Task", {id: taskID, text}, true));
+            })
         })
-    })
-    .catch((err) => {
-        console.log(err);
+        .catch((err) => {
+            reject(err);
+        })
     })
 }
 

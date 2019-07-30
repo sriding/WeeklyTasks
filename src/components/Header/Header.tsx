@@ -1,8 +1,5 @@
 import React from 'react'
-import { View, StyleSheet } from "react-native";
 import { Appbar } from "react-native-paper";
-
-import Sidebar from "./../SideBar/SideBar";
 
 export default function Header(props) {
     return (

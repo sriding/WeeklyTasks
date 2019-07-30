@@ -3,10 +3,8 @@ import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
 
 export const getAllDaysData = () => { 
     return new Promise((resolve, reject) => {
-        console.log("Is this running?");
         Realm.open({schema: [DaySchema, TaskSchema, NoteSchema]})
             .then((realm) => {
-                console.log("This should finish second");
                 let dayObjects = [];
                 let dayObject = realm.objects("Day");
                 let taskObjects = [];

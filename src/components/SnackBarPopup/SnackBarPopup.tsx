@@ -10,17 +10,17 @@ export default function SnackBarPopup(props) {
                 <Snackbar
                     visible={props.visibility}
                     onDismiss={() => {props.toggleSnackBarVisibility()}}
-                    duration={3000}
+                    duration={2500}
                     style={{backgroundColor: "#C00000"}}>
-                    {props.snackBarText}
+                    <Text style={{textAlign: "center"}}>{props.snackBarText}</Text>
                 </Snackbar>
                 :                 
                 <Snackbar
                     visible={props.visibility}
                     onDismiss={() => {props.toggleSnackBarVisibility()}}
-                    duration={3000}
+                    duration={2500}
                     style={{backgroundColor: "#4d4dff"}}>
-                    {props.snackBarText}
+                    <Text style={{textAlign: "center"}}>{props.snackBarText}</Text>
                 </Snackbar>
                 }
           </View>

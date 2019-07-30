@@ -1,26 +1,24 @@
 import React from 'react'
 import {
-    View,
-    Text,
     StyleSheet
   } from 'react-native';
-import { Avatar, Button, Card, Title, Paragraph, Subheading } from 'react-native-paper';
+import { Card, Title, Paragraph, Subheading } from 'react-native-paper';
 
-export default function DayCard(props) {
+export default function HomeScreenCard(props) {
     return (
     <Card onPress={() => {
         props.navigation.navigate("Day", {
           id: props.dayInformation.id
         })
       }} style={styles.cardContainer}>
-        <Card.Content>
+        <Card.Content style={styles.tasksContainer}>
           <Title>{props.dayInformation && props.dayInformation.id}</Title>
           <Subheading>Tasks</Subheading>
           {props.dayInformation && props.dayInformation.tasks.map((task) => {
             return <Paragraph key={task.id}>{`\u2022 ${task.text}`}</Paragraph>
           })}
         </Card.Content>
-        <Card.Content>
+        <Card.Content style={styles.noteContainer}>
           <Subheading>Note</Subheading>
           <Paragraph>{props.dayInformation && `\u2022 ${props.dayInformation.note.text}`}</Paragraph>
         </Card.Content>
@@ -33,12 +31,15 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 8,
         maxHeight: 450,
-        overflow: "scroll",
         shadowColor: "#4d4dff",
-        shadowRadius: 3,
-        shadowOffset: {
-          width: 0,
-          height: 4
-        },
+        shadowRadius: 4
+    },
+    tasksContainer: {
+      maxHeight: 330,
+      overflow: "hidden"
+    },
+    noteContainer: {
+      maxHeight: 100,
+      overflow: "hidden"
     }
 })

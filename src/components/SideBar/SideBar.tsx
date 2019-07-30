@@ -1,16 +1,14 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 
-import { ScrollView, FlatList, Text, StyleSheet } from "react-native"
 import { List } from "react-native-paper"
 
-export default function SideBar(props) {
-    const daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-    "Saturday", "Sunday"]
+import theWeek from "./../../utilities/theWeek";
 
+export default function SideBar(props) {
     return (
         <List.Section>
             <List.Subheader>Days</List.Subheader>
-            {daysOfTheWeek.map((day, index) => {
+            {theWeek.map((day, index) => {
             return (
                 <List.Item 
                     key={index}
@@ -26,11 +24,3 @@ export default function SideBar(props) {
         </List.Section>
     )
 }
-
-const styles = StyleSheet.create({
-    leftPaneText: {
-        textAlign: "center",
-        fontSize: 22,
-        padding: 20
-    }
-})
