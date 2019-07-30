@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View} from 'react-native'
+import { StyleSheet, View, Dimensions} from 'react-native'
 import { Chip } from "react-native-paper"
 
 const DayScreenFabButtonOptions = (props) => {
@@ -7,7 +7,11 @@ const DayScreenFabButtonOptions = (props) => {
         <View style={styles.chipStyles}>
             <Chip textStyle={{color: "white", fontSize: 15}} 
                 style={styles.chipStyleAdd} 
-                onPress={() => {}}>
+                onPress={() => {
+                    props.firstScrollView.current.scrollTo({x: 0,y: 0});
+                    props.newTaskTextRef.current.focus();
+                    props.toggleFabButtonOptions();
+                }}>
                 Add Task
             </Chip>
             <Chip textStyle={{color: "white", fontSize: 15}} 
@@ -29,8 +33,8 @@ const DayScreenFabButtonOptions = (props) => {
 const styles = StyleSheet.create({
     chipStyles: {
         position: "absolute",
-        bottom: 150,
-        right: 75,
+        top: Dimensions.get("window").height - 230,
+        right: 70,
         zIndex: 2
     },
     chipStyleAdd: {

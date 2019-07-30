@@ -3,44 +3,90 @@ import { StyleSheet ,Text, View, TextInput as NativeTextInput} from 'react-nativ
 
 import { Card, Button, TextInput, Paragraph } from 'react-native-paper';
 
-export default function DayScreenCard(props) {
+import { addTask } from "./../../functionsInteractingWithRealm/tasks";
+
+export default class DayScreenCard extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            newTaskText: "",
+        }
+    }
+
+    clearTaskText = () => {
+        addTask(this.state.newTaskText, this.props.id)
+        .then(() => {
+            this.props.submitTaskText();
+        })
+        .then(() => {
+            this.props.newTaskTextRef.current.blur();
+            setTimeout(() => {
+                this.setState({
+                    newTaskText: ""
+                })
+            }, 800)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+    }
+
+    render() {
         return (
             <Card style={styles.cardContainer}>
-            <Card.Content>
-                <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
-                <View style={styles.addTaskEntry}>
-                    <Text style={styles.plusSign}>{"\u002B"}</Text>
-                    <TextInput style={styles.newTaskInput}
-                        label="New Task"
-                        mode="flat"
-                        multiline={true}
-                    ></TextInput>
-                </View>
-                {props.Day && props.Day.tasks.map((task) => {
-                    return (
-                        <View key={task.id}>
-                            <NativeTextInput value={`\u2022 ${task.text}`} multiline={true} style={styles.paragraphText}></NativeTextInput>
-                            <View style={styles.buttonCombiner}>
-                                <Button mode="outlined" style={styles.buttonStyle} icon="check-circle" onPress={() => {
-                                    props.checkTask(task.id)
-                                }}>Check</Button>
-                                <Button mode="outlined" style={styles.buttonStyle} color="#C00000" icon="highlight-off" onPress={() => {
-                                    props.deleteTask(task.id)
-                                }}>Delete</Button>
+                <Card.Content>
+                    <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
+                    <View style={styles.addTaskEntry}>
+                        <Text style={styles.plusSign}>{"\u002B"}</Text>
+                        <TextInput style={styles.newTaskInput}
+                            ref={this.props.newTaskTextRef}
+                            label="New Task"
+                            mode="flat"
+                            multiline={true}
+                            numberOfLines={4}
+                            value={this.state.newTaskText}
+                            onChangeText={text => {
+                                this.setState({
+                                    newTaskText: text
+                                })
+                            }}
+                            onSubmitEditing={this.clearTaskText}
+                        ></TextInput>
+                    </View>
+                    {this.props.Day && this.props.Day.tasks.map((task) => {
+                        return (
+                            <View key={task.id}>
+                                <NativeTextInput 
+                                    value={`\u2022 ${task.text}`} 
+                                    multiline={true} 
+                                    style={styles.paragraphText}
+                                    onFocus={() => {
+                                        styles.paragraphText.backgroundColor
+                                    }}
+                                    >
+                                </NativeTextInput>
+                                <View style={styles.buttonCombiner}>
+                                    <Button mode="outlined" style={styles.buttonStyle} icon="check-circle" onPress={() => {
+                                        this.props.checkTask(task.id)
+                                    }}>Check</Button>
+                                    <Button mode="outlined" style={styles.buttonStyle} color="#C00000" icon="highlight-off" onPress={() => {
+                                        this.props.deleteTask(task.id)
+                                    }}>Delete</Button>
+                                </View>
                             </View>
-                        </View>
-                    )
-                })}
-            </Card.Content>
-            <Card.Content>
-                <Button mode="contained" style={styles.subHeadingText}>Note</Button>
-                <Paragraph style={styles.paragraphText}>{props.Day && `\u2022 ${props.Day.note.text}`}</Paragraph>
-                <Button mode="outlined" color="#C00000" style={styles.buttonStyleNote} icon="highlight-off" onPress={() => {
-                    props.deleteNote(props.Day.note.id);
-                }}>Delete</Button>
-            </Card.Content>
-        </Card>
+                        )
+                    })}
+                </Card.Content>
+                <Card.Content>
+                    <Button mode="contained" style={styles.subHeadingText}>Note</Button>
+                    <Paragraph style={styles.paragraphText}>{this.props.Day && `\u2022 ${this.props.Day.note.text}`}</Paragraph>
+                    <Button mode="outlined" color="#C00000" style={styles.buttonStyleNote} icon="highlight-off" onPress={() => {
+                        this.props.deleteNote(this.props.Day.note.id);
+                    }}>Delete</Button>
+                </Card.Content>
+            </Card>
         )
+    }
 }
 
 const styles = StyleSheet.create({
@@ -88,7 +134,7 @@ const styles = StyleSheet.create({
     },
     subHeadingText: {
         maxWidth: 130,
-        marginTop: 5,
+        marginTop: 15,
         marginBottom: 25,
     },
     paragraphText: {

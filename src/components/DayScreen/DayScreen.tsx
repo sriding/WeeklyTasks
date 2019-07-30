@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { SafeAreaView, View, StyleSheet, ScrollView, TextInput as NativeTextInput } from "react-native";
+import { SafeAreaView, View, StyleSheet, ScrollView, TextInput as NativeTextInput, Dimensions } from "react-native";
 import { Button, Card, Paragraph, Chip, FAB, TextInput, Text } from "react-native-paper";
 
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
@@ -14,6 +14,7 @@ import DayScreenCard from "./../DayScreenCard/DayScreenCard";
 import DayScreenFabButtonOptions from "./../DayScreenFabButtonOptions/DayScreenFabButtonOptions";
 
 import moment from 'moment';
+import { getAllDaysData } from '../../functionsInteractingWithRealm/getAllDaysData';
 
 export default class DayScreen extends Component {
     constructor(props) {
@@ -30,6 +31,9 @@ export default class DayScreen extends Component {
             snackBarIsError: false,
             snackBarText: "",
         }
+
+        this.newTaskTextRef = React.createRef();
+        this.firstScrollView = React.createRef();
     }
 
     componentDidMount = () => {
@@ -62,6 +66,21 @@ export default class DayScreen extends Component {
         }
     }
 
+    submitTaskText = () => {
+            getASingleDaysData(this.state.id)
+                .then((data) => {
+                    this.setState({
+                        Day: data
+                    })
+                    this.setSnackBarTextAndIfError("Task Created!", false);
+                    this.toggleSnackBarVisibility();
+                })
+                .catch((error) => {
+                    this.setSnackBarTextAndIfError(error, true);
+                    this.toggleSnackBarVisibility();
+                })
+    }
+
     //Toggles snackbar appearance
     toggleSnackBarVisibility = () => {
         this.setState({
@@ -74,6 +93,12 @@ export default class DayScreen extends Component {
         this.setState({
           snackBarText: text,
           snackBarIsError: isError
+        })
+    }
+
+    toggleFabButtonOptions = () => {
+        this.setState({
+            fabButtonClicked: !this.state.fabButtonClicked
         })
     }
 
@@ -132,31 +157,36 @@ export default class DayScreen extends Component {
                     title={this.state.id} 
                     date={moment().startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
                     navigation={this.props.navigation}/>
-                <ScrollView 
+                <ScrollView
+                    ref={this.firstScrollView} 
                     contentContainerStyle={styles.cardContainerViewContainer} 
                     showsVerticalScrollIndicator={false}>
                     <DayScreenCard 
                         Day={this.state.Day}
                         checkTask={this.checkTask}
                         deleteTask={this.deleteTask}
-                        deleteNote={this.deleteNote} />
+                        deleteNote={this.deleteNote}
+                        submitTaskText={this.submitTaskText}
+                        id={this.state.id}
+                        newTaskTextRef={this.newTaskTextRef} />
                 </ScrollView>
-                <FAB style={styles.fabButton} icon="list" onPress={() => {
-                    this.setState({
-                        fabButtonClicked: !this.state.fabButtonClicked
-                    })
-                }} />
-                {this.state.fabButtonClicked ? 
-                <DayScreenFabButtonOptions
-                    checkAllTasks={this.checkAllTasks}
-                    deleteAllTasks={this.deleteAllTasks}
-                    Day={this.state.Day}
-                 /> : null}
                 <SnackBarPopup 
                     visibility={this.state.snackBarVisibility}
                     toggleSnackBarVisibility={this.toggleSnackBarVisibility}
                     snackBarIsError={this.state.snackBarIsError}
                     snackBarText={this.state.snackBarText} />
+                {this.state.fabButtonClicked ? 
+                <DayScreenFabButtonOptions
+                    newTaskTextRef={this.newTaskTextRef}
+                    checkAllTasks={this.checkAllTasks}
+                    deleteAllTasks={this.deleteAllTasks}
+                    Day={this.state.Day}
+                    firstScrollView={this.firstScrollView}
+                    toggleFabButtonOptions={this.toggleFabButtonOptions}
+                 /> : null}
+                <FAB style={styles.fabButton} icon="list" onPress={() => {
+                    this.toggleFabButtonOptions();
+                }} />
             </SafeAreaView>
         )}
     }
@@ -166,7 +196,8 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         flexWrap: "nowrap",
         backgroundColor: "#EDF0FF",
-        paddingBottom: 150
+        paddingBottom: 150,
+        minHeight: "100%"
     },
     goBackButtonViewContainer: {
         maxWidth: 120, 
@@ -187,7 +218,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         margin: 20,
         right: 0,
-        bottom: 97,
+        top: Dimensions.get("window").height - 130,
         width: 55,
         backgroundColor: "#4d4dff",
         color: "white"
