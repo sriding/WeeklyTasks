@@ -1,11 +1,14 @@
 import React from 'react';
 
+import { Provider as PaperProvider } from "react-native-paper"
 //Components
 import DrawerNavigator from "./src/navigation/navigator";
 
 const App = () => {
   return (
-    <DrawerNavigator />
+    <PaperProvider>
+      <DrawerNavigator />
+    </PaperProvider>
   )
 };
 

@@ -17,14 +17,26 @@ export const getAllDaysData = () => {
                             isChecked: dayObject[i].tasks[j].isChecked
                         });
                     }
-                    dayObjects.push({
-                        id: dayObject[i].id,
-                        tasks: taskObjects,
-                        note: {
-                            id: dayObject[i].note.id, 
-                            text: dayObject[i].note.text
-                        }
-                    })
+
+                    if (dayObject[i].note !== null) {
+                        dayObjects.push({
+                            id: dayObject[i].id,
+                            tasks: taskObjects,
+                            note: {
+                                id: dayObject[i].note.id, 
+                                text: dayObject[i].note.text
+                            }
+                        })
+                    } else {
+                        dayObjects.push({
+                            id: dayObject[i].id,
+                            tasks: taskObjects,
+                            note: {
+                                id: dayObject[i].id, 
+                                text: ""
+                            }
+                        })
+                    }
                     taskObjects = [];
                 }
                 resolve(dayObjects);

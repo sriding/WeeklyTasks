@@ -17,14 +17,14 @@ const DayScreenFabButtonOptions = (props) => {
             <Chip textStyle={{color: "white", fontSize: 15}} 
                 style={styles.chipStyleCheck} 
                 onPress={() => {
-                    props.checkAllTasks(props.Day.tasks)
+                    props.checkAllTasks()
                 }}>
                 Check All
             </Chip>
             <Chip textStyle={{color: "white", fontSize: 15}} 
                 style={styles.chipStyleDelete} 
                 onPress={() => {
-                props.deleteAllTasks(props.Day.tasks)
+                props.deleteAllTasks();
             }}>Delete All</Chip>
         </View>
     )

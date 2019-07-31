@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 //React Native Paper, Material Design elements
-import { Provider as PaperProvider, FAB } from "react-native-paper";
+import { FAB } from "react-native-paper";
 
 //Library to deal with the time object in javascript
 import moment from 'moment';
@@ -160,7 +160,6 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <PaperProvider>
         <SafeAreaView>
           <Header title="Home" date={moment().format('MM/DD/YYYY')} 
             sideBarIconClicked={this.sideBarIconClicked}/>
@@ -199,7 +198,6 @@ class HomeScreen extends Component {
               snackBarText={this.state.snackBarText} />
           </View>
         </SafeAreaView>
-      </PaperProvider>
       );
     }
   };

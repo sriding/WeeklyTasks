@@ -23,16 +23,13 @@ export default class DayScreen extends Component {
             id: null,
             Day: null,
             fabButtonClicked: false,
-            currentSelectedText: {
-                text: "",
-                id: null
-            },
             snackBarVisibility: false,
             snackBarIsError: false,
             snackBarText: "",
         }
 
         this.newTaskTextRef = React.createRef();
+        this.newNoteTextRef = React.createRef();
         this.firstScrollView = React.createRef();
     }
 
@@ -102,19 +99,10 @@ export default class DayScreen extends Component {
         })
     }
 
-    addTask = (text, dayID) => {
-        addTask(text, dayID);
-    }
-
-    updateTask = (text, taskID) => {
-        updateTask(text, taskID)
+    checkTask = (taskID, isChecked) => {
+        checkTask(taskID, isChecked)
         .then(() => {
-            getASingleDaysData(this.state.id)
-            .then((data) => {
-                this.setState({
-                    Day: data
-                })
-            })
+            this.submitTaskText();
         })
         .catch((error) => {
             this.setSnackBarTextAndIfError(error, true);
@@ -122,20 +110,37 @@ export default class DayScreen extends Component {
         })
     }
 
-    checkTask = (taskID) => {
-        checkTask(taskID);
-    }
-
     deleteTask = (taskID) => {
-        deleteTask(taskID);
+        deleteTask(taskID)
+        .then(() => {
+            this.submitTaskText();
+        })
+        .catch((error) => {
+            this.setSnackBarTextAndIfError(error, true);
+            this.toggleSnackBarVisibility();
+        })
     }
 
-    checkAllTasks = (taskIDs) => {
-        checkAllTasks(taskIDs);
+    checkAllTasks = () => {
+        checkAllTasks(this.state.id)
+        .then(() => {
+            this.submitTaskText();
+        })
+        .catch((error) => {
+            this.setSnackBarTextAndIfError(error, true);
+            this.toggleSnackBarVisibility();
+        })
     }
 
     deleteAllTasks = (taskIDs) => {
-        deleteAllTasks(taskIDs);
+        deleteAllTasks(this.state.id)
+        .then(() => {
+            this.submitTaskText();
+        })
+        .catch((error) => {
+            this.setSnackBarTextAndIfError(error, true);
+            this.toggleSnackBarVisibility();
+        })
     }
 
     addNote = (text, dayID) => {
@@ -147,34 +152,45 @@ export default class DayScreen extends Component {
     }
 
     deleteNote = (noteID) => {
-        deleteNote(noteID);
+        deleteNote(noteID)
+        .then(() => {
+            this.submitTaskText();
+        })
+        .catch((error) => {
+            this.setSnackBarTextAndIfError(error, true);
+            this.toggleSnackBarVisibility();
+        })
     }
 
     render() {
         return (
             <SafeAreaView style={styles.mainContainer}>
                 <Header 
-                    title={this.state.id} 
-                    date={moment().startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
-                    navigation={this.props.navigation}/>
+                title={this.state.id} 
+                date={moment().startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
+                navigation={this.props.navigation}/>
                 <ScrollView
-                    ref={this.firstScrollView} 
-                    contentContainerStyle={styles.cardContainerViewContainer} 
-                    showsVerticalScrollIndicator={false}>
+                ref={this.firstScrollView} 
+                contentContainerStyle={styles.cardContainerViewContainer} 
+                showsVerticalScrollIndicator={false}>
                     <DayScreenCard 
-                        Day={this.state.Day}
-                        checkTask={this.checkTask}
-                        deleteTask={this.deleteTask}
-                        deleteNote={this.deleteNote}
-                        submitTaskText={this.submitTaskText}
-                        id={this.state.id}
-                        newTaskTextRef={this.newTaskTextRef} />
+                    Day={this.state.Day}
+                    checkTask={this.checkTask}
+                    deleteTask={this.deleteTask}
+                    deleteNote={this.deleteNote}
+                    submitTaskText={this.submitTaskText}
+                    id={this.state.id}
+                    newTaskTextRef={this.newTaskTextRef}
+                    newNoteTextRef={this.newNoteTextRef} />
                 </ScrollView>
                 <SnackBarPopup 
                     visibility={this.state.snackBarVisibility}
                     toggleSnackBarVisibility={this.toggleSnackBarVisibility}
                     snackBarIsError={this.state.snackBarIsError}
                     snackBarText={this.state.snackBarText} />
+                <FAB style={styles.fabButton} icon="list" onPress={() => {
+                    this.toggleFabButtonOptions();
+                }} />
                 {this.state.fabButtonClicked ? 
                 <DayScreenFabButtonOptions
                     newTaskTextRef={this.newTaskTextRef}
@@ -184,9 +200,6 @@ export default class DayScreen extends Component {
                     firstScrollView={this.firstScrollView}
                     toggleFabButtonOptions={this.toggleFabButtonOptions}
                  /> : null}
-                <FAB style={styles.fabButton} icon="list" onPress={() => {
-                    this.toggleFabButtonOptions();
-                }} />
             </SafeAreaView>
         )}
     }
