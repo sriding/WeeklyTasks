@@ -30,6 +30,8 @@ class HomeScreen extends Component {
     super(props);
     this.state = {
       taskInput: "",
+      taskInputError: false,
+      taskInputErrorText: "",
       snackBarVisibility: false,
       snackBarIsError: false,
       snackBarText: "",
@@ -37,7 +39,7 @@ class HomeScreen extends Component {
       dialogToggle: false,
       dialogListToggle: false,
       dayInformation: null,
-      dayOfTheWeek: null
+      dayOfTheWeek: null,
     }
 
     //Reference to the text input field in the dialog popup for creating a task
@@ -52,19 +54,27 @@ class HomeScreen extends Component {
     */
     createInitialDays();
 
+    this.setState({
+      dayOfTheWeek: moment().format('dddd')
+    })
+
+    const didFocusSubscription = this.props.navigation.addListener(
+      'didFocus',
+      () => {
+        getAllDaysData().then((data) => {
+          this.setState({
+            dayInformation: data,
+          })
+        })
+        .catch((error) => {
+          this.setSnackBarTextAndIfError(error, true);
+          this.toggleSnackBarVisibility();
+        })
+      }
+    );
     /* 
       Function that will retrieve all the days of the week data from the realm file.
     */
-    getAllDaysData().then((data) => {
-      this.setState({
-        dayInformation: data,
-        dayOfTheWeek: moment().format('dddd')
-      })
-    })
-    .catch((error) => {
-      this.setSnackBarTextAndIfError(error, true);
-      this.toggleSnackBarVisibility();
-    })
   } 
 
   //Saves input that user plans on submitting as a new task to save
@@ -82,9 +92,11 @@ class HomeScreen extends Component {
         getAllDaysData().then((data) => {
           this.setState({
             dayInformation: data,
+            taskInputError: false,
+            taskInputErrorText: ""
           })
           this.dismissDialogToggle();
-          this.setSnackBarTextAndIfError("Task created!", false);
+          this.setSnackBarTextAndIfError("Task Created!", false);
           this.toggleSnackBarVisibility();
         })
         .catch((error) => {
@@ -93,8 +105,10 @@ class HomeScreen extends Component {
         })
       })
       .catch((error) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
+        this.setState({
+          taskInputError: true,
+          taskInputErrorText: error
+        })
       })
   }
 
@@ -118,7 +132,9 @@ class HomeScreen extends Component {
       dialogToggle: false,
       taskInput: "",
       dialogListToggle: false,
-      dayOfTheWeek: moment().format('dddd')
+      dayOfTheWeek: moment().format('dddd'),
+      taskInputError: false,
+      taskInputErrorText: ""
     })
   }
 
@@ -191,7 +207,9 @@ class HomeScreen extends Component {
               toggleDialogList={this.toggleDialogList}
               creatingTask={this.creatingTask}
               setDayOfTheWeek={this.setDayOfTheWeek}
-              dayOfTheWeek={this.state.dayOfTheWeek}/>
+              dayOfTheWeek={this.state.dayOfTheWeek}
+              taskInputError={this.state.taskInputError}
+              taskInputErrorText={this.state.taskInputErrorText}/>
             <SnackBarPopup visibility={this.state.snackBarVisibility}
               toggleSnackBarVisibility={this.toggleSnackBarVisibility}
               snackBarIsError={this.state.snackBarIsError}

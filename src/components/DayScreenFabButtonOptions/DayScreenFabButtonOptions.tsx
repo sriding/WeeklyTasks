@@ -2,6 +2,8 @@ import React from 'react'
 import { StyleSheet, View, Dimensions} from 'react-native'
 import { Chip } from "react-native-paper"
 
+import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
+
 const DayScreenFabButtonOptions = (props) => {
     return (
         <View style={styles.chipStyles}>
@@ -11,6 +13,7 @@ const DayScreenFabButtonOptions = (props) => {
                     props.firstScrollView.current.scrollTo({x: 0,y: 0});
                     props.newTaskTextRef.current.focus();
                     props.toggleFabButtonOptions();
+                    //deleteEverything();
                 }}>
                 Add Task
             </Chip>
@@ -18,6 +21,7 @@ const DayScreenFabButtonOptions = (props) => {
                 style={styles.chipStyleCheck} 
                 onPress={() => {
                     props.checkAllTasks()
+                    props.toggleFabButtonOptions();
                 }}>
                 Check All
             </Chip>
@@ -25,6 +29,7 @@ const DayScreenFabButtonOptions = (props) => {
                 style={styles.chipStyleDelete} 
                 onPress={() => {
                 props.deleteAllTasks();
+                props.toggleFabButtonOptions();
             }}>Delete All</Chip>
         </View>
     )

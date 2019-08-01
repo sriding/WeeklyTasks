@@ -7,14 +7,27 @@ export const getASingleDaysData = (dayID) => {
         .then((realm) => {
             let dayData = realm.objects("Day").filtered(`id == "${dayID}"`);
             let taskData = [];
-            for (let i = 0; i < dayData[0].tasks.length; i++) {
-                taskData.push({
-                    id: dayData[0].tasks[i].id, 
-                    day: dayData[0].tasks[i].day,
-                    text: dayData[0].tasks[i].text, 
-                    isChecked: dayData[0].tasks[i].isChecked
-                })
-            }
+            let leftOverTaskData = [];
+            for (let i = dayData[0].tasks.length - 1; i >= 0; i--) {
+                if (dayData[0].tasks[i].isChecked === true) {
+                    leftOverTaskData.push({
+                        id: dayData[0].tasks[i].id, 
+                        day: dayData[0].tasks[i].day,
+                        text: dayData[0].tasks[i].text, 
+                        isChecked: dayData[0].tasks[i].isChecked
+                    })
+                } else {
+                    taskData.push({
+                        id: dayData[0].tasks[i].id, 
+                        day: dayData[0].tasks[i].day,
+                        text: dayData[0].tasks[i].text, 
+                        isChecked: dayData[0].tasks[i].isChecked
+                    })
+            }}
+
+            leftOverTaskData.forEach((taskDataObject) => {
+                taskData.push(taskDataObject);
+            })
             resolve({
                 id: dayData[0].id,
                 tasks: taskData,

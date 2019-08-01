@@ -15,6 +15,14 @@ export default class DayScreenCard extends Component {
         this.state = {
             newTaskText: "",
             newNoteText: "",
+            newTaskTextError: false,
+            newNoteTextError: false,
+            newTaskTextErrorText: "",
+            newNoteTextErrorText: "",
+            updateTaskTextError: false,
+            updateNoteTextError: false,
+            updateTaskTextErrorText: "",
+            updateNoteTextErrorText: "",
             updateTaskTextState: {
                 text: "",
                 taskID: null
@@ -33,55 +41,93 @@ export default class DayScreenCard extends Component {
     clearTaskText = () => {
         addTask(this.state.newTaskText, this.props.id)
         .then(() => {
-            this.props.submitTaskText();
+            this.props.submitTaskText(true, "Task Created!");
         })
         .then(() => {
             this.props.newTaskTextRef.current.blur();
+            setTimeout(() => {
+                this.setState({
+                    newTaskText: "",
+                    newTaskTextError: false,
+                    newTaskTextErrorText: "",
+                })
+            }, 800)
+        })
+        .catch((error) => {
+            this.props.newTaskTextRef.current.blur();
+            this.setState({
+                newTaskTextError: true,
+                newTaskTextErrorText: error,
+            })
             setTimeout(() => {
                 this.setState({
                     newTaskText: ""
                 })
             }, 800)
         })
-        .catch((error) => {
-            console.log(error);
-        })
     }
 
     clearNoteText = () => {
         addNote(this.state.newNoteText, this.state.updateNoteTextState.noteID)
         .then(() => {
-            this.props.submitTaskText();
+            this.props.submitTaskText(true, "Note Created!");
         })
         .then(() => {
+            setTimeout(() => {
+                this.setState({
+                    newNoteText: "",
+                    newNoteTextError: false,
+                    newNoteTextErrorText: ""
+                })
+            }, 800)
+        })
+        .catch((error) => {
+            this.props.newNoteTextRef.current.blur();
+            this.setState({
+                newNoteTextError: true,
+                newNoteTextErrorText: error
+            })
             setTimeout(() => {
                 this.setState({
                     newNoteText: ""
                 })
             }, 800)
         })
-        .catch((error) => {
-            console.log(error);
-        })
     }
 
     updateTaskText = () => {
         updateTask(this.state.updateTaskTextState.text, this.state.updateTaskTextState.taskID)
         .then(() => {
-            this.props.submitTaskText();
+            this.props.submitTaskText(true, "Task Updated!");
+            this.setState({
+                updateTaskTextError: false,
+                updateTaskTextErrorText: ""
+            })
+            this.dismissTaskDialog();
         })
         .catch((error) => {
-            console.log(error);
+            this.setState({
+                updateTaskTextError: true,
+                updateTaskTextErrorText: error
+            })
         })
     }
 
     updateNoteText = () => {
         updateNote(this.state.updateNoteTextState.text, this.state.updateNoteTextState.noteID)
         .then(() => {
-            this.props.submitTaskText();
+            this.props.submitTaskText(true, "Note Updated!");
+            this.setState({
+                updateNoteTextError: false,
+                updateNoteTextErrorText: ""
+            })
+            this.dismissNoteDialog();
         })
         .catch((error) => {
-            console.log(error);
+            this.setState({
+                updateNoteTextError: true,
+                updateNoteTextErrorText: error
+            })
         })
     }
 
@@ -106,13 +152,17 @@ export default class DayScreenCard extends Component {
 
     dismissTaskDialog = () => {
         this.setState({
-            updateTaskDialogVisible: false
+            updateTaskDialogVisible: false,
+            updateTaskTextError: false,
+            updateTaskTextErrorText: ""
         })
     }
 
     dismissNoteDialog = () => {
         this.setState({
-            updateNoteDialogVisible: false
+            updateNoteDialogVisible: false,
+            updateNoteTextError: false,
+            updateNoteTextErrorText: ""
         })
     }
 
@@ -122,12 +172,16 @@ export default class DayScreenCard extends Component {
             <Card style={styles.cardContainer}>
                 <Card.Content>
                     <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
+                    {this.state.newTaskTextError ? <Paragraph style={{color: "#C00000"}}>
+                        {this.state.newTaskTextErrorText}
+                    </Paragraph> : null}
                     <View style={styles.addTaskEntry}>
                         <Text style={styles.plusSign}>{"\u002B"}</Text>
                         <TextInput style={styles.newTaskInput}
                             ref={this.props.newTaskTextRef}
                             label="New Task"
                             mode="flat"
+                            error={this.state.newTaskTextError}
                             multiline={true}
                             numberOfLines={4}
                             value={this.state.newTaskText}
@@ -198,7 +252,7 @@ export default class DayScreenCard extends Component {
                             this.setState({
                                 updateNoteDialogVisible: true
                             })
-                        }}>{this.props.Day && `\u2022 ${this.props.Day.note.text}`}</Paragraph>
+                        }}>{this.props.Day && this.props.Day.note.text}</Paragraph>
                         <Button mode="outlined" color="#C00000" style={styles.buttonStyleNote} icon="highlight-off" onPress={() => {
                             this.props.deleteNote(this.props.Day.note.id);
                             this.setState({
@@ -206,13 +260,19 @@ export default class DayScreenCard extends Component {
                             })
                         }}>Delete</Button>
                     </Fragment> : 
+                    <Fragment>
+                    {this.state.newNoteTextError ? <Paragraph style={{color: "#C00000"}}>
+                        {this.state.newNoteTextErrorText}
+                    </Paragraph> : null}                         
                     <View style={styles.addTaskEntry}>
                         <Text style={styles.plusSign}>{"\u002B"}</Text>
                         <TextInput style={styles.newTaskInput}
+                            ref={this.props.newNoteTextRef}
                             label="New Note"
                             mode="flat"
                             multiline={true}
                             numberOfLines={4}
+                            error={this.state.newNoteTextError}
                             value={this.state.newNoteText}
                             onChangeText={text => {
                                 this.setState({
@@ -227,8 +287,9 @@ export default class DayScreenCard extends Component {
                                 })
                             }}
                             onSubmitEditing={this.clearNoteText}
-                        ></TextInput>
+                        ></TextInput>                   
                     </View>
+                </Fragment>
                 }
                 </Card.Content>
             </Card>
@@ -237,13 +298,17 @@ export default class DayScreenCard extends Component {
                 dismissTaskDialog={this.dismissTaskDialog}
                 updateTaskText={this.updateTaskText}
                 updateTaskTextState={this.state.updateTaskTextState}
-                updatingUpdateTaskTextState={this.updatingUpdateTaskTextState}/>
+                updatingUpdateTaskTextState={this.updatingUpdateTaskTextState}
+                updateTaskTextError={this.state.updateTaskTextError}
+                updateTaskTextErrorText={this.state.updateTaskTextErrorText}/>
             <UpdateNoteDialog 
                 updateNoteDialogVisible={this.state.updateNoteDialogVisible}
                 dismissNoteDialog={this.dismissNoteDialog}
                 updateNoteText={this.updateNoteText}
                 updateNoteTextState={this.state.updateNoteTextState}
-                updatingUpdateNoteTextState={this.updatingUpdateNoteTextState}/>
+                updatingUpdateNoteTextState={this.updatingUpdateNoteTextState}
+                updateNoteTextError={this.state.updateNoteTextError}
+                updateNoteTextErrorText={this.state.updateNoteTextErrorText}/>
             </Fragment>
         )
     }

@@ -8,15 +8,29 @@ export const getAllDaysData = () => {
                 let dayObjects = [];
                 let dayObject = realm.objects("Day");
                 let taskObjects = [];
+                let leftOverTaskObjects = [];
                 for (let i = 0; i < 7; i++) {
-                    for (let j = 0; j < dayObject[i].tasks.length; j++) {
-                        taskObjects.push({
-                            id: dayObject[i].tasks[j].id, 
-                            day: dayObject[i].tasks[j].day,
-                            text: dayObject[i].tasks[j].text, 
-                            isChecked: dayObject[i].tasks[j].isChecked
-                        });
+                    for (let j = dayObject[i].tasks.length - 1; j >= 0; j--) {
+                        if (dayObject[i].tasks[j].isChecked === true) {
+                            leftOverTaskObjects.push({
+                                id: dayObject[i].tasks[j].id, 
+                                day: dayObject[i].tasks[j].day,
+                                text: dayObject[i].tasks[j].text, 
+                                isChecked: dayObject[i].tasks[j].isChecked
+                            })
+                        } else {
+                            taskObjects.push({
+                                id: dayObject[i].tasks[j].id, 
+                                day: dayObject[i].tasks[j].day,
+                                text: dayObject[i].tasks[j].text, 
+                                isChecked: dayObject[i].tasks[j].isChecked
+                            });
+                        }
                     }
+
+                    leftOverTaskObjects.forEach((taskObject) => {
+                        taskObjects.push(taskObject);
+                    })
 
                     if (dayObject[i].note !== null) {
                         dayObjects.push({
@@ -38,6 +52,7 @@ export const getAllDaysData = () => {
                         })
                     }
                     taskObjects = [];
+                    leftOverTaskObjects = [];
                 }
                 resolve(dayObjects);
             })

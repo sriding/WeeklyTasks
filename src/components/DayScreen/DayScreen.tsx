@@ -4,7 +4,7 @@ import { Button, Card, Paragraph, Chip, FAB, TextInput, Text } from "react-nativ
 
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
 import { addTask, updateTask, checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
-import { addNote, updateNote, deleteNote } from "./../../functionsInteractingWithRealm/notes";
+import { updateNote, deleteNote } from "./../../functionsInteractingWithRealm/notes";
 import theWeek from "./../../utilities/theWeek";
 
 //Components
@@ -63,14 +63,19 @@ export default class DayScreen extends Component {
         }
     }
 
-    submitTaskText = () => {
+    submitTaskText = (useSnackBar = true, snackBarText?) => {
             getASingleDaysData(this.state.id)
                 .then((data) => {
                     this.setState({
                         Day: data
                     })
-                    this.setSnackBarTextAndIfError("Task Created!", false);
-                    this.toggleSnackBarVisibility();
+                    if (useSnackBar) {
+                        this.setSnackBarTextAndIfError(snackBarText, false);
+                        this.toggleSnackBarVisibility();
+                    }
+                })
+                .then(() => {
+                    
                 })
                 .catch((error) => {
                     this.setSnackBarTextAndIfError(error, true);
@@ -102,7 +107,7 @@ export default class DayScreen extends Component {
     checkTask = (taskID, isChecked) => {
         checkTask(taskID, isChecked)
         .then(() => {
-            this.submitTaskText();
+            this.submitTaskText(false);
         })
         .catch((error) => {
             this.setSnackBarTextAndIfError(error, true);
@@ -113,7 +118,7 @@ export default class DayScreen extends Component {
     deleteTask = (taskID) => {
         deleteTask(taskID)
         .then(() => {
-            this.submitTaskText();
+            this.submitTaskText(true, "Task Deleted!");
         })
         .catch((error) => {
             this.setSnackBarTextAndIfError(error, true);
@@ -124,7 +129,7 @@ export default class DayScreen extends Component {
     checkAllTasks = () => {
         checkAllTasks(this.state.id)
         .then(() => {
-            this.submitTaskText();
+            this.submitTaskText(false);
         })
         .catch((error) => {
             this.setSnackBarTextAndIfError(error, true);
@@ -135,7 +140,7 @@ export default class DayScreen extends Component {
     deleteAllTasks = (taskIDs) => {
         deleteAllTasks(this.state.id)
         .then(() => {
-            this.submitTaskText();
+            this.submitTaskText(true, "All Tasks Deleted!");
         })
         .catch((error) => {
             this.setSnackBarTextAndIfError(error, true);
@@ -143,18 +148,10 @@ export default class DayScreen extends Component {
         })
     }
 
-    addNote = (text, dayID) => {
-        addNote(text, dayID);
-    }
-
-    updateNote = (text, noteID) => {
-        updateNote(text, noteID);
-    }
-
     deleteNote = (noteID) => {
         deleteNote(noteID)
         .then(() => {
-            this.submitTaskText();
+            this.submitTaskText(true, "Note Deleted!");
         })
         .catch((error) => {
             this.setSnackBarTextAndIfError(error, true);

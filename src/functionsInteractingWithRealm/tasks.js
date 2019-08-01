@@ -3,10 +3,11 @@ import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
 
 export const addTask = (text, dayID) => { 
     return new Promise((resolve, reject) => {
-        if (text.length === 0) {
+        let trimmedText = text.trim();
+        if (trimmedText.length === 0) {
             return reject("No text!");
-        } else if (text.length > 250) {
-            return reject("Cannot exceed 250 characters.")
+        } else if (trimmedText.length > 350) {
+            return reject("Cannot exceed 350 characters.")
         }
         Realm.open({schema: [DaySchema, TaskSchema, NoteSchema]})
         .then((realm) => {
@@ -21,13 +22,12 @@ export const addTask = (text, dayID) => {
                 let newTask = realm.create("Task", {
                     id: Math.max(...arrayOfIds) + 1,
                     day: dayID,
-                    text,
+                    text: trimmedText,
                     isChecked: false
                 })
                 let dayToUpdate = realm.create("Day", {
                     id: dayID,
                 }, true);
-                console.log("This should finish first.");
                 resolve(dayToUpdate.tasks.push(newTask));
             })
         })
@@ -39,10 +39,16 @@ export const addTask = (text, dayID) => {
 
 export const updateTask = (text, taskID) => {
     return new Promise((resolve, reject) => {
+        let trimmedText = text.trim();
+        if (trimmedText.length === 0) {
+            return reject("No text!");
+        } else if (trimmedText.length > 350) {
+            return reject("Cannot exceed 350 characters.")
+        }
         Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema]})
         .then((realm) => {
             realm.write(() => {
-                resolve(realm.create("Task", {id: taskID, text}, true));
+                resolve(realm.create("Task", {id: taskID, text: trimmedText}, true));
             })
         })
         .catch((err) => {

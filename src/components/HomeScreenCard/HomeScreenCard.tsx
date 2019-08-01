@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import {
-    StyleSheet
+    StyleSheet,
+    View
   } from 'react-native';
-import { Card, Title, Paragraph, Subheading } from 'react-native-paper';
+import { Card, Title, Paragraph, Subheading, Text } from 'react-native-paper';
 
 export default function HomeScreenCard(props) {
     return (
@@ -15,7 +16,13 @@ export default function HomeScreenCard(props) {
           <Title>{props.dayInformation && props.dayInformation.id}</Title>
           <Subheading>Tasks</Subheading>
           {props.dayInformation && props.dayInformation.tasks.map((task) => {
-            return <Paragraph key={task.id}>{`\u2022 ${task.text}`}</Paragraph>
+            return (task.isChecked ? 
+              <View key={task.id} style={{flexDirection: "row"}}>
+              <Paragraph>{`\u2022 `}</Paragraph>
+              <Paragraph style={{textDecorationLine: 'line-through', textDecorationStyle: "solid"}}>{task.text}</Paragraph>
+              </View> :
+              <Paragraph key={task.id}>{`\u2022 ${task.text}`}</Paragraph>
+            )
           })}
         </Card.Content>
         <Card.Content style={styles.noteContainer}>
