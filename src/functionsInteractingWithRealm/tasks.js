@@ -97,7 +97,6 @@ export const checkAllTasks = (day) => {
                         task.isChecked = true;
                     }
                 } else {
-                    console.log("Running the UNcheck all portion");
                     let tasksToUncheck = realm.objects("Task").filtered(`day == "${day}"`);
                     for (let task of tasksToUncheck) {
                         task.isChecked = false;

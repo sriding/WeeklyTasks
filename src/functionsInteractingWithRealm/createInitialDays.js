@@ -3,7 +3,7 @@ import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
 import theWeek from "./../utilities/theWeek";
 
 export default function createInitialDays() {
-    console.log(Realm.defaultPath);
+    //console.log(Realm.defaultPath);
     Realm.open({schema: [DaySchema, TaskSchema, NoteSchema]})
         .then(realm => {
             if (realm.objects('Day')[0]) {
@@ -21,6 +21,6 @@ export default function createInitialDays() {
             }
         })
         .catch(error => {
-            console.log(error);
+            return error;
         });
     }

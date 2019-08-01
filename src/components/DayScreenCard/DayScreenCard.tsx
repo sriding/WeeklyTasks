@@ -141,7 +141,6 @@ export default class DayScreenCard extends Component {
     }
 
     updatingUpdateNoteTextState = (text, noteID) => {
-        console.log(noteID);
         this.setState({
             updateNoteTextState: {
                 text,

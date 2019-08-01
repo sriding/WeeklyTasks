@@ -57,7 +57,6 @@ export const getAllDaysData = () => {
                 resolve(dayObjects);
             })
             .catch((err) => {
-                console.log(err);
                 reject(err);
             })
 })}

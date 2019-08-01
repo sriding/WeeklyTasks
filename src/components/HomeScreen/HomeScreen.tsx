@@ -72,9 +72,6 @@ class HomeScreen extends Component {
         })
       }
     );
-    /* 
-      Function that will retrieve all the days of the week data from the realm file.
-    */
   } 
 
   //Saves input that user plans on submitting as a new task to save
