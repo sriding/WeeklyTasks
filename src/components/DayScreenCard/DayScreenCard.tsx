@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet ,Text, View, TextInput as NativeTextInput} from 'react-native'
+import { StyleSheet ,Text, View, TextInput as NativeTextInput, Dimensions, ScrollView} from 'react-native'
 
 import { Card, Button, TextInput, Paragraph } from 'react-native-paper';
 
@@ -36,6 +36,7 @@ export default class DayScreenCard extends Component {
         }
 
         this.taskTextRef = React.createRef();
+        this.newNoteScrollViewRef = React.createRef();
     }
 
     clearTaskText = () => {
@@ -167,7 +168,7 @@ export default class DayScreenCard extends Component {
 
     render() {
         return (
-            <Fragment>
+        <Fragment>
             <Card style={styles.cardContainer}>
                 <Card.Content>
                     <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
@@ -182,7 +183,6 @@ export default class DayScreenCard extends Component {
                             mode="flat"
                             error={this.state.newTaskTextError}
                             multiline={true}
-                            numberOfLines={4}
                             value={this.state.newTaskText}
                             onChangeText={text => {
                                 this.setState({
@@ -262,7 +262,7 @@ export default class DayScreenCard extends Component {
                     <Fragment>
                     {this.state.newNoteTextError ? <Paragraph style={{color: "#C00000"}}>
                         {this.state.newNoteTextErrorText}
-                    </Paragraph> : null}                         
+                    </Paragraph> : null}
                     <View style={styles.addTaskEntry}>
                         <Text style={styles.plusSign}>{"\u002B"}</Text>
                         <TextInput style={styles.newTaskInput}
@@ -270,7 +270,6 @@ export default class DayScreenCard extends Component {
                             label="New Note"
                             mode="flat"
                             multiline={true}
-                            numberOfLines={4}
                             error={this.state.newNoteTextError}
                             value={this.state.newNoteText}
                             onChangeText={text => {
@@ -279,6 +278,7 @@ export default class DayScreenCard extends Component {
                                 })
                             }}
                             onFocus={() => {
+                                this.props.firstScrollView.current.scrollTo({x: 0, y: Dimensions.get("window").height})
                                 this.setState({
                                     updateNoteTextState: {
                                         noteID: this.props.Day.note.id
@@ -299,7 +299,9 @@ export default class DayScreenCard extends Component {
                 updateTaskTextState={this.state.updateTaskTextState}
                 updatingUpdateTaskTextState={this.updatingUpdateTaskTextState}
                 updateTaskTextError={this.state.updateTaskTextError}
-                updateTaskTextErrorText={this.state.updateTaskTextErrorText}/>
+                updateTaskTextErrorText={this.state.updateTaskTextErrorText}
+                keyboardHeight={this.props.keyboardHeight}
+                keyboardOpen={this.props.keyboardOpen}/>
             <UpdateNoteDialog 
                 updateNoteDialogVisible={this.state.updateNoteDialogVisible}
                 dismissNoteDialog={this.dismissNoteDialog}
@@ -307,7 +309,9 @@ export default class DayScreenCard extends Component {
                 updateNoteTextState={this.state.updateNoteTextState}
                 updatingUpdateNoteTextState={this.updatingUpdateNoteTextState}
                 updateNoteTextError={this.state.updateNoteTextError}
-                updateNoteTextErrorText={this.state.updateNoteTextErrorText}/>
+                updateNoteTextErrorText={this.state.updateNoteTextErrorText}
+                keyboardHeight={this.props.keyboardHeight}
+                keyboardOpen={this.props.keyboardOpen}/>
             </Fragment>
         )
     }
@@ -326,6 +330,7 @@ const styles = StyleSheet.create({
           width: 0,
           height: 3
         },
+        paddingBottom: 250
     },
     addTaskEntry: {
         flexDirection: "row",

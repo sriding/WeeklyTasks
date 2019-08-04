@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { SafeAreaView, View, StyleSheet, ScrollView, TextInput as NativeTextInput, Dimensions } from "react-native";
+import { SafeAreaView, View, StyleSheet, ScrollView, TextInput as NativeTextInput, Dimensions, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import { Button, Card, Paragraph, Chip, FAB, TextInput, Text } from "react-native-paper";
 
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
@@ -26,6 +26,8 @@ export default class DayScreen extends Component {
             snackBarVisibility: false,
             snackBarIsError: false,
             snackBarText: "",
+            keyboardHeight: 0,
+            keyboardOpen: false
         }
 
         this.newTaskTextRef = React.createRef();
@@ -45,6 +47,21 @@ export default class DayScreen extends Component {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
+
+        this.keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            this._keyboardDidShow,
+        );
+      
+        this.keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            this._keyboardDidHide,
+        );
+    }
+
+    componentWillUnmount = () => {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -59,6 +76,24 @@ export default class DayScreen extends Component {
             .catch((error) => {
                 this.setSnackBarTextAndIfError(error, true);
                 this.toggleSnackBarVisibility();
+            })
+        }
+    }
+
+    _keyboardDidShow = (event) => {
+        if (Platform.OS == "ios") {
+            this.setState({
+                keyboardHeight: event.endCoordinates.height,
+                keyboardOpen: true
+            })
+        }
+    }
+    
+    _keyboardDidHide = () => {
+        if (Platform.OS == "ios") {
+            this.setState({
+                keyboardHeight: 0,
+                keyboardOpen: false
             })
         }
     }
@@ -163,22 +198,25 @@ export default class DayScreen extends Component {
         return (
             <SafeAreaView style={styles.mainContainer}>
                 <Header 
-                title={this.state.id} 
-                date={moment().startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
-                navigation={this.props.navigation}/>
+                    title={this.state.id} 
+                    date={moment().startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
+                    navigation={this.props.navigation}/>
                 <ScrollView
-                ref={this.firstScrollView} 
-                contentContainerStyle={styles.cardContainerViewContainer} 
-                showsVerticalScrollIndicator={false}>
+                    ref={this.firstScrollView} 
+                    contentContainerStyle={styles.cardContainerViewContainer} 
+                    showsVerticalScrollIndicator={false}>
                     <DayScreenCard 
-                    Day={this.state.Day}
-                    checkTask={this.checkTask}
-                    deleteTask={this.deleteTask}
-                    deleteNote={this.deleteNote}
-                    submitTaskText={this.submitTaskText}
-                    id={this.state.id}
-                    newTaskTextRef={this.newTaskTextRef}
-                    newNoteTextRef={this.newNoteTextRef} />
+                        Day={this.state.Day}
+                        checkTask={this.checkTask}
+                        deleteTask={this.deleteTask}
+                        deleteNote={this.deleteNote}
+                        submitTaskText={this.submitTaskText}
+                        id={this.state.id}
+                        newTaskTextRef={this.newTaskTextRef}
+                        newNoteTextRef={this.newNoteTextRef}
+                        keyboardHeight={this.state.keyboardHeight}
+                        keyboardOpen={this.state.keyboardOpen}
+                        firstScrollView={this.firstScrollView}/>
                 </ScrollView>
                 <SnackBarPopup 
                     visibility={this.state.snackBarVisibility}
@@ -206,7 +244,6 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         flexWrap: "nowrap",
         backgroundColor: "#EDF0FF",
-        paddingBottom: 150,
         minHeight: "100%"
     },
     goBackButtonViewContainer: {

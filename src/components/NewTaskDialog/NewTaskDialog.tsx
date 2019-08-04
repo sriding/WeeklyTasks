@@ -1,52 +1,63 @@
-import React from 'react'
+import React, { Component } from 'react'
 
-import { ScrollView, StyleSheet, Dimensions } from "react-native"
+import { ScrollView, StyleSheet, Dimensions, View, KeyboardAvoidingView } from "react-native"
 import { Portal, Dialog, TextInput, List, Button, Paragraph } from "react-native-paper"
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import theWeek from "../../utilities/theWeek";
 
-    export default function NewTaskDialog(props) {
+export default class NewTaskDialog extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        }
+    }
+
+    render() {
         return (
             <Portal>
                 <Dialog
-                    visible={props.dialogToggle}
-                    onDismiss={props.dismissDialogToggle}
-                    style={{maxHeight: Dimensions.get('window').height - 100 }}>
+                    visible={this.props.dialogToggle}
+                    onDismiss={this.props.dismissDialogToggle}
+                    style={!this.props.keyboardOpen ? styles.dialogContainer :  {
+                        maxHeight: Dimensions.get('window').height - 100, 
+                        marginBottom: this.props.keyboardHeight - 70
+                        }}>
                     <Dialog.Title>Task</Dialog.Title>
                     <Dialog.Content>
                         <TextInput 
                             mode="outlined"
                             label="Input"
                             multiline={true}
-                            numberOfLines={4}
-                            error={props.taskInputError}
-                            style={{minHeight: 80, maxHeight: 300}}
-                            onChangeText={props.taskInputChange}
-                            value={props.taskInput}
-                            ref={props.textInputRef}
+                            numberOfLines={3}
+                            error={this.props.taskInputError}
+                            style={{minHeight: 80, maxHeight: 125}}
+                            onChangeText={this.props.taskInputChange}
+                            value={this.props.taskInput}
+                            ref={this.props.textInputRef}
                         />
-                        {props.taskInputError ? <Paragraph style={{color: "#C00000"}}>
-                            {props.taskInputErrorText}
+                        {this.props.taskInputError ? <Paragraph style={{color: "#C00000"}}>
+                            {this.props.taskInputErrorText}
                         </Paragraph> : null}
                     </Dialog.Content>
-                    <Dialog.Title style={{marginTop: 0}}>Day</Dialog.Title>
                     <Dialog.Content>
                         <List.Accordion
-                            title={props.dayOfTheWeek}
-                            expanded={props.dialogListToggle}
+                            title={this.props.dayOfTheWeek}
+                            expanded={this.props.dialogListToggle}
                             onPress={() => {
-                                props.toggleDialogList();
-                                props.textInputRef.current.blur();
-                            }}>
-                            <Dialog.ScrollArea>
-                            <ScrollView style={{maxHeight: Dimensions.get("window").height / 4}}>
+                                this.props.toggleDialogList();
+                                this.props.textInputRef.current.blur();
+                            }}
+                            style={{marginBottom: 0}}>
+                            <Dialog.ScrollArea style={{marginBottom: 0}}>
+                            <ScrollView style={{maxHeight: Dimensions.get("window").height / 5, marginBottom: 0}}>
                                 {theWeek.map((day, index) => {
                                 return (
                                     <List.Item 
                                     key={index}
                                     onPress={() => {
-                                        props.dismissDialogList();
-                                        props.setDayOfTheWeek(day);
+                                        this.props.dismissDialogList();
+                                        this.props.setDayOfTheWeek(day);
                                     }} 
                                     title={day}
                                     />
@@ -56,24 +67,22 @@ import theWeek from "../../utilities/theWeek";
                             </Dialog.ScrollArea>
                         </List.Accordion>
                     </Dialog.Content>
-                    <Dialog.Actions>
+                    <Dialog.Actions style={{marginTop: 0,}}>
                         <Button
-                            onPress={props.dismissDialogToggle}>Cancel
+                            onPress={this.props.dismissDialogToggle}>Cancel
                         </Button>
                         <Button
-                            onPress={props.creatingTask}>Create
+                            onPress={this.props.creatingTask}>Create
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
         )
     }
+}
 
 const styles = StyleSheet.create({
-    dialogButtons: {
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        marginTop: 0,
-        marginBottom: 20
-      }
+    dialogContainer: {
+        maxHeight: Dimensions.get('window').height - 100, 
+    },
 })

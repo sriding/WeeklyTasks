@@ -15,7 +15,7 @@ export default function HomeScreenCard(props) {
         <Card.Content style={styles.tasksContainer}>
           <Title>{props.dayInformation && props.dayInformation.id}</Title>
           <Subheading>Tasks</Subheading>
-          {props.dayInformation && props.dayInformation.tasks.map((task) => {
+          {props.dayInformation && props.dayInformation.tasks.length !== 0 ? props.dayInformation.tasks.map((task) => {
             return (task.isChecked ? 
               <View key={task.id} style={{flexDirection: "row"}}>
               <Paragraph>{`\u2022 `}</Paragraph>
@@ -23,11 +23,13 @@ export default function HomeScreenCard(props) {
               </View> :
               <Paragraph key={task.id}>{`\u2022 ${task.text}`}</Paragraph>
             )
-          })}
+          }) : <Text>...</Text>}
         </Card.Content>
         <Card.Content style={styles.noteContainer}>
           <Subheading>Note</Subheading>
-          <Paragraph>{props.dayInformation && `\u2022 ${props.dayInformation.note.text}`}</Paragraph>
+          {props.dayInformation ? 
+          <Paragraph>{props.dayInformation.note.text.length === 0 ? 
+           "..." : "\u2022 " + props.dayInformation.note.text}</Paragraph> : null }
         </Card.Content>
     </Card>
     )

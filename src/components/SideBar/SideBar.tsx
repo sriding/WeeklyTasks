@@ -6,7 +6,7 @@ import theWeek from "./../../utilities/theWeek";
 
 export default function SideBar(props) {
     return (
-        <List.Section>
+        <List.Section style={{minHeight: "100%"}}>
             <List.Subheader>Days</List.Subheader>
             {theWeek.map((day, index) => {
             return (

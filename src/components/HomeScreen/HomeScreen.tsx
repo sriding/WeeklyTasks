@@ -3,7 +3,10 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
-  View
+  View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 
 //React Native Paper, Material Design elements
@@ -39,7 +42,9 @@ class HomeScreen extends Component {
       dialogToggle: false,
       dialogListToggle: false,
       dayInformation: null,
-      dayOfTheWeek: null,
+      dayOfTheWeek: moment().format('dddd'),
+      keyboardHeight: 0,
+      keyboardOpen: false
     }
 
     //Reference to the text input field in the dialog popup for creating a task
@@ -54,11 +59,7 @@ class HomeScreen extends Component {
     */
     createInitialDays();
 
-    this.setState({
-      dayOfTheWeek: moment().format('dddd')
-    })
-
-    const didFocusSubscription = this.props.navigation.addListener(
+    this.didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
       () => {
         getAllDaysData().then((data) => {
@@ -72,7 +73,41 @@ class HomeScreen extends Component {
         })
       }
     );
+
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
   } 
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+    this.didFocusSubscription.remove();
+  }
+
+  _keyboardDidShow = (event) => {
+    if (Platform.OS == "ios") {
+      this.setState({
+        keyboardHeight: event.endCoordinates.height,
+        keyboardOpen: true
+      })
+    }
+  }
+
+  _keyboardDidHide = () => {
+    if (Platform.OS == "ios") {
+      this.setState({
+        keyboardHeight: 0,
+        keyboardOpen: false
+      })
+    }
+  }
 
   //Saves input that user plans on submitting as a new task to save
   taskInputChange = (text) => {
@@ -176,21 +211,26 @@ class HomeScreen extends Component {
         <SafeAreaView>
           <Header title="Home" date={moment().format('MM/DD/YYYY')} 
             sideBarIconClicked={this.sideBarIconClicked}/>
-          <View style={styles.mainContainer}>
-            {this.state.sideBarToggle !== false ?
-              <ScrollView style={styles.leftPaneContainer} showsVerticalScrollIndicator={false}>
-                <SideBar navigation={this.props.navigation}/>
-              </ScrollView>
-              : <ScrollView style={styles.leftPaneContainerNoText} />
-            } 
-            <ScrollView style={styles.middlePaneContainer} showsVerticalScrollIndicator={false}>
+          <View style={styles.mainContainer} ref={this.originalViewRef}>
+              {this.state.sideBarToggle !== false ?
+                <ScrollView style={styles.leftPaneContainer} 
+                  showsVerticalScrollIndicator={false}>
+                  <SideBar navigation={this.props.navigation}/>
+                </ScrollView> : 
+                <ScrollView style={styles.leftPaneContainerNoText} />
+              } 
+            <ScrollView style={styles.middlePaneContainer} 
+              showsVerticalScrollIndicator={false}>
               {theWeek.map((days, index) => {
                 return (
-                  <HomeScreenCard key={index} dayInformation={this.state.dayInformation && this.state.dayInformation[index]} navigation={this.props.navigation}/>
+                  <HomeScreenCard key={index} 
+                    dayInformation={this.state.dayInformation && this.state.dayInformation[index]} 
+                    navigation={this.props.navigation}/>
                 )
               })}
             </ScrollView>
-            <ScrollView style={styles.rightPaneContainer} showsVerticalScrollIndicator={false} />
+            <ScrollView style={styles.rightPaneContainer} 
+              showsVerticalScrollIndicator={false} />
             <FAB style={styles.fabButton} icon="add" onPress={() => {
               this.toggleDialogToggle()
             }} />
@@ -206,7 +246,10 @@ class HomeScreen extends Component {
               setDayOfTheWeek={this.setDayOfTheWeek}
               dayOfTheWeek={this.state.dayOfTheWeek}
               taskInputError={this.state.taskInputError}
-              taskInputErrorText={this.state.taskInputErrorText}/>
+              taskInputErrorText={this.state.taskInputErrorText}
+              focusTextInput={this.focusTextInput}
+              keyboardHeight={this.state.keyboardHeight}
+              keyboardOpen={this.state.keyboardOpen}/>
             <SnackBarPopup visibility={this.state.snackBarVisibility}
               toggleSnackBarVisibility={this.toggleSnackBarVisibility}
               snackBarIsError={this.state.snackBarIsError}
@@ -230,6 +273,7 @@ const styles = StyleSheet.create({
     flexGrow: 0.3,
     borderStyle: "solid",
     borderRightWidth: 0.5,
+    borderBottomWidth: 0.5,
     marginRight: 20,
     minWidth: 100,
     backgroundColor: "#fff"

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Dialog, Portal, Button, TextInput, Paragraph } from "react-native-paper";
-import { Dimensions } from 'react-native';
+import { Dimensions, KeyboardAvoidingView, StyleSheet } from 'react-native';
 
 export default class UpdateTaskDialog extends Component {
     constructor(props) {
@@ -14,7 +14,10 @@ export default class UpdateTaskDialog extends Component {
             <Portal>
                 <Dialog visible={this.props.updateTaskDialogVisible}
                 onDismiss={this.props.dismissTaskDialog}
-                style={{maxHeight: Dimensions.get("window").height / 2}}>
+                style={!this.props.keyboardOpen ? styles.dialogContainer : {
+                    maxHeight: Dimensions.get("window").height / 2,
+                    marginBottom: this.props.keyboardHeight - 90
+                }}>
                     <Dialog.Title>Update Task</Dialog.Title>
                     <Dialog.Content>
                         {this.props.updateTaskTextError ? <Paragraph style={{color: "#C00000"}}>
@@ -23,7 +26,7 @@ export default class UpdateTaskDialog extends Component {
                         <TextInput mode="outlined"
                         value={this.props.updateTaskTextState.text}
                         multiline={true}
-                        numberOfLines={4}
+                        numberOfLines={3}
                         error={this.props.updateTaskTextError} 
                         onChangeText={(text) => {
                             this.props.updatingUpdateTaskTextState(text, this.props.updateTaskTextState.taskID);
@@ -41,3 +44,9 @@ export default class UpdateTaskDialog extends Component {
         )
     }
 }
+
+const styles = StyleSheet.create({
+    dialogContainer: {
+        maxHeight: Dimensions.get("window").height / 2,
+    }
+})
