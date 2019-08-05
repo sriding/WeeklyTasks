@@ -13,17 +13,17 @@ export const saveLoginDate = () => {
                 realm.write(() => {
                     realm.create("Login", {
                         id: 0,
-                        date: moment(new Date()).format("MM/DD/YYYY"),
+                        date: moment().format("YYYY-MM-DD"),
                         alreadyLoggedInToday: true
                     })
-                    resolve("No date saved, so created a new one.");
+                    resolve();
                 })
-            } else if (realm.objects("Login")[0].date !== moment(new Date()).format("MM/DD/YYYY")) {
+            } else if (realm.objects("Login")[0].date !== moment().format("YYYY-MM-DD")) {
                 let oldDate = realm.objects("Login")[0].date;
-                let newDate = moment(new Date()).format("MM/DD/YYYY");
-                let mondayOfThisWeek = moment().startOf('isoWeek').format("MM/DD/YYYY");
+                let newDate = moment().format("YYYY-MM-DD");
+                let mondayOfThisWeek = moment().startOf('isoWeek').format("YYYY-MM-DD");
 
-                if (newDate.diff(oldDate, "days") >= 7 || newDate.diff(mondayOfThisWeek, "days") < newDate.diff(oldDate, "days")) {
+                if (moment(newDate, "YYYY-MM-DD").diff(oldDate, "days") >= 7 || moment(newDate, "YYYY-MM-DD").diff(mondayOfThisWeek, "days") < moment(newDate, "YYYY-MM-DD").diff(oldDate, "days")) {
                     unCheckEveryTaskInTheDatabase()
                     .then(() => {
                         realm.write(() => {
@@ -32,7 +32,7 @@ export const saveLoginDate = () => {
                                 date: newDate,
                                 alreadyLoggedInToday: true
                             }, true)
-                            resolve("New week - All tasks unchecked!");
+                            resolve("New Week: All Tasks Unchecked!");
                         })
                     })
                     .catch((error) => {
@@ -45,11 +45,11 @@ export const saveLoginDate = () => {
                             date: newDate,
                             alreadyLoggedInToday: true
                         }, true)
-                        resolve("New date saved.");
+                        resolve();
                     })
                 }
             } else {
-                resolve("Hello again.");
+                resolve();
             }
         })
         .catch((error) => {

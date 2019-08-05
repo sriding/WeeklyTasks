@@ -46,7 +46,7 @@ class HomeScreen extends Component {
       dialogToggle: false,
       dialogListToggle: false,
       dayInformation: null,
-      dayOfTheWeek: moment().format('dddd'),
+      dayOfTheWeek: moment(new Date().toISOString(), moment.ISO_8601).format('dddd'),
       keyboardHeight: 0,
       keyboardOpen: false
     }
@@ -70,7 +70,10 @@ class HomeScreen extends Component {
 
     saveLoginDate()
       .then((message) => {
-        console.log(message);
+        if (message != undefined) {
+          this.setSnackBarTextAndIfError(message, false);
+          this.toggleSnackBarVisibility();
+        }
       })
       .catch((error) => {
           this.setSnackBarTextAndIfError(error, true);
@@ -183,7 +186,7 @@ class HomeScreen extends Component {
       dialogToggle: false,
       taskInput: "",
       dialogListToggle: false,
-      dayOfTheWeek: moment().format('dddd'),
+      dayOfTheWeek: moment(new Date().toISOString(), moment.ISO_8601).format('dddd'),
       taskInputError: false,
       taskInputErrorText: ""
     })
@@ -228,7 +231,7 @@ class HomeScreen extends Component {
   render() {
     return (
         <SafeAreaView>
-          <Header title="Home" date={moment().format('MM/DD/YYYY')} 
+          <Header title="Home" date={moment(new Date().toISOString(), moment.ISO_8601).format('MM/DD/YYYY')} 
             sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer} ref={this.originalViewRef}>
               {this.state.sideBarToggle !== false ?

@@ -199,7 +199,7 @@ export default class DayScreen extends Component {
             <SafeAreaView style={styles.mainContainer}>
                 <Header 
                     title={this.state.id} 
-                    date={moment().startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
+                    date={moment(new Date().toISOString(), moment.ISO_8601).startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
                     navigation={this.props.navigation}/>
                 <ScrollView
                     ref={this.firstScrollView} 

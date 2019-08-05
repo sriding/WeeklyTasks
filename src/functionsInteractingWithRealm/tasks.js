@@ -135,7 +135,11 @@ export const unCheckEveryTaskInTheDatabase = () => {
                 for (task of amountOfTasks) {
                     task.isChecked = false
                 };
+                resolve();
             })
+        })
+        .catch((error) => {
+            reject(error);
         })
     })
 }
