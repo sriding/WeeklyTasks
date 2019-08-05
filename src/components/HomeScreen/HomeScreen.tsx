@@ -26,7 +26,11 @@ import NewTaskDialog from "../NewTaskDialog/NewTaskDialog";
 import createInitialDays from "./../../functionsInteractingWithRealm/createInitialDays";
 import { addTask } from "./../../functionsInteractingWithRealm/tasks";
 import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDaysData";
+import { saveLoginDate } from "./../../functionsInteractingWithRealm/login";
 import theWeek from "./../../utilities/theWeek";
+
+//FOR RESETING REALM COMPLETELY
+import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -52,12 +56,26 @@ class HomeScreen extends Component {
   }
 
   componentDidMount = () => {
+
+    //deleteEverything()
+    //.then(() => {
+
     /*
       Will check if there is already a realm file with the initial days of the week data 
       in it; if there is no realm file or no initial data, this will create/update the realm file
       to be used as a database storage
     */
+
     createInitialDays();
+
+    saveLoginDate()
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+          this.setSnackBarTextAndIfError(error, true);
+          this.toggleSnackBarVisibility();
+      })
 
     this.didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
@@ -83,6 +101,7 @@ class HomeScreen extends Component {
       'keyboardDidHide',
       this._keyboardDidHide,
     );
+  //})
   } 
 
   componentWillUnmount() {

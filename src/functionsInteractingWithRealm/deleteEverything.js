@@ -1,14 +1,18 @@
 import Realm from "realm";
-import { DaySchema, TaskSchema, NoteSchema } from "../schemas/schemas";
+import { DaySchema, TaskSchema, NoteSchema, LoginSchema } from "../schemas/schemas";
 
 export const deleteEverything = () => {
-    Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema]})
-    .then((realm) => {
-        realm.write(() => {
-            realm.deleteAll();
+    return new Promise((resolve, reject) => {
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
+        .then((realm) => {
+            realm.write(() => {
+                resolve(realm.deleteAll());
+            })
         })
+        .catch((error) => {
+            reject(error);
+        }) 
     })
-
 }
 
 export default deleteEverything;

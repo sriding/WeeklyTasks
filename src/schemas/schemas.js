@@ -29,3 +29,13 @@ export const NoteSchema = {
       text: 'string',
     }
 }
+
+export const LoginSchema = {
+  name: "Login",
+  primaryKey: 'id',
+  properties: {
+    id: 'int',
+    date: 'string',
+    alreadyLoggedInToday: 'bool'
+  }
+}

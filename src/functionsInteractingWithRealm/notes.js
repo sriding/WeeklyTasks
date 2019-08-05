@@ -1,5 +1,5 @@
 const Realm = require("realm");
-import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
+import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
 
 export const addNote = (text, noteID) => {
     return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ export const addNote = (text, noteID) => {
         } else if (trimmedText.length > 350) {
             return reject("Cannot exceed 350 characters.")
         }
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema]})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Note", {
@@ -33,7 +33,7 @@ export const updateNote = (text, noteID) => {
         } else if (trimmedText.length > 350) {
             return reject("Cannot exceed 350 characters.")
         }
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema]})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Note", {
@@ -51,7 +51,7 @@ export const updateNote = (text, noteID) => {
 
 export const deleteNote = (noteID) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema] })
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema] })
         .then((realm) => {
             realm.write(() => {
                 realm.create("Note", {

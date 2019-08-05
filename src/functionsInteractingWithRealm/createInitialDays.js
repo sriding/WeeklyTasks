@@ -1,10 +1,10 @@
 const Realm = require("realm");
-import {DaySchema, TaskSchema, NoteSchema} from "./../schemas/schemas";
+import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
 import theWeek from "./../utilities/theWeek";
 
 export default function createInitialDays() {
     //console.log(Realm.defaultPath);
-    Realm.open({schema: [DaySchema, TaskSchema, NoteSchema]})
+    Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
         .then(realm => {
             if (realm.objects('Day')[0]) {
                 return null;
