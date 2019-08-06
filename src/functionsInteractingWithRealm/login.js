@@ -54,7 +54,7 @@ export const saveLoginDate = () => {
             }
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         })
     })
 }

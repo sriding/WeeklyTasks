@@ -38,7 +38,7 @@ export const getASingleDaysData = (dayID) => {
             });
         })
         .catch((err) => {
-            reject(err);
+            reject(err.toString());
         })
     })
 }

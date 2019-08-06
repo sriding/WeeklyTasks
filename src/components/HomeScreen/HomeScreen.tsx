@@ -5,11 +5,12 @@ import {
   ScrollView,
   View,
   Keyboard,
-  Platform
+  Platform,
+  EmitterSubscription
 } from 'react-native';
 
 //React Native Paper, Material Design elements
-import { FAB } from "react-native-paper";
+import { FAB, TextInput } from "react-native-paper";
 
 //Library to deal with the time object in javascript
 import moment from 'moment';
@@ -28,11 +29,56 @@ import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDays
 import { saveLoginDate } from "./../../functionsInteractingWithRealm/login";
 import theWeek from "./../../utilities/theWeek";
 
+import {
+  NavigationParams,
+  NavigationScreenProp,
+  NavigationState
+} from 'react-navigation';
+
 //FOR RESETING REALM COMPLETELY
 import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
 
-class HomeScreen extends Component {
-  constructor(props) {
+interface DayObject { 
+    id: string,
+    tasks: {
+      id: number,
+      day: string,
+      text: string,
+      isChecked: boolean
+    }[],
+    note: {
+      id: number,
+      text: string
+    }
+}
+interface AppProps {
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>
+}
+
+interface AppState {
+  taskInput: string,
+  taskInputError: boolean,
+  taskInputErrorText: string,
+  snackBarVisibility: boolean,
+  snackBarIsError: boolean,
+  snackBarText: string,
+  sideBarToggle: boolean,
+  dialogToggle: boolean,
+  dialogListToggle: boolean,
+  dayInformation: DayObject[],
+  dayOfTheWeek: string,
+  keyboardHeight: number,
+  keyboardOpen: boolean,
+  date: string
+}
+
+class HomeScreen extends Component<AppProps, AppState> {
+  protected textInputRef: React.RefObject<TextInput>
+  public keyboardDidShowListener!: EmitterSubscription
+  public keyboardDidHideListener!: EmitterSubscription
+
+  public didFocusSubscription: any
+  constructor(props: AppProps) {
     super(props);
     this.state = {
       taskInput: "",
@@ -44,7 +90,19 @@ class HomeScreen extends Component {
       sideBarToggle: false,
       dialogToggle: false,
       dialogListToggle: false,
-      dayInformation: null,
+      dayInformation: [{
+        id: "",
+        tasks: [{
+          id: -1,
+          day: "",
+          text: "",
+          isChecked: false
+        }],
+        note: {
+          id: -1,
+          text: ""
+        }
+      }],
       dayOfTheWeek: moment().format('dddd'),
       keyboardHeight: 0,
       keyboardOpen: false,
@@ -69,7 +127,7 @@ class HomeScreen extends Component {
       .then(() => {
         //Nothing
       })
-      .catch((error) => {
+      .catch((error: string) => {
         this.setSnackBarTextAndIfError(error, true);
         this.toggleSnackBarVisibility();
       })
@@ -80,13 +138,13 @@ class HomeScreen extends Component {
       every monday.
     */ 
     saveLoginDate()
-      .then((message) => {
+      .then((message?: string) => {
         if (message != undefined) {
           this.setSnackBarTextAndIfError(message, false);
           this.toggleSnackBarVisibility();
         }
       })
-      .catch((error) => {
+      .catch((error: string) => {
           this.setSnackBarTextAndIfError(error, true);
           this.toggleSnackBarVisibility();
       })
@@ -99,12 +157,12 @@ class HomeScreen extends Component {
     this.didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
       () => {
-        getAllDaysData().then((data) => {
+        getAllDaysData().then((data: DayObject[]) => {
           this.setState({
             dayInformation: data,
           })
         })
-        .catch((error) => {
+        .catch((error: string) => {
           this.setSnackBarTextAndIfError(error, true);
           this.toggleSnackBarVisibility();
         })
@@ -129,7 +187,7 @@ class HomeScreen extends Component {
     this.didFocusSubscription.remove();
   }
 
-  _keyboardDidShow = (event) => {
+  _keyboardDidShow = (event: any) => {
     if (Platform.OS == "ios") {
       this.setState({
         keyboardHeight: event.endCoordinates.height,
@@ -148,7 +206,7 @@ class HomeScreen extends Component {
   }
 
   //Saves input that user plans on submitting as a new task to save
-  taskInputChange = (text) => {
+  taskInputChange = (text: string) => {
     this.setState({ taskInput: text})
   }
 
@@ -159,7 +217,7 @@ class HomeScreen extends Component {
   creatingTask = () => {
     addTask(this.state.taskInput, this.state.dayOfTheWeek)
       .then(() => {
-        getAllDaysData().then((data) => {
+        getAllDaysData().then((data: DayObject[]) => {
           this.setState({
             dayInformation: data,
             taskInputError: false,
@@ -169,12 +227,12 @@ class HomeScreen extends Component {
           this.setSnackBarTextAndIfError("Task Created!", false);
           this.toggleSnackBarVisibility();
         })
-        .catch((error) => {
+        .catch((error: string) => {
           this.setSnackBarTextAndIfError(error, true);
           this.toggleSnackBarVisibility();
         })
       })
-      .catch((error) => {
+      .catch((error: string) => {
         this.setState({
           taskInputError: true,
           taskInputErrorText: error
@@ -202,7 +260,7 @@ class HomeScreen extends Component {
       dialogToggle: false,
       taskInput: "",
       dialogListToggle: false,
-      dayOfTheWeek: moment(new Date().toISOString(), moment.ISO_8601).format('dddd'),
+      dayOfTheWeek: moment().format('dddd'),
       taskInputError: false,
       taskInputErrorText: ""
     })
@@ -223,7 +281,7 @@ class HomeScreen extends Component {
   }
 
   //Sets the current day; primarily used for deciding what day a task should be created for
-  setDayOfTheWeek = (day) => {
+  setDayOfTheWeek = (day: string) => {
     this.setState({
       dayOfTheWeek: day
     })
@@ -237,7 +295,7 @@ class HomeScreen extends Component {
   }
 
   //Sets the text to show on the snackbar and if the snackbar is an error message or not
-  setSnackBarTextAndIfError = (text, isError) => {
+  setSnackBarTextAndIfError = (text: string, isError: boolean) => {
     this.setState({
       snackBarText: text,
       snackBarIsError: isError
@@ -249,7 +307,7 @@ class HomeScreen extends Component {
         <SafeAreaView>
           <Header title="Home" date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
-          <View style={styles.mainContainer} ref={this.originalViewRef}>
+          <View style={styles.mainContainer}>
               {this.state.sideBarToggle !== false ?
                 <ScrollView style={styles.leftPaneContainer} 
                   showsVerticalScrollIndicator={false}>
@@ -285,7 +343,6 @@ class HomeScreen extends Component {
               dayOfTheWeek={this.state.dayOfTheWeek}
               taskInputError={this.state.taskInputError}
               taskInputErrorText={this.state.taskInputErrorText}
-              focusTextInput={this.focusTextInput}
               keyboardHeight={this.state.keyboardHeight}
               keyboardOpen={this.state.keyboardOpen}/>
             <SnackBarPopup visibility={this.state.snackBarVisibility}

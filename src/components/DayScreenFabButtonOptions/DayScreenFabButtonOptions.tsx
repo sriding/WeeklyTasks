@@ -1,8 +1,17 @@
 import React from 'react'
-import { StyleSheet, View, Dimensions} from 'react-native'
-import { Chip } from "react-native-paper"
+import { StyleSheet, View, Dimensions, ScrollView} from 'react-native'
+import { Chip, TextInput } from "react-native-paper"
+import { deleteAllTasks } from '../../functionsInteractingWithRealm/tasks';
 
-const DayScreenFabButtonOptions = (props) => {
+interface AppProps {
+    firstScrollView: React.RefObject<ScrollView>,
+    newTaskTextRef: React.RefObject<TextInput>,
+    toggleFabButtonOptions: () => void,
+    checkAllTasks: () => void,
+    deleteAllTasks: () => void
+}
+
+const DayScreenFabButtonOptions = (props: AppProps) => {
     return (
         <View style={styles.chipStyles}>
             <Chip textStyle={{fontSize: 15}} 
@@ -10,8 +19,8 @@ const DayScreenFabButtonOptions = (props) => {
                 icon="create"
                 mode="outlined"
                 onPress={() => {
-                    props.firstScrollView.current.scrollTo({x: 0,y: 0});
-                    props.newTaskTextRef.current.focus();
+                    props.firstScrollView.current!.scrollTo({x: 0,y: 0});
+                    props.newTaskTextRef.current!.focus();
                     props.toggleFabButtonOptions();
                 }}>
                 Add Task

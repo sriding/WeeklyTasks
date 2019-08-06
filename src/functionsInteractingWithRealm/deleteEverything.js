@@ -10,7 +10,7 @@ export const deleteEverything = () => {
             })
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         }) 
     })
 }

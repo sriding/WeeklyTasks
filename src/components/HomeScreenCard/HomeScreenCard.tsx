@@ -1,11 +1,36 @@
 import React from 'react'
 import {
     StyleSheet,
-    View
+    View,
+    InteractionManager
   } from 'react-native';
 import { Card, Title, Paragraph, Subheading, Text } from 'react-native-paper';
 
-export default function HomeScreenCard(props) {
+import {
+  NavigationParams,
+  NavigationScreenProp,
+  NavigationState
+} from 'react-navigation';
+
+interface DayInformationObject { 
+  id: string,
+  tasks: {
+    id: number,
+    day: string,
+    text: string,
+    isChecked: boolean
+  }[],
+  note: {
+    id: number,
+    text: string
+  }
+}
+interface AppProps {
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>
+  dayInformation: DayInformationObject
+}
+
+export default function HomeScreenCard(props: AppProps) {
     return (
     <Card onPress={() => {
         props.navigation.navigate("Day", {

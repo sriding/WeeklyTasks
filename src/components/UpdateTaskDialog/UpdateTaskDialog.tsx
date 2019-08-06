@@ -2,7 +2,22 @@ import React from 'react'
 import { Dialog, Portal, Button, TextInput, Paragraph } from "react-native-paper";
 import { Dimensions, StyleSheet } from 'react-native';
 
-export default function UpdateTaskDialog(props) {
+interface AppProps {
+    updateTaskDialogVisible: boolean,
+    dismissTaskDialog: () => void,
+    updateTaskText: () => void,
+    updateTaskTextState: {
+        text: string,
+        taskID: number
+    },
+    updatingUpdateTaskTextState: (text: string, taskID: number) => void,
+    updateTaskTextError: boolean,
+    updateTaskTextErrorText: string,
+    keyboardHeight: number,
+    keyboardOpen: boolean
+}
+
+export default function UpdateTaskDialog(props: AppProps) {
         return (
             <Portal>
                 <Dialog visible={props.updateTaskDialogVisible}

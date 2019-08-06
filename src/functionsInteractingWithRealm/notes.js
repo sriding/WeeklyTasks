@@ -20,7 +20,7 @@ export const addNote = (text, noteID) => {
             })
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         })
     })
 };
@@ -44,7 +44,7 @@ export const updateNote = (text, noteID) => {
             })
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         })
     })
 };
@@ -62,7 +62,7 @@ export const deleteNote = (noteID) => {
             })
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         })
     })
 };

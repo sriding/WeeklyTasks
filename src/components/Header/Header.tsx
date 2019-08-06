@@ -1,7 +1,20 @@
 import React from 'react'
 import { Appbar } from "react-native-paper";
 
-export default function Header(props) {
+import {
+    NavigationParams,
+    NavigationScreenProp,
+    NavigationState,
+  } from 'react-navigation';
+
+interface AppProps {
+    navigation: NavigationScreenProp<NavigationState, NavigationParams>,
+    sideBarIconClicked: () => void,
+    title: string,
+    date: string
+}
+
+export default function Header(props: AppProps) {
     return (
          <Appbar.Header style={{height: 60}}>
             {props.navigation ? 

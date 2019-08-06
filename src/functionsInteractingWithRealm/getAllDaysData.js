@@ -58,6 +58,6 @@ export const getAllDaysData = () => {
                 resolve(dayObjects);
             })
             .catch((err) => {
-                reject(err);
+                reject(err.toString());
             })
 })}

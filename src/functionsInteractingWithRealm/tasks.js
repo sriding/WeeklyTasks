@@ -33,7 +33,7 @@ export const addTask = (text, dayID) => {
             })
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         })
     })
 }
@@ -53,7 +53,7 @@ export const updateTask = (text, taskID) => {
             })
         })
         .catch((err) => {
-            reject(err);
+            reject(err.toString());
         })
     })
 }
@@ -67,7 +67,7 @@ export const checkTask = (taskID, isChecked) => {
             })
         })
         .catch((err) => {
-            reject(err);
+            reject(err.toString());
         })
     })
 }
@@ -82,7 +82,7 @@ export const deleteTask = (taskID) => {
             })
         })
         .catch((err) => {
-            reject(err);
+            reject(err.toString());
         })
     })
 }
@@ -107,7 +107,7 @@ export const checkAllTasks = (day) => {
             })
         })
       .catch((error) => {
-        reject(error);
+        reject(error.toString());
       })
     })
 };
@@ -121,7 +121,7 @@ export const deleteAllTasks = (day) => {
             })
         })
         .catch((err) => {
-            reject(err);
+            reject(err.toString());
         })
     })
 }
@@ -139,7 +139,7 @@ export const unCheckEveryTaskInTheDatabase = () => {
             })
         })
         .catch((error) => {
-            reject(error);
+            reject(error.toString());
         })
     })
 }

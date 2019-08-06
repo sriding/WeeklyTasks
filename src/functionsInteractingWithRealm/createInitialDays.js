@@ -1,8 +1,8 @@
 const Realm = require("realm");
 
-import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
+import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "../schemas/schemas";
 
-import theWeek from "./../utilities/theWeek";
+import theWeek from "../utilities/theWeek";
 
 export const createInitialDays = () => {
     return new Promise((resolve, reject) => {
@@ -24,7 +24,7 @@ export const createInitialDays = () => {
             }
         })
         .catch(error => {
-            reject(error);
+            reject(error.toString());
         });
     })
 }

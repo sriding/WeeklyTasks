@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard, EmitterSubscription } from "react-native";
-import { FAB } from "react-native-paper";
+import { DeviceEventEmitter ,SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard, EmitterSubscription } from "react-native";
+import { FAB, TextInput } from "react-native-paper";
 import theWeek from "./../../utilities/theWeek";
 
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
@@ -48,8 +48,8 @@ interface AppState {
 
 export default class DayScreen extends Component<AppProps, AppState> {
 
-    protected newTaskTextRef: React.RefObject<HTMLInputElement>
-    protected newNoteTextRef: React.RefObject<HTMLInputElement>
+    protected newTaskTextRef: React.RefObject<TextInput>
+    protected newNoteTextRef: React.RefObject<TextInput>
     protected firstScrollView: React.RefObject<ScrollView>
     public keyboardDidShowListener!: EmitterSubscription
     public keyboardDidHideListener!: EmitterSubscription
@@ -210,6 +210,17 @@ export default class DayScreen extends Component<AppProps, AppState> {
         })
     }
 
+    deleteNote = (noteID: number) => {
+        deleteNote(noteID)
+        .then(() => {
+            this.submitTaskText(true, "Note Deleted!");
+        })
+        .catch((error: string) => {
+            this.setSnackBarTextAndIfError(error, true);
+            this.toggleSnackBarVisibility();
+        })
+    }
+
     checkAllTasks = () => {
         checkAllTasks(this.state.id)
         .then(() => {
@@ -232,17 +243,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
         })
     }
 
-    deleteNote = (noteID: number) => {
-        deleteNote(noteID)
-        .then(() => {
-            this.submitTaskText(true, "Note Deleted!");
-        })
-        .catch((error: string) => {
-            this.setSnackBarTextAndIfError(error, true);
-            this.toggleSnackBarVisibility();
-        })
-    }
-
     render() {
         return (
             <SafeAreaView style={styles.mainContainer}>
@@ -253,7 +253,14 @@ export default class DayScreen extends Component<AppProps, AppState> {
                 <ScrollView
                     ref={this.firstScrollView} 
                     contentContainerStyle={styles.cardContainerViewContainer} 
-                    showsVerticalScrollIndicator={false}>
+                    showsVerticalScrollIndicator={false}
+                    onScrollBeginDrag={() => {
+                        if (this.state.fabButtonClicked) {
+                            this.setState({
+                                fabButtonClicked: false
+                            })
+                        }
+                    }}>
                     <DayScreenCard 
                         Day={this.state.Day}
                         checkTask={this.checkTask}
@@ -280,7 +287,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
                     newTaskTextRef={this.newTaskTextRef}
                     checkAllTasks={this.checkAllTasks}
                     deleteAllTasks={this.deleteAllTasks}
-                    Day={this.state.Day}
                     firstScrollView={this.firstScrollView}
                     toggleFabButtonOptions={this.toggleFabButtonOptions}
                  /> : null}

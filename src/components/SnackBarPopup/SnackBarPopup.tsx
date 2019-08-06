@@ -3,7 +3,15 @@ import { View, StyleSheet, Dimensions, Text } from "react-native"
 
 import { Snackbar } from "react-native-paper";
 
-export default function SnackBarPopup(props) {
+interface AppProps {
+    snackBarIsError: boolean,
+    visibility: boolean,
+    toggleSnackBarVisibility: () => void,
+    snackBarText: string,
+
+}
+
+export default function SnackBarPopup(props: AppProps) {
         return (
             <View style={styles.container}>
                 {props.snackBarIsError ? 

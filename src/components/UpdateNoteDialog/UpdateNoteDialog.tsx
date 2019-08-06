@@ -3,7 +3,22 @@ import { Dimensions, StyleSheet } from 'react-native'
 
 import { Dialog, Portal, Button, TextInput, Paragraph } from "react-native-paper";
 
-export default function UpdateNoteDialog (props) {
+interface AppProps {
+    updateNoteDialogVisible: boolean,
+    dismissNoteDialog: () => void,
+    updateNoteText: () => void,
+    updateNoteTextState: {
+        text: string,
+        noteID: number
+    },
+    updatingUpdateNoteTextState: (text: string, nodeID: number) => void,
+    updateNoteTextError: boolean,
+    updateNoteTextErrorText: string,
+    keyboardHeight: number,
+    keyboardOpen: boolean
+}
+
+export default function UpdateNoteDialog (props: AppProps) {
     return (
         <Portal>
             <Dialog visible={props.updateNoteDialogVisible}

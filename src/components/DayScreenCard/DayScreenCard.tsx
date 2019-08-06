@@ -9,7 +9,27 @@ import UpdateTaskDialog from './../UpdateTaskDialog/UpdateTaskDialog';
 import UpdateNoteDialog from "./../UpdateNoteDialog/UpdateNoteDialog";
 import { addNote, updateNote } from '../../functionsInteractingWithRealm/notes';
 
+interface DayObject {
+    id: string,
+    tasks: {id: number, day: string, text: string, isChecked: boolean}[],
+    note: {
+        id: number,
+        text: string
+    }
+}
+
 interface AppProps {
+    Day: DayObject,
+    checkTask: (taskID: number, isChecked: boolean) => void,
+    deleteTask: (taskID: number) => void,
+    deleteNote: (noteID: number) => void,
+    submitTaskText: (useSnackBar: boolean, snackBarText?: string) => void,
+    id: string
+    newTaskTextRef: React.RefObject<TextInput>,
+    newNoteTextRef: React.RefObject<TextInput>,
+    firstScrollView: React.RefObject<ScrollView>,
+    keyboardHeight: number,
+    keyboardOpen: boolean
 
 }
 
@@ -75,7 +95,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             this.props.submitTaskText(true, "Task Created!");
         })
         .then(() => {
-            this.props.newTaskTextRef.current.blur();
+            this.props.newTaskTextRef.current!.blur();
             setTimeout(() => {
                 this.setState({
                     newTaskText: "",
@@ -85,7 +105,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             }, 800)
         })
         .catch((error: string) => {
-            this.props.newTaskTextRef.current.blur();
             this.setState({
                 newTaskTextError: true,
                 newTaskTextErrorText: error,
@@ -113,7 +132,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             }, 800)
         })
         .catch((error: string) => {
-            this.props.newNoteTextRef.current.blur();
             this.setState({
                 newNoteTextError: true,
                 newNoteTextErrorText: error
@@ -308,7 +326,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                 })
                             }}
                             onFocus={() => {
-                                this.props.firstScrollView.current.scrollTo({x: 0, y: Dimensions.get("window").height})
+                                this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height})
+                                this.setState({
+                                    updateTaskTextError: false,
+                                    updateTaskTextErrorText: ""
+                                })
                                 this.setState({
                                     updateNoteTextState: {
                                         text: this.props.Day.note.text,

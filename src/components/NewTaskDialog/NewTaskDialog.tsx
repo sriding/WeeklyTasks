@@ -5,7 +5,25 @@ import { Portal, Dialog, TextInput, List, Button, Paragraph } from "react-native
 
 import theWeek from "../../utilities/theWeek";
 
-export default function NewTaskDialog(props) {
+interface AppProps {
+    dialogToggle: boolean,
+    dialogListToggle: boolean,
+    dismissDialogToggle: () => void,
+    dismissDialogList: () => void,
+    taskInputChange: (text: string) => void,
+    taskInput: string
+    textInputRef: React.RefObject<TextInput>,
+    toggleDialogList: () => void,
+    creatingTask: () => void,
+    setDayOfTheWeek: (day: string) => void,
+    dayOfTheWeek: string,
+    taskInputError: boolean,
+    taskInputErrorText: string,
+    keyboardHeight: number,
+    keyboardOpen: boolean
+}
+
+export default function NewTaskDialog(props: AppProps) {
         return (
             <Portal>
                 <Dialog
@@ -38,7 +56,7 @@ export default function NewTaskDialog(props) {
                             expanded={props.dialogListToggle}
                             onPress={() => {
                                 props.toggleDialogList();
-                                props.textInputRef.current.blur();
+                                props.textInputRef.current!.blur();
                             }}
                             style={{marginBottom: 0}}>
                             <Dialog.ScrollArea style={{marginBottom: 0}}>
