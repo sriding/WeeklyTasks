@@ -2,7 +2,7 @@ const Realm = require("realm");
 import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
 
 export const getAllDaysData = () => { 
-    //console.log(Realm.defaultPath);
+    console.log(Realm.defaultPath);
     return new Promise((resolve, reject) => {
         Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
             .then((realm) => {

@@ -76,8 +76,8 @@ class HomeScreen extends Component<AppProps, AppState> {
   protected textInputRef: React.RefObject<TextInput>
   public keyboardDidShowListener!: EmitterSubscription
   public keyboardDidHideListener!: EmitterSubscription
-
   public didFocusSubscription: any
+  
   constructor(props: AppProps) {
     super(props);
     this.state = {

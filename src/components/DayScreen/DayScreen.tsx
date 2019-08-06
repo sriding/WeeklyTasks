@@ -53,6 +53,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
     protected firstScrollView: React.RefObject<ScrollView>
     public keyboardDidShowListener!: EmitterSubscription
     public keyboardDidHideListener!: EmitterSubscription
+    public didFocusSubscription: any
 
     constructor(props: AppProps) {
         super(props);
@@ -81,26 +82,30 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
 
     componentDidMount = () => {
-        getASingleDaysData(this.props.navigation.getParam("id", "Monday"))
-        .then((data: DayObject) => {
-            this.setState({
-                id: this.props.navigation.getParam("id", "Monday"),
-                Day: data,
-                date: moment().startOf('isoWeek')
-                .add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days")
-                .format('YYYY-MM-DD')
-            })
-        })
-        .catch((error: string) => {
-            this.setSnackBarTextAndIfError(error, true);
-            this.toggleSnackBarVisibility();
-        })
+        this.didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            () => {
+                getASingleDaysData(this.props.navigation.getParam("id", "Monday"))
+                .then((data: DayObject) => {
+                    this.setState({
+                        id: this.props.navigation.getParam("id", "Monday"),
+                        Day: data,
+                        date: moment().startOf('isoWeek')
+                        .add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days")
+                        .format('YYYY-MM-DD')
+                    })
+                })
+                .catch((error: string) => {
+                    this.setSnackBarTextAndIfError(error, true);
+                    this.toggleSnackBarVisibility();
+                })
+            }
+          );
 
         this.keyboardDidShowListener = Keyboard.addListener(
                 'keyboardDidShow',
                 this._keyboardDidShow,
-            )
-
+        )
       
         this.keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
@@ -111,25 +116,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
     componentWillUnmount = () => {
         this.keyboardDidShowListener.remove();
         this.keyboardDidHideListener.remove();
-    }
-
-    componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
-        if (this.props.navigation.getParam("id", "no-id") !== this.state.id) {
-            getASingleDaysData(this.props.navigation.getParam("id", "no-id"))
-            .then((data: DayObject) => {
-                this.setState({
-                    id: this.props.navigation.getParam("id", "no-id"),
-                    Day: data,
-                    date: moment().startOf('isoWeek')
-                    .add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days")
-                    .format('YYYY-MM-DD')
-                })
-            })
-            .catch((error: string) => {
-                this.setSnackBarTextAndIfError(error, true);
-                this.toggleSnackBarVisibility();
-            })
-        }
+        this.didFocusSubscription.remove();
     }
 
     _keyboardDidShow = (event: any) => {
