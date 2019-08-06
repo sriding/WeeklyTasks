@@ -1,5 +1,3 @@
-const Realm = require("realm");
-
 export const DaySchema = {
     name: "Day",
     primaryKey: 'id',

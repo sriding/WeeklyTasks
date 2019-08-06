@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet ,Text, View, TextInput as NativeTextInput, Dimensions, ScrollView} from 'react-native'
+import { StyleSheet ,Text, View, Dimensionsn } from 'react-native'
 
 import { Card, Button, TextInput, Paragraph } from 'react-native-paper';
 

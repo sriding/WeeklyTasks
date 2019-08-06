@@ -1,9 +1,9 @@
 import React from 'react'
-import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native'
+import { Dimensions, StyleSheet } from 'react-native'
 
 import { Dialog, Portal, Button, TextInput, Paragraph } from "react-native-paper";
 
-const UpdateNoteDialog = (props) => {
+export default function UpdateNoteDialog (props) {
     return (
         <Portal>
             <Dialog visible={props.updateNoteDialogVisible}
@@ -43,5 +43,3 @@ const styles = StyleSheet.create({
         maxHeight: Dimensions.get("window").height / 2,
     }
 })
-
-export default UpdateNoteDialog

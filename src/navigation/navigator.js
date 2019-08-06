@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 import { createDrawerNavigator, createAppContainer } from "react-navigation"
 
 import HomeScreen from '../components/HomeScreen/HomeScreen';

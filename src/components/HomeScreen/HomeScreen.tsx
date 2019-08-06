@@ -5,7 +5,6 @@ import {
   ScrollView,
   View,
   Keyboard,
-  KeyboardAvoidingView,
   Platform
 } from 'react-native';
 
@@ -23,7 +22,7 @@ import SnackBarPopup from "../SnackBarPopup/SnackBarPopup";
 import NewTaskDialog from "../NewTaskDialog/NewTaskDialog";
 
 //Additional function/object imports
-import createInitialDays from "./../../functionsInteractingWithRealm/createInitialDays";
+import { createInitialDays } from "./../../functionsInteractingWithRealm/createInitialDays";
 import { addTask } from "./../../functionsInteractingWithRealm/tasks";
 import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDaysData";
 import { saveLoginDate } from "./../../functionsInteractingWithRealm/login";
@@ -46,9 +45,10 @@ class HomeScreen extends Component {
       dialogToggle: false,
       dialogListToggle: false,
       dayInformation: null,
-      dayOfTheWeek: moment(new Date().toISOString(), moment.ISO_8601).format('dddd'),
+      dayOfTheWeek: moment().format('dddd'),
       keyboardHeight: 0,
-      keyboardOpen: false
+      keyboardOpen: false,
+      date: moment().format('YYYY-MM-DD')
     }
 
     //Reference to the text input field in the dialog popup for creating a task
@@ -65,9 +65,20 @@ class HomeScreen extends Component {
       in it; if there is no realm file or no initial data, this will create/update the realm file
       to be used as a database storage
     */
+    createInitialDays()
+      .then(() => {
+        //Nothing
+      })
+      .catch((error) => {
+        this.setSnackBarTextAndIfError(error, true);
+        this.toggleSnackBarVisibility();
+      })
 
-    createInitialDays();
-
+    /*
+      Saves the date the user logs in to the embedded database to determine when
+      the app should reset all the tasks to unchecked. This reset should be happening
+      every monday.
+    */ 
     saveLoginDate()
       .then((message) => {
         if (message != undefined) {
@@ -80,6 +91,11 @@ class HomeScreen extends Component {
           this.toggleSnackBarVisibility();
       })
 
+    /*
+      This event listener is for when a user taps the back arrow on the day screen;
+      this listener will fire because the homescreen is now in focus and can update
+      any tasks/notes on the homescreen that were updated on the day screen
+    */
     this.didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
       () => {
@@ -231,7 +247,7 @@ class HomeScreen extends Component {
   render() {
     return (
         <SafeAreaView>
-          <Header title="Home" date={moment(new Date().toISOString(), moment.ISO_8601).format('MM/DD/YYYY')} 
+          <Header title="Home" date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer} ref={this.originalViewRef}>
               {this.state.sideBarToggle !== false ?

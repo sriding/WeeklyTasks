@@ -1,6 +1,7 @@
 const Realm = require("realm");
 
 import moment from "moment";
+
 import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
 
 import { unCheckEveryTaskInTheDatabase } from "./tasks";

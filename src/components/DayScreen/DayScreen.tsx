@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { SafeAreaView, View, StyleSheet, ScrollView, TextInput as NativeTextInput, Dimensions, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
-import { Button, Card, Paragraph, Chip, FAB, TextInput, Text } from "react-native-paper";
+import { SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard } from "react-native";
+import { FAB } from "react-native-paper";
 
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
-import { addTask, updateTask, checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
-import { updateNote, deleteNote } from "./../../functionsInteractingWithRealm/notes";
+import { checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
+import { deleteNote } from "./../../functionsInteractingWithRealm/notes";
 import theWeek from "./../../utilities/theWeek";
 
 //Components
@@ -14,7 +14,6 @@ import DayScreenCard from "./../DayScreenCard/DayScreenCard";
 import DayScreenFabButtonOptions from "./../DayScreenFabButtonOptions/DayScreenFabButtonOptions";
 
 import moment from 'moment';
-import { getAllDaysData } from '../../functionsInteractingWithRealm/getAllDaysData';
 
 export default class DayScreen extends Component {
     constructor(props) {
@@ -27,7 +26,8 @@ export default class DayScreen extends Component {
             snackBarIsError: false,
             snackBarText: "",
             keyboardHeight: 0,
-            keyboardOpen: false
+            keyboardOpen: false,
+            date: ""
         }
 
         this.newTaskTextRef = React.createRef();
@@ -40,7 +40,8 @@ export default class DayScreen extends Component {
         .then((data) => {
             this.setState({
                 id: this.props.navigation.getParam("id", "Monday"),
-                Day: data
+                Day: data,
+                date: moment().startOf('isoweek').add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days").format('YYYY-MM-DD')
             })
         })
         .catch((error) => {
@@ -70,7 +71,8 @@ export default class DayScreen extends Component {
             .then((data) => {
                 this.setState({
                     id: this.props.navigation.getParam("id", "no-id"),
-                    Day: data
+                    Day: data,
+                    date: moment().startOf('isoweek').add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days").format('YYYY-MM-DD')
                 })
             })
             .catch((error) => {
@@ -108,9 +110,6 @@ export default class DayScreen extends Component {
                         this.setSnackBarTextAndIfError(snackBarText, false);
                         this.toggleSnackBarVisibility();
                     }
-                })
-                .then(() => {
-                    
                 })
                 .catch((error) => {
                     this.setSnackBarTextAndIfError(error, true);
@@ -172,7 +171,7 @@ export default class DayScreen extends Component {
         })
     }
 
-    deleteAllTasks = (taskIDs) => {
+    deleteAllTasks = () => {
         deleteAllTasks(this.state.id)
         .then(() => {
             this.submitTaskText(true, "All Tasks Deleted!");
@@ -199,7 +198,7 @@ export default class DayScreen extends Component {
             <SafeAreaView style={styles.mainContainer}>
                 <Header 
                     title={this.state.id} 
-                    date={moment(new Date().toISOString(), moment.ISO_8601).startOf('isoweek').add('days', theWeek.indexOf(this.props.navigation.getParam("id", "no-id"))).format('MM/DD/YYYY')} 
+                    date={this.state.date} 
                     navigation={this.props.navigation}/>
                 <ScrollView
                     ref={this.firstScrollView} 

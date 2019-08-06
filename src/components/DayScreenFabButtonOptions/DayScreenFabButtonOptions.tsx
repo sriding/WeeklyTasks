@@ -2,31 +2,34 @@ import React from 'react'
 import { StyleSheet, View, Dimensions} from 'react-native'
 import { Chip } from "react-native-paper"
 
-import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
-
 const DayScreenFabButtonOptions = (props) => {
     return (
         <View style={styles.chipStyles}>
-            <Chip textStyle={{color: "white", fontSize: 15}} 
+            <Chip textStyle={{fontSize: 15}} 
                 style={styles.chipStyleAdd} 
+                icon="create"
+                mode="outlined"
                 onPress={() => {
                     props.firstScrollView.current.scrollTo({x: 0,y: 0});
                     props.newTaskTextRef.current.focus();
                     props.toggleFabButtonOptions();
-                    //deleteEverything();
                 }}>
                 Add Task
             </Chip>
-            <Chip textStyle={{color: "white", fontSize: 15}} 
+            <Chip textStyle={{fontSize: 15}} 
                 style={styles.chipStyleCheck} 
+                icon="check"
+                mode="outlined"
                 onPress={() => {
                     props.checkAllTasks()
                     props.toggleFabButtonOptions();
                 }}>
                 Check All
             </Chip>
-            <Chip textStyle={{color: "white", fontSize: 15}} 
+            <Chip textStyle={{fontSize: 15}} 
                 style={styles.chipStyleDelete} 
+                icon="delete"
+                mode="outlined"
                 onPress={() => {
                 props.deleteAllTasks();
                 props.toggleFabButtonOptions();
@@ -44,21 +47,21 @@ const styles = StyleSheet.create({
     },
     chipStyleAdd: {
         marginBottom: 15,
-        backgroundColor: "#000",
-        paddingLeft: 6,
-        paddingRight: 6,
+        paddingLeft: 7,
+        paddingRight: 7,
+        backgroundColor: "#EDF0FF"
     },
     chipStyleCheck: {
         marginBottom: 15,
-        backgroundColor: "#4d4dff",
-        paddingLeft: 6,
-        paddingRight: 6,
+        paddingLeft: 7,
+        paddingRight: 7,
+        backgroundColor: "#EDF0FF"
     },
     chipStyleDelete: {
         marginBottom: 15,
-        backgroundColor: "#C00000",
-        paddingLeft: 6,
-        paddingRight: 6,
+        paddingLeft: 7,
+        paddingRight: 7,
+        backgroundColor: "#EDF0FF"
     },
 })
 
