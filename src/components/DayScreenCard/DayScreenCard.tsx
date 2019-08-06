@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet ,Text, View, Dimensionsn } from 'react-native'
+import { StyleSheet ,Text, View, Dimensions, ScrollView } from 'react-native'
 
 import { Card, Button, TextInput, Paragraph } from 'react-native-paper';
 
@@ -9,8 +9,38 @@ import UpdateTaskDialog from './../UpdateTaskDialog/UpdateTaskDialog';
 import UpdateNoteDialog from "./../UpdateNoteDialog/UpdateNoteDialog";
 import { addNote, updateNote } from '../../functionsInteractingWithRealm/notes';
 
-export default class DayScreenCard extends Component {
-    constructor(props) {
+interface AppProps {
+
+}
+
+interface AppState {
+    newTaskText: string,
+    newNoteText: string,
+    newTaskTextError: boolean,
+    newNoteTextError: boolean,
+    newTaskTextErrorText: string,
+    newNoteTextErrorText: string,
+    updateTaskTextError: boolean,
+    updateNoteTextError: boolean,
+    updateTaskTextErrorText: string,
+    updateNoteTextErrorText: string,
+    updateTaskTextState: {
+        text: string,
+        taskID: number
+    },
+    updateNoteTextState: {
+        text: string,
+        noteID: number
+    },
+    updateTaskDialogVisible: boolean,
+    updateNoteDialogVisible: boolean
+
+}
+export default class DayScreenCard extends Component<AppProps, AppState> {
+    protected taskTextRef: React.RefObject<HTMLInputElement>
+    protected newNoteScrollViewRef: React.RefObject<ScrollView>
+
+    constructor(props: AppProps) {
         super(props);
         this.state = {
             newTaskText: "",
@@ -25,11 +55,11 @@ export default class DayScreenCard extends Component {
             updateNoteTextErrorText: "",
             updateTaskTextState: {
                 text: "",
-                taskID: null
+                taskID: -1
             },
             updateNoteTextState: {
                 text: "",
-                noteID: null
+                noteID: -1
             },
             updateTaskDialogVisible: false,
             updateNoteDialogVisible: false
@@ -54,7 +84,7 @@ export default class DayScreenCard extends Component {
                 })
             }, 800)
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.props.newTaskTextRef.current.blur();
             this.setState({
                 newTaskTextError: true,
@@ -82,7 +112,7 @@ export default class DayScreenCard extends Component {
                 })
             }, 800)
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.props.newNoteTextRef.current.blur();
             this.setState({
                 newNoteTextError: true,
@@ -106,7 +136,7 @@ export default class DayScreenCard extends Component {
             })
             this.dismissTaskDialog();
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setState({
                 updateTaskTextError: true,
                 updateTaskTextErrorText: error
@@ -124,7 +154,7 @@ export default class DayScreenCard extends Component {
             })
             this.dismissNoteDialog();
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setState({
                 updateNoteTextError: true,
                 updateNoteTextErrorText: error
@@ -132,7 +162,7 @@ export default class DayScreenCard extends Component {
         })
     }
 
-    updatingUpdateTaskTextState = (text, taskID) => {
+    updatingUpdateTaskTextState = (text: string, taskID: number) => {
         this.setState({
             updateTaskTextState: {
                 text,
@@ -141,7 +171,7 @@ export default class DayScreenCard extends Component {
         })
     }
 
-    updatingUpdateNoteTextState = (text, noteID) => {
+    updatingUpdateNoteTextState = (text: string, noteID: number) => {
         this.setState({
             updateNoteTextState: {
                 text,
@@ -281,7 +311,8 @@ export default class DayScreenCard extends Component {
                                 this.props.firstScrollView.current.scrollTo({x: 0, y: Dimensions.get("window").height})
                                 this.setState({
                                     updateNoteTextState: {
-                                        noteID: this.props.Day.note.id
+                                        text: this.props.Day.note.text,
+                                        noteID: this.props.Day.note.id,
                                     }
                                 })
                             }}

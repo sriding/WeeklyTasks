@@ -1,11 +1,17 @@
 import React, { Component } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard } from "react-native";
+import { SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard, EmitterSubscription } from "react-native";
 import { FAB } from "react-native-paper";
+import theWeek from "./../../utilities/theWeek";
 
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
 import { checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
 import { deleteNote } from "./../../functionsInteractingWithRealm/notes";
-import theWeek from "./../../utilities/theWeek";
+
+import {
+    NavigationParams,
+    NavigationScreenProp,
+    NavigationState,
+  } from 'react-navigation';
 
 //Components
 import Header from "./../Header/Header";
@@ -15,19 +21,58 @@ import DayScreenFabButtonOptions from "./../DayScreenFabButtonOptions/DayScreenF
 
 import moment from 'moment';
 
-export default class DayScreen extends Component {
-    constructor(props) {
+interface DayObject {
+    id: string,
+    tasks: {id: number, day: string, text: string, isChecked: boolean}[],
+    note: {
+        id: number,
+        text: string
+    }
+}
+interface AppProps {
+    navigation: NavigationScreenProp<NavigationState, NavigationParams>
+}
+
+interface AppState {
+    id: string,
+    Day: DayObject,
+    fabButtonClicked: boolean,
+    snackBarVisibility: boolean,
+    snackBarIsError: boolean,
+    snackBarText: string,
+    keyboardHeight: number,
+    keyboardOpen: boolean,
+    date: string
+}
+
+
+export default class DayScreen extends Component<AppProps, AppState> {
+
+    protected newTaskTextRef: React.RefObject<HTMLInputElement>
+    protected newNoteTextRef: React.RefObject<HTMLInputElement>
+    protected firstScrollView: React.RefObject<ScrollView>
+    public keyboardDidShowListener!: EmitterSubscription
+    public keyboardDidHideListener!: EmitterSubscription
+
+    constructor(props: AppProps) {
         super(props);
         this.state = {
-            id: null,
-            Day: null,
+            id: "",
+            Day: {
+                id: "",
+                tasks: [{id: 0, day: "", text: "", isChecked: false}],
+                note: {
+                    id: 0,
+                    text: ""
+                }
+            },
             fabButtonClicked: false,
             snackBarVisibility: false,
             snackBarIsError: false,
             snackBarText: "",
             keyboardHeight: 0,
             keyboardOpen: false,
-            date: ""
+            date: "",
         }
 
         this.newTaskTextRef = React.createRef();
@@ -37,22 +82,25 @@ export default class DayScreen extends Component {
 
     componentDidMount = () => {
         getASingleDaysData(this.props.navigation.getParam("id", "Monday"))
-        .then((data) => {
+        .then((data: DayObject) => {
             this.setState({
                 id: this.props.navigation.getParam("id", "Monday"),
                 Day: data,
-                date: moment().startOf('isoweek').add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days").format('YYYY-MM-DD')
+                date: moment().startOf('isoWeek')
+                .add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days")
+                .format('YYYY-MM-DD')
             })
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
 
         this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            this._keyboardDidShow,
-        );
+                'keyboardDidShow',
+                this._keyboardDidShow,
+            )
+
       
         this.keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
@@ -65,24 +113,26 @@ export default class DayScreen extends Component {
         this.keyboardDidHideListener.remove();
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
+    componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
         if (this.props.navigation.getParam("id", "no-id") !== this.state.id) {
             getASingleDaysData(this.props.navigation.getParam("id", "no-id"))
-            .then((data) => {
+            .then((data: DayObject) => {
                 this.setState({
                     id: this.props.navigation.getParam("id", "no-id"),
                     Day: data,
-                    date: moment().startOf('isoweek').add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days").format('YYYY-MM-DD')
+                    date: moment().startOf('isoWeek')
+                    .add(theWeek.indexOf(this.props.navigation.getParam("id", "no-id")), "days")
+                    .format('YYYY-MM-DD')
                 })
             })
-            .catch((error) => {
+            .catch((error: string) => {
                 this.setSnackBarTextAndIfError(error, true);
                 this.toggleSnackBarVisibility();
             })
         }
     }
 
-    _keyboardDidShow = (event) => {
+    _keyboardDidShow = (event: any) => {
         if (Platform.OS == "ios") {
             this.setState({
                 keyboardHeight: event.endCoordinates.height,
@@ -100,18 +150,18 @@ export default class DayScreen extends Component {
         }
     }
 
-    submitTaskText = (useSnackBar = true, snackBarText?) => {
+    submitTaskText = (useSnackBar = true, snackBarText?: string) => {
             getASingleDaysData(this.state.id)
-                .then((data) => {
+                .then((data: DayObject) => {
                     this.setState({
                         Day: data
                     })
                     if (useSnackBar) {
-                        this.setSnackBarTextAndIfError(snackBarText, false);
+                        this.setSnackBarTextAndIfError(snackBarText!, false);
                         this.toggleSnackBarVisibility();
                     }
                 })
-                .catch((error) => {
+                .catch((error: string) => {
                     this.setSnackBarTextAndIfError(error, true);
                     this.toggleSnackBarVisibility();
                 })
@@ -125,7 +175,7 @@ export default class DayScreen extends Component {
     }
 
     //Sets the text to show on the snackbar and if the snackbar is an error message or not
-    setSnackBarTextAndIfError = (text, isError) => {
+    setSnackBarTextAndIfError = (text: string, isError: boolean) => {
         this.setState({
           snackBarText: text,
           snackBarIsError: isError
@@ -138,23 +188,23 @@ export default class DayScreen extends Component {
         })
     }
 
-    checkTask = (taskID, isChecked) => {
+    checkTask = (taskID: number, isChecked: boolean) => {
         checkTask(taskID, isChecked)
         .then(() => {
             this.submitTaskText(false);
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
     }
 
-    deleteTask = (taskID) => {
+    deleteTask = (taskID: number) => {
         deleteTask(taskID)
         .then(() => {
             this.submitTaskText(true, "Task Deleted!");
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
@@ -165,7 +215,7 @@ export default class DayScreen extends Component {
         .then(() => {
             this.submitTaskText(false);
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
@@ -176,18 +226,18 @@ export default class DayScreen extends Component {
         .then(() => {
             this.submitTaskText(true, "All Tasks Deleted!");
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
     }
 
-    deleteNote = (noteID) => {
+    deleteNote = (noteID: number) => {
         deleteNote(noteID)
         .then(() => {
             this.submitTaskText(true, "Note Deleted!");
         })
-        .catch((error) => {
+        .catch((error: string) => {
             this.setSnackBarTextAndIfError(error, true);
             this.toggleSnackBarVisibility();
         })
