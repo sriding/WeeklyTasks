@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeviceEventEmitter ,SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard, EmitterSubscription } from "react-native";
+import { View, SafeAreaView, StyleSheet, ScrollView, Dimensions, Platform, Keyboard, EmitterSubscription } from "react-native";
 import { FAB, TextInput } from "react-native-paper";
 import theWeek from "./../../utilities/theWeek";
 
@@ -74,6 +74,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
             keyboardHeight: 0,
             keyboardOpen: false,
             date: "",
+            topOffset: Dimensions.get("window").height - 130
         }
 
         this.newTaskTextRef = React.createRef();
@@ -119,6 +120,15 @@ export default class DayScreen extends Component<AppProps, AppState> {
         this.didFocusSubscription.remove();
     }
 
+    componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
+        if (prevState.id !== this.state.id) {
+            console.log("ID changed");
+            setTimeout(() => {
+                this.firstScrollView.current!.scrollTo({x: 0, y: 0});
+                }, 300)
+        }
+    }
+
     _keyboardDidShow = (event: any) => {
         if (Platform.OS == "ios") {
             this.setState({
@@ -136,6 +146,20 @@ export default class DayScreen extends Component<AppProps, AppState> {
             })
         }
     }
+
+    onLayout = () => {
+        if (Dimensions.get("window").height > Dimensions.get("window").width) {
+            console.log("First option");
+            console.log(Dimensions.get("window").height)
+            this.setState({
+                topOffset: Dimensions.get("window").height - 130
+            })
+        } else {
+            this.setState({
+                topOffset: Dimensions.get("window").height - 130
+            })
+        }
+      }
 
     submitTaskText = (useSnackBar = true, snackBarText?: string) => {
             getASingleDaysData(this.state.id)
@@ -233,6 +257,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
     render() {
         return (
             <SafeAreaView style={styles.mainContainer}>
+                <View onLayout={this.onLayout}>
                 <Header 
                     title={this.state.id} 
                     date={this.state.date} 
@@ -266,7 +291,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
                     toggleSnackBarVisibility={this.toggleSnackBarVisibility}
                     snackBarIsError={this.state.snackBarIsError}
                     snackBarText={this.state.snackBarText} />
-                <FAB style={styles.fabButton} icon="list" onPress={() => {
+                <FAB style={{...styles.fabButton, top: this.state.topOffset}} icon="list" onPress={() => {
                     this.toggleFabButtonOptions();
                 }} />
                 {this.state.fabButtonClicked ? 
@@ -277,6 +302,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
                     firstScrollView={this.firstScrollView}
                     toggleFabButtonOptions={this.toggleFabButtonOptions}
                  /> : null}
+                 </View>
             </SafeAreaView>
         )}
     }
@@ -307,7 +333,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         margin: 20,
         right: 0,
-        top: Dimensions.get("window").height - 130,
         width: 55,
         backgroundColor: "#4d4dff",
         color: "white"

@@ -2,7 +2,6 @@ import React from 'react'
 import {
     StyleSheet,
     View,
-    InteractionManager
   } from 'react-native';
 import { Card, Title, Paragraph, Subheading, Text } from 'react-native-paper';
 
@@ -66,14 +65,15 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         maxHeight: 450,
         shadowColor: "#4d4dff",
-        shadowRadius: 4
+        shadowRadius: 4,
+        elevation: 3
     },
     tasksContainer: {
       maxHeight: 330,
       overflow: "hidden"
     },
     noteContainer: {
-      maxHeight: 100,
+      maxHeight: 200,
       overflow: "hidden"
     }
 })

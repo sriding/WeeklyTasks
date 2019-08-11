@@ -24,7 +24,8 @@ export default function UpdateTaskDialog(props: AppProps) {
                 onDismiss={props.dismissTaskDialog}
                 style={!props.keyboardOpen ? styles.dialogContainer : {
                     maxHeight: Dimensions.get("window").height / 2,
-                    marginBottom: props.keyboardHeight - 90
+                    marginBottom: props.keyboardHeight - 90,
+                    elevation: 10
                 }}>
                     <Dialog.Title>Update Task</Dialog.Title>
                     <Dialog.Content>
@@ -35,6 +36,7 @@ export default function UpdateTaskDialog(props: AppProps) {
                         value={props.updateTaskTextState.text}
                         multiline={true}
                         numberOfLines={3}
+                        style={{minHeight: 80, maxHeight: 125}}
                         error={props.updateTaskTextError} 
                         onChangeText={(text) => {
                             props.updatingUpdateTaskTextState(text, props.updateTaskTextState.taskID);
@@ -55,5 +57,6 @@ export default function UpdateTaskDialog(props: AppProps) {
 const styles = StyleSheet.create({
     dialogContainer: {
         maxHeight: Dimensions.get("window").height / 2,
+        elevation: 10
     }
 })

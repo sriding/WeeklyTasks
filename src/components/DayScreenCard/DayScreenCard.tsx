@@ -53,7 +53,8 @@ interface AppState {
         noteID: number
     },
     updateTaskDialogVisible: boolean,
-    updateNoteDialogVisible: boolean
+    updateNoteDialogVisible: boolean,
+    paddingBottom: number
 
 }
 export default class DayScreenCard extends Component<AppProps, AppState> {
@@ -82,7 +83,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 noteID: -1
             },
             updateTaskDialogVisible: false,
-            updateNoteDialogVisible: false
+            updateNoteDialogVisible: false,
+            paddingBottom: 175
         }
 
         this.taskTextRef = React.createRef();
@@ -217,7 +219,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     render() {
         return (
         <Fragment>
-            <Card style={styles.cardContainer}>
+            <Card style={{...styles.cardContainer, paddingBottom: this.state.paddingBottom}}>
                 <Card.Content>
                     <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
                     {this.state.newTaskTextError ? <Paragraph style={{color: "#C00000"}}>
@@ -232,10 +234,16 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             error={this.state.newTaskTextError}
                             multiline={true}
                             value={this.state.newTaskText}
+                            returnKeyType="done"
                             onChangeText={text => {
                                 this.setState({
                                     newTaskText: text
                                 })
+                            }}
+                            onKeyPress={(e) => {
+                                if(e.nativeEvent.key == "Enter"){
+                                    this.clearTaskText();
+                                }
                             }}
                             onSubmitEditing={this.clearTaskText}
                         ></TextInput>
@@ -320,22 +328,34 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             multiline={true}
                             error={this.state.newNoteTextError}
                             value={this.state.newNoteText}
+                            returnKeyType="done"
                             onChangeText={text => {
                                 this.setState({
                                     newNoteText: text
                                 })
                             }}
                             onFocus={() => {
-                                this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height})
                                 this.setState({
                                     updateTaskTextError: false,
-                                    updateTaskTextErrorText: ""
-                                })
-                                this.setState({
+                                    updateTaskTextErrorText: "",
                                     updateNoteTextState: {
                                         text: this.props.Day.note.text,
                                         noteID: this.props.Day.note.id,
-                                    }
+                                    },
+                                    paddingBottom: 300
+                                })
+                                setTimeout(() => {
+                                    this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height})
+                                }, 300)
+                            }}
+                            onKeyPress={(e) => {
+                                if(e.nativeEvent.key == "Enter"){
+                                    this.clearNoteText();
+                                }
+                            }}
+                            onBlur={() => {
+                                this.setState({
+                                    paddingBottom: 175
                                 })
                             }}
                             onSubmitEditing={this.clearNoteText}
@@ -377,13 +397,13 @@ const styles = StyleSheet.create({
         maxWidth: "90%",
         minHeight: "90%",
         marginTop: 20,
+        elevation: 3,
         shadowColor: "#000000",
         shadowRadius: 4,
         shadowOffset: {
           width: 0,
           height: 3
         },
-        paddingBottom: 250
     },
     addTaskEntry: {
         flexDirection: "row",
@@ -396,6 +416,7 @@ const styles = StyleSheet.create({
     newTaskInput: {
         backgroundColor: "white",
         width: "90%",
+        maxHeight: 125
     },
     buttonCombiner: {
         flexDirection: "row",

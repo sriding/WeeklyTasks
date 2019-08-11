@@ -193,6 +193,10 @@ class HomeScreen extends Component<AppProps, AppState> {
         keyboardHeight: event.endCoordinates.height,
         keyboardOpen: true
       })
+    } else {
+      this.setState({
+        keyboardHeight: event.endCoordinates.height
+      })
     }
   }
 
@@ -201,6 +205,10 @@ class HomeScreen extends Component<AppProps, AppState> {
       this.setState({
         keyboardHeight: 0,
         keyboardOpen: false
+      })
+    } else {
+      this.setState({
+        keyboardHeight: 0
       })
     }
   }

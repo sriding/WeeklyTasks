@@ -29,17 +29,18 @@ export default function NewTaskDialog(props: AppProps) {
                 <Dialog
                     visible={props.dialogToggle}
                     onDismiss={props.dismissDialogToggle}
-                    style={!props.keyboardOpen ? styles.dialogContainer :  {
-                        maxHeight: Dimensions.get('window').height - 100, 
-                        marginBottom: props.keyboardHeight - 70
+                    style={!props.keyboardOpen ?  {maxHeight: Dimensions.get('window').height - props.keyboardHeight - 50, elevation: 10}  :  {
+                        maxHeight: Dimensions.get('window').height - props.keyboardHeight - 50, 
+                        marginBottom: props.keyboardHeight - 70,
+                        elevation: 10
                         }}>
-                    <Dialog.Title>Task</Dialog.Title>
+                    {props.keyboardHeight > 0 ? null : <Dialog.Title>Task</Dialog.Title> }
                     <Dialog.Content>
                         <TextInput 
                             mode="outlined"
-                            label="Input"
                             multiline={true}
                             numberOfLines={3}
+                            placeholder="Input"
                             error={props.taskInputError}
                             style={{minHeight: 80, maxHeight: 125}}
                             onChangeText={props.taskInputChange}
@@ -92,6 +93,5 @@ export default function NewTaskDialog(props: AppProps) {
 
 const styles = StyleSheet.create({
     dialogContainer: {
-        maxHeight: Dimensions.get('window').height - 100, 
     },
 })
