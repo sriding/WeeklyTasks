@@ -1,2 +1,2 @@
 # WeeklyTasks
-Weekly tasks app made with React Native - Work in progress
+Weekly task manager app made with React Native, React Native Paper, and Realm - WIP
