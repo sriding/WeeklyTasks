@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ScrollView, StyleSheet, Dimensions } from "react-native"
+import { ScrollView, StyleSheet, Dimensions, Platform } from "react-native"
 import { Portal, Dialog, TextInput, List, Button, Paragraph } from "react-native-paper"
 
 import theWeek from "../../utilities/theWeek";
@@ -29,9 +29,9 @@ export default function NewTaskDialog(props: AppProps) {
                 <Dialog
                     visible={props.dialogToggle}
                     onDismiss={props.dismissDialogToggle}
-                    style={!props.keyboardOpen ?  {maxHeight: Dimensions.get('window').height - props.keyboardHeight - 50, elevation: 10}  :  {
+                    style={!props.keyboardOpen ?  {maxHeight: Dimensions.get('window').height, elevation: 10}  :  {
                         maxHeight: Dimensions.get('window').height - props.keyboardHeight - 50, 
-                        marginBottom: props.keyboardHeight - 70,
+                        marginBottom: props.keyboardHeight,
                         elevation: 10
                         }}>
                     {props.keyboardHeight > 0 ? null : <Dialog.Title>Task</Dialog.Title> }
@@ -45,12 +45,18 @@ export default function NewTaskDialog(props: AppProps) {
                             style={{minHeight: 80, maxHeight: 125}}
                             onChangeText={props.taskInputChange}
                             value={props.taskInput}
+                            onKeyPress={(e) => {
+                                if(e.nativeEvent.key == "Enter"){
+                                    props.textInputRef.current!.blur();
+                                }
+                            }}
                             ref={props.textInputRef}
                         />
                         {props.taskInputError ? <Paragraph style={{color: "#C00000"}}>
                             {props.taskInputErrorText}
                         </Paragraph> : null}
                     </Dialog.Content>
+                    {Platform.OS == "ios" && Dimensions.get("window").width > Dimensions.get("window").height && props.keyboardHeight > 0 ? null : 
                     <Dialog.Content>
                         <List.Accordion
                             title={props.dayOfTheWeek}
@@ -78,6 +84,8 @@ export default function NewTaskDialog(props: AppProps) {
                             </Dialog.ScrollArea>
                         </List.Accordion>
                     </Dialog.Content>
+                    }
+                    {Platform.OS === "ios" && Dimensions.get("window").width > Dimensions.get("window").height && props.keyboardHeight > 0 ? null : 
                     <Dialog.Actions style={{marginTop: 0,}}>
                         <Button
                             onPress={props.dismissDialogToggle}>Cancel
@@ -86,12 +94,8 @@ export default function NewTaskDialog(props: AppProps) {
                             onPress={props.creatingTask}>Create
                         </Button>
                     </Dialog.Actions>
+                    }
                 </Dialog>
             </Portal>
         )
 }
-
-const styles = StyleSheet.create({
-    dialogContainer: {
-    },
-})

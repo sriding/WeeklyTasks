@@ -8,12 +8,13 @@ interface AppProps {
     newTaskTextRef: React.RefObject<TextInput>,
     toggleFabButtonOptions: () => void,
     checkAllTasks: () => void,
-    deleteAllTasks: () => void
+    deleteAllTasks: () => void,
+    topOffset: number
 }
 
 const DayScreenFabButtonOptions = (props: AppProps) => {
     return (
-        <View style={styles.chipStyles}>
+        <View style={{...styles.chipStyles, top: props.topOffset - 100}}>
             <Chip textStyle={{fontSize: 15}} 
                 style={styles.chipStyleAdd} 
                 icon="create"
@@ -50,7 +51,6 @@ const DayScreenFabButtonOptions = (props: AppProps) => {
 const styles = StyleSheet.create({
     chipStyles: {
         position: "absolute",
-        top: Dimensions.get("window").height - 230,
         right: 70,
         zIndex: 2
     },

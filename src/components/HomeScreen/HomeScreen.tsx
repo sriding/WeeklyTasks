@@ -21,6 +21,7 @@ import Header from "../Header/Header";
 import SideBar from "../SideBar/SideBar";
 import SnackBarPopup from "../SnackBarPopup/SnackBarPopup";
 import NewTaskDialog from "../NewTaskDialog/NewTaskDialog";
+import StatusBar from "./../StatusBar/StatusBar";
 
 //Additional function/object imports
 import { createInitialDays } from "./../../functionsInteractingWithRealm/createInitialDays";
@@ -312,7 +313,8 @@ class HomeScreen extends Component<AppProps, AppState> {
 
   render() {
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{backgroundColor: "#EDF0FF"}}>
+          <StatusBar />
           <Header title="Home" date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer}>
@@ -367,7 +369,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     borderBottomWidth: 1,
     flexDirection: "row",
-    backgroundColor: "#EDF0FF",
     color: "#3A4890",
     minHeight: "100%",
     paddingBottom: 150

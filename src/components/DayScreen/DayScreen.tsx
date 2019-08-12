@@ -42,7 +42,8 @@ interface AppState {
     snackBarText: string,
     keyboardHeight: number,
     keyboardOpen: boolean,
-    date: string
+    date: string,
+    topOffset: number
 }
 
 
@@ -83,6 +84,11 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
 
     componentDidMount = () => {
+        if (Platform.OS === "ios") {
+            this.setState({
+                topOffset: Dimensions.get("window").height - 175
+            })
+        }
         this.didFocusSubscription = this.props.navigation.addListener(
             'didFocus',
             () => {
@@ -148,15 +154,23 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
 
     onLayout = () => {
-        if (Dimensions.get("window").height > Dimensions.get("window").width) {
-            console.log("First option");
-            console.log(Dimensions.get("window").height)
+        if (Platform.OS !== "ios") {
+            if (Dimensions.get("window").height > Dimensions.get("window").width) {
+                this.setState({
+                    topOffset: Dimensions.get("window").height - 130
+                })
+            } else {
+                this.setState({
+                    topOffset: Dimensions.get("window").height - 130
+                })
+            }
+        } else if (Dimensions.get("window").width > Dimensions.get("window").height) {
             this.setState({
                 topOffset: Dimensions.get("window").height - 130
             })
         } else {
             this.setState({
-                topOffset: Dimensions.get("window").height - 130
+                topOffset: Dimensions.get("window").height - 175
             })
         }
       }
@@ -301,6 +315,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
                     deleteAllTasks={this.deleteAllTasks}
                     firstScrollView={this.firstScrollView}
                     toggleFabButtonOptions={this.toggleFabButtonOptions}
+                    topOffset={this.state.topOffset}
                  /> : null}
                  </View>
             </SafeAreaView>

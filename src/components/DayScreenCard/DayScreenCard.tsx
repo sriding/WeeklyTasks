@@ -60,6 +60,8 @@ interface AppState {
 export default class DayScreenCard extends Component<AppProps, AppState> {
     protected taskTextRef: React.RefObject<HTMLInputElement>
     protected newNoteScrollViewRef: React.RefObject<ScrollView>
+    protected updateTaskTextRef: React.RefObject<TextInput>
+    protected updateNoteTextRef: React.RefObject<TextInput>
 
     constructor(props: AppProps) {
         super(props);
@@ -89,6 +91,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
 
         this.taskTextRef = React.createRef();
         this.newNoteScrollViewRef = React.createRef();
+        this.updateTaskTextRef = React.createRef();
+        this.updateNoteTextRef = React.createRef();
     }
 
     clearTaskText = () => {
@@ -342,7 +346,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                         text: this.props.Day.note.text,
                                         noteID: this.props.Day.note.id,
                                     },
-                                    paddingBottom: 300
+                                    paddingBottom: 250
                                 })
                                 setTimeout(() => {
                                     this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height})
@@ -374,7 +378,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 updateTaskTextError={this.state.updateTaskTextError}
                 updateTaskTextErrorText={this.state.updateTaskTextErrorText}
                 keyboardHeight={this.props.keyboardHeight}
-                keyboardOpen={this.props.keyboardOpen}/>
+                keyboardOpen={this.props.keyboardOpen}
+                updateTaskTextRef={this.updateTaskTextRef}/>
             <UpdateNoteDialog 
                 updateNoteDialogVisible={this.state.updateNoteDialogVisible}
                 dismissNoteDialog={this.dismissNoteDialog}
@@ -384,7 +389,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 updateNoteTextError={this.state.updateNoteTextError}
                 updateNoteTextErrorText={this.state.updateNoteTextErrorText}
                 keyboardHeight={this.props.keyboardHeight}
-                keyboardOpen={this.props.keyboardOpen}/>
+                keyboardOpen={this.props.keyboardOpen}
+                updateNoteTextRef={this.updateNoteTextRef}/>
             </Fragment>
         )
     }
