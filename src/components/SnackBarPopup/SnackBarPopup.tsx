@@ -25,7 +25,6 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
 
     componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
         if (prevProps.visibility !== this.props.visibility && prevProps.visibility === false) {
-            console.log("Snackbar pops up");
             this.setState({
                 leftOffset: (Dimensions.get("window").width - 200) / 2,
                 rightOffset: (Dimensions.get("window").width - 200) / 2,

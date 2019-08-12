@@ -128,7 +128,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
 
     componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
         if (prevState.id !== this.state.id) {
-            console.log("ID changed");
             setTimeout(() => {
                 this.firstScrollView.current!.scrollTo({x: 0, y: 0});
                 }, 300)

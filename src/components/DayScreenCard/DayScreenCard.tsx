@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet ,Text, View, Dimensions, ScrollView } from 'react-native'
+import { StyleSheet ,Text, View, Dimensions, ScrollView, Platform } from 'react-native'
 
 import { Card, Button, TextInput, Paragraph } from 'react-native-paper';
 
@@ -245,7 +245,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                 })
                             }}
                             onKeyPress={(e) => {
-                                if(e.nativeEvent.key == "Enter"){
+                                if(e.nativeEvent.key == "Enter" && Platform.OS != "ios"){
                                     this.clearTaskText();
                                 }
                             }}
@@ -353,7 +353,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                 }, 300)
                             }}
                             onKeyPress={(e) => {
-                                if(e.nativeEvent.key == "Enter"){
+                                if(e.nativeEvent.key == "Enter" && Platform.OS != "ios"){
                                     this.clearNoteText();
                                 }
                             }}
