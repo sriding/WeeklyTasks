@@ -36,6 +36,8 @@ import {
   NavigationState
 } from 'react-navigation';
 
+import { pushNotifications } from "./../../services/Index";
+
 //FOR RESETING REALM COMPLETELY
 import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
 
@@ -149,6 +151,9 @@ class HomeScreen extends Component<AppProps, AppState> {
           this.setSnackBarTextAndIfError(error, true);
           this.toggleSnackBarVisibility();
       })
+
+      pushNotifications.localNotification();
+      //pushNotifications.localNotificationIOS();
 
     /*
       This event listener is for when a user taps the back arrow on the day screen;
