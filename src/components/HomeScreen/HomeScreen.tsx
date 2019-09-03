@@ -70,6 +70,7 @@ interface AppState {
   dialogListToggle: boolean,
   dayInformation: DayObject[],
   dayOfTheWeek: string,
+  amountOfTasksForTheDay: number,
   keyboardHeight: number,
   keyboardOpen: boolean,
   date: string
@@ -107,6 +108,7 @@ class HomeScreen extends Component<AppProps, AppState> {
         }
       }],
       dayOfTheWeek: moment().format('dddd'),
+      amountOfTasksForTheDay: 0,
       keyboardHeight: 0,
       keyboardOpen: false,
       date: moment().format('YYYY-MM-DD')
@@ -151,9 +153,6 @@ class HomeScreen extends Component<AppProps, AppState> {
           this.setSnackBarTextAndIfError(error, true);
           this.toggleSnackBarVisibility();
       })
-
-      pushNotifications.localNotification();
-      //pushNotifications.localNotificationIOS();
 
     /*
       This event listener is for when a user taps the back arrow on the day screen;
@@ -222,6 +221,10 @@ class HomeScreen extends Component<AppProps, AppState> {
   //Saves input that user plans on submitting as a new task to save
   taskInputChange = (text: string) => {
     this.setState({ taskInput: text})
+  }
+
+  setRemindersForTheDay = () => {
+    pushNotifications.localNotification(); 
   }
 
   /*

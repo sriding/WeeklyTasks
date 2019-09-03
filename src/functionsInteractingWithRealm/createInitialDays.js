@@ -2,6 +2,7 @@ const Realm = require("realm");
 
 import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "../schemas/schemas";
 
+import { pushNotifications } from "./../services/Index";
 import theWeek from "../utilities/theWeek";
 
 export const createInitialDays = () => {
@@ -19,9 +20,13 @@ export const createInitialDays = () => {
                             note: {id: i, text: "Create a note for the day here."}
                         });
                     }
-                    resolve();
+                    return;
                 });
             }
+        })
+        .then(() => {
+            pushNotifications.localNotification(); 
+            resolve();
         })
         .catch(error => {
             reject(error.toString());
