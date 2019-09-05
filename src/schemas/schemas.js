@@ -16,6 +16,8 @@ export const TaskSchema = {
       day: 'string',
       text:  'string',
       isChecked: "bool",
+      reminder: 'bool',
+      reminderTime: 'string'
     }
 };
   

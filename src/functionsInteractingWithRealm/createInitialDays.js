@@ -7,7 +7,7 @@ import theWeek from "../utilities/theWeek";
 
 export const createInitialDays = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
+        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
         .then(realm => {
             if (realm.objects('Day')[0]) {
                 resolve(null);
@@ -16,7 +16,14 @@ export const createInitialDays = () => {
                     for (let i = 0; i < theWeek.length; i++) {
                         realm.create('Day', {
                             id: theWeek[i],
-                            tasks: [{id: i, day: theWeek[i], text: "Create tasks for the day here.", isChecked: false}],
+                            tasks: [{
+                                id: i, 
+                                day: theWeek[i], 
+                                text: "Create tasks for the day here.", 
+                                isChecked: false,
+                                reminder: false,
+                                reminderTime: "12:00 PM"
+                            }],
                             note: {id: i, text: "Create a note for the day here."}
                         });
                     }

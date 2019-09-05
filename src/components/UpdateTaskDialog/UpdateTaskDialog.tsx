@@ -2,6 +2,8 @@ import React from 'react'
 import { Dialog, Portal, Button, TextInput, Paragraph } from "react-native-paper";
 import { Dimensions, StyleSheet, Platform } from 'react-native';
 
+import SetReminder from "./../SetReminder/SetReminder";
+
 interface AppProps {
     updateTaskDialogVisible: boolean,
     dismissTaskDialog: () => void,
@@ -15,7 +17,10 @@ interface AppProps {
     updateTaskTextErrorText: string,
     keyboardHeight: number,
     keyboardOpen: boolean,
-    updateTaskTextRef: React.RefObject<TextInput>
+    updateTaskTextRef: React.RefObject<TextInput>,
+    reminder: boolean,
+    reminderTime: string,
+    changeReminderTime: (reminderTime: string) => void
 }
 
 export default function UpdateTaskDialog(props: AppProps) {
@@ -31,6 +36,9 @@ export default function UpdateTaskDialog(props: AppProps) {
                     {props.keyboardHeight > 0 ? null :
                     <Dialog.Title>Update Task</Dialog.Title>
                     }
+                    <SetReminder reminder={props.reminder}
+                    reminderTime={props.reminderTime}
+                    changeReminderTime={props.changeReminderTime}/>
                     <Dialog.Content>
                         {props.updateTaskTextError ? <Paragraph style={{color: "#C00000"}}>
                             {props.updateTaskTextErrorText}

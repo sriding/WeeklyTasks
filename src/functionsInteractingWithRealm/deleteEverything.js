@@ -5,7 +5,7 @@ import { pushNotifications } from "./../services/Index";
 
 export const deleteEverything = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
         .then((realm) => {
             realm.write(() => {
                 realm.deleteAll();

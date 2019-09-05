@@ -73,7 +73,9 @@ interface AppState {
   amountOfTasksForTheDay: number,
   keyboardHeight: number,
   keyboardOpen: boolean,
-  date: string
+  date: string,
+  reminder: boolean,
+  reminderTime: string
 }
 
 class HomeScreen extends Component<AppProps, AppState> {
@@ -111,7 +113,9 @@ class HomeScreen extends Component<AppProps, AppState> {
       amountOfTasksForTheDay: 0,
       keyboardHeight: 0,
       keyboardOpen: false,
-      date: moment().format('YYYY-MM-DD')
+      date: moment().format('YYYY-MM-DD'),
+      reminder: true,
+      reminderTime: "12:00 PM"
     }
 
     //Reference to the text input field in the dialog popup for creating a task
@@ -232,7 +236,7 @@ class HomeScreen extends Component<AppProps, AppState> {
     a property of a day's object
   */
   creatingTask = () => {
-    addTask(this.state.taskInput, this.state.dayOfTheWeek)
+    addTask(this.state.taskInput, this.state.dayOfTheWeek, this.state.reminder, this.state.reminderTime)
       .then(() => {
         getAllDaysData().then((data: DayObject[]) => {
           this.setState({
@@ -319,6 +323,13 @@ class HomeScreen extends Component<AppProps, AppState> {
     })
   }
 
+  changeReminderTime = (reminderTime: string) => {
+    this.setState({
+        reminder: reminderTime === "N/A" ? false : true,
+        reminderTime
+    })
+}
+
   render() {
     return (
         <SafeAreaView style={{backgroundColor: "#EDF0FF"}}>
@@ -362,7 +373,10 @@ class HomeScreen extends Component<AppProps, AppState> {
               taskInputError={this.state.taskInputError}
               taskInputErrorText={this.state.taskInputErrorText}
               keyboardHeight={this.state.keyboardHeight}
-              keyboardOpen={this.state.keyboardOpen}/>
+              keyboardOpen={this.state.keyboardOpen}
+              reminder={this.state.reminder}
+              reminderTime={this.state.reminderTime}
+              changeReminderTime={this.changeReminderTime}/>
             <SnackBarPopup visibility={this.state.snackBarVisibility}
               toggleSnackBarVisibility={this.toggleSnackBarVisibility}
               snackBarIsError={this.state.snackBarIsError}

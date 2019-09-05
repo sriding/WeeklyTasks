@@ -5,6 +5,8 @@ import { Portal, Dialog, TextInput, List, Button, Paragraph } from "react-native
 
 import theWeek from "../../utilities/theWeek";
 
+import SetReminder from "./../SetReminder/SetReminder";
+
 interface AppProps {
     dialogToggle: boolean,
     dialogListToggle: boolean,
@@ -20,7 +22,10 @@ interface AppProps {
     taskInputError: boolean,
     taskInputErrorText: string,
     keyboardHeight: number,
-    keyboardOpen: boolean
+    keyboardOpen: boolean,
+    reminder: boolean,
+    reminderTime: string,
+    changeReminderTime: (reminderTime: string) => void
 }
 
 export default function NewTaskDialog(props: AppProps) {
@@ -35,6 +40,9 @@ export default function NewTaskDialog(props: AppProps) {
                         elevation: 10
                         }}>
                     {props.keyboardHeight > 0 ? null : <Dialog.Title>Task</Dialog.Title> }
+                    <SetReminder reminder={props.reminder}
+                    reminderTime={props.reminderTime}
+                    changeReminderTime={props.changeReminderTime} />
                     <Dialog.Content>
                         <TextInput 
                             mode="outlined"
