@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet ,Text, View, Dimensions, ScrollView, Platform } from 'react-native'
+import { StyleSheet ,Text, View, Dimensions, ScrollView, Platform, TouchableHighlight } from 'react-native'
 
 import { Card, Button, TextInput, Paragraph, Checkbox, Caption, Menu, Divider } from 'react-native-paper';
 
@@ -242,7 +242,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     <Button mode="contained" style={styles.subHeadingText}>Tasks</Button>
                     <SetReminder reminder={this.state.reminder} 
                     reminderTime={this.state.reminderTime}
-                    changeReminderTime={this.changeReminderTime}/>
+                    changeReminderTime={this.changeReminderTime}
+                    text="New Task Reminder Time: "/>
                     {this.state.newTaskTextError ? <Paragraph style={{color: "#C00000"}}>
                         {this.state.newTaskTextErrorText}
                     </Paragraph> : null}
@@ -282,7 +283,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                         },
                                         updateTaskDialogVisible: true,
                                         reminder: task.reminder,
-                                        reminderTime: task.reminderTime
+                                        reminderTime: task.reminder === false ? "N/A" : task.reminderTime
                                     })
                                 }}>{task.text}
                             </Paragraph>
@@ -297,8 +298,32 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         </View> : 
                             <View key={task.id}>
                                 <View style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                                    <Checkbox status={task.reminder ? 'checked' : 'unchecked'}/>
+                                    <TouchableHighlight onPress={() => {
+                                        this.setState({
+                                            updateTaskTextState: {
+                                                text: task.text,
+                                                taskID: task.id,
+                                            },
+                                            updateTaskDialogVisible: true,
+                                            reminder: task.reminder,
+                                            reminderTime: task.reminder === false ? "N/A" : task.reminderTime
+                                        })
+                                    }}>
+                                        <Checkbox status={task.reminder ? 'checked' : 'unchecked'}/>
+                                    </TouchableHighlight>   
+                                    <TouchableHighlight onPress={() => {
+                                        this.setState({
+                                            updateTaskTextState: {
+                                                text: task.text,
+                                                taskID: task.id,
+                                            },
+                                            updateTaskDialogVisible: true,
+                                            reminder: task.reminder,
+                                            reminderTime: task.reminder === false ? "N/A" : task.reminderTime
+                                        })
+                                    }}>
                                     <Caption style={styles.captionText}>{task.reminder ? `Reminder set for: ${task.reminderTime}` : "No Reminder set"}</Caption>
+                                    </TouchableHighlight>  
                                 </View>
                                 <Paragraph
                                     style={styles.paragraphText}
@@ -310,7 +335,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                             },
                                             updateTaskDialogVisible: true,
                                             reminder: task.reminder,
-                                            reminderTime: task.reminderTime
+                                            reminderTime: task.reminder === false ? "N/A" : task.reminderTime
                                         })
                                     }}>{task.text}
                                 </Paragraph>
@@ -374,7 +399,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                     paddingBottom: 250
                                 })
                                 setTimeout(() => {
-                                    this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height})
+                                    this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height - 50})
                                 }, 300)
                             }}
                             onKeyPress={(e) => {
@@ -477,7 +502,8 @@ const styles = StyleSheet.create({
     paragraphText: {
         marginBottom: 15,
         backgroundColor: "white",
-        fontSize: 19
+        fontSize: 19,
+        paddingTop: 10
     },
     paragraphTextStrikethrough: {
         marginBottom: 15,

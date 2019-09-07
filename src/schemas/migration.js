@@ -1,5 +1,7 @@
 const Realm = require("realm");
 
+import { pushNotifications } from "./../services/Index";
+
 import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./schemas";
 
 const migration = () => {

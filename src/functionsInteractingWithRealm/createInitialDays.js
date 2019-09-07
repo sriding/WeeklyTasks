@@ -32,7 +32,7 @@ export const createInitialDays = () => {
             }
         })
         .then(() => {
-            pushNotifications.localNotification(); 
+            pushNotifications.sendLocalNotification(); 
             resolve();
         })
         .catch(error => {

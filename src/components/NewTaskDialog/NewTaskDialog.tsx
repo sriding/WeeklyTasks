@@ -42,7 +42,8 @@ export default function NewTaskDialog(props: AppProps) {
                     {props.keyboardHeight > 0 ? null : <Dialog.Title>Task</Dialog.Title> }
                     <SetReminder reminder={props.reminder}
                     reminderTime={props.reminderTime}
-                    changeReminderTime={props.changeReminderTime} />
+                    changeReminderTime={props.changeReminderTime}
+                    text="Set Reminder Time: " />
                     <Dialog.Content>
                         <TextInput 
                             mode="outlined"

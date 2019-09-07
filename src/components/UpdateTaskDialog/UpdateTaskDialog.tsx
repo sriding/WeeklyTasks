@@ -38,7 +38,8 @@ export default function UpdateTaskDialog(props: AppProps) {
                     }
                     <SetReminder reminder={props.reminder}
                     reminderTime={props.reminderTime}
-                    changeReminderTime={props.changeReminderTime}/>
+                    changeReminderTime={props.changeReminderTime}
+                    text="Change Reminder Time: "/>
                     <Dialog.Content>
                         {props.updateTaskTextError ? <Paragraph style={{color: "#C00000"}}>
                             {props.updateTaskTextErrorText}

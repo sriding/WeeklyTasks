@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 8,
         maxHeight: 450,
-        shadowColor: "#4d4dff",
+        shadowColor: "#6200ee",
         shadowRadius: 4,
         elevation: 3
     },

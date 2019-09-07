@@ -7,7 +7,8 @@ import timeValues from "./../../utilities/timeValues";
 interface AppProps {
     reminder: boolean,
     reminderTime: string,
-    changeReminderTime: (reminderTime: string) => void
+    changeReminderTime: (reminderTime: string) => void,
+    text: string
 }
 
 interface AppState {
@@ -26,8 +27,8 @@ class SetReminder extends Component<AppProps, AppState> {
 
     render() {
         return (
-            <View style={{display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", alignItems: "center", alignContent: "center"}}>
-            <Paragraph style={{marginBottom: 0, paddingBottom: 0}}>Set New Task Reminders: </Paragraph> 
+            <View style={{display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", alignItems: "center", alignContent: "center", margin: 3}}>
+            <Paragraph style={{marginBottom: 0, paddingBottom: 0}}>{this.props.text}</Paragraph> 
             <Menu     
                 visible={this.state.menuVisibility}
                 onDismiss={() => {
@@ -36,7 +37,7 @@ class SetReminder extends Component<AppProps, AppState> {
                     })
                 }}
                 anchor={
-                    <Paragraph style={{fontSize: 15, padding: 3, margin: 4, 
+                    <Paragraph style={{fontSize: 15, padding: 4, margin: 4, 
                     borderWidth: 1}} onPress={() => {
                         this.setState({
                             menuVisibility: true

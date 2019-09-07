@@ -33,16 +33,87 @@ const configure = () => {
  });
 };
 
- const localNotification = () => {
-   PushNotification.cancelAllLocalNotifications()
-   theWeek.forEach((day, index) => {
-    getAmountOfTasksForTheDay(day).then((tasks) => {
+ const testLocalNotifications = () => {
+  PushNotification.localNotification({
+    title: "Title Test",
+    message: "Message Test" // (required)
+  })
+ }
+
+ const sendLocalNotification = () => {
+  PushNotification.cancelAllLocalNotifications();
+
+  let currentTime = moment().format("h:mm A");
+  let currentDate = moment().format('dddd');
+  let currentIndex = theWeek.indexOf(currentDate);
+
+  //arrayStartingFromToday.forEach((day, index) => {
+    for (let i = currentIndex; i < theWeek.length; i++) {
+    getAmountOfTasksForTheDay(theWeek[i]).then((tasks) => {
+      if (currentDate === theWeek[i]) {
+        if (moment(currentTime, "h:mm A").isBefore(moment("10:00 AM", "h:mm A"))) {
+          PushNotification.localNotificationSchedule({
+            //... You can use all the options from localNotifications
+            title: tasks.amount === 1 ? `You have 1 task remaining for today!` : `You have ${tasks.amount} tasks remaining for today!`,
+            message: tasks.amount === 0 ? `No tasks to worry about!` : `Only ${tasks.amount} to go.`, // (required)
+            date: new Date(moment().startOf('isoweek').add(i, 'days').add(10 , "hours").format()),
+            repeatType: "week"
+          });
+        } else {
+          //Do Nothing
+        }
+
+        for (task of tasks.taskObjects) {
+          if (task.reminder === true && moment(currentTime, "h:mm A").isBefore(moment(task.reminderTime, "h:mm A"))) {
+            PushNotification.localNotificationSchedule({
+              //... You can use all the options from localNotifications
+              title: "Reminder",
+              message: task.text, // (required)
+              date: new Date(moment().startOf('isoweek').add(i, 'days')
+              .add(timeValues[task.reminderTime], "hours").format()),
+              repeatType: "week"
+            })
+          } else {
+            //Do nothing
+          }
+        }
+      } else {
+        PushNotification.localNotificationSchedule({
+          //... You can use all the options from localNotifications
+          title: tasks.amount === 1 ? `You have 1 task remaining for today!` : `You have ${tasks.amount} tasks remaining for today!`,
+          message: tasks.amount === 0 ? `No tasks to worry about!` : `Only ${tasks.amount} to go.`, // (required)
+          date: new Date(moment().startOf('isoweek').add(i, 'days').add(10 , "hours").format()), // in 60 secs
+          repeatType: "week"
+        });
+
+        for (task of tasks.taskObjects) {
+          if (task.reminder === true) {
+            PushNotification.localNotificationSchedule({
+              //... You can use all the options from localNotifications
+              title: "Reminder",
+              message: task.text, // (required)
+              date: new Date(moment().startOf('isoweek').add(i, 'days')
+              .add(timeValues[task.reminderTime], "hours").format()),
+              largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
+              smallIcon: "ic_launcher", // in 60 secs // in 60 secs
+              repeatType: "week"
+            })
+          } else {
+            //Do nothing
+          }
+        }
+      }
+    })
+  }
+   //PushNotification.cancelAllLocalNotifications();
+   //arrayFromStartOfWeekToToday.forEach((day, index) => {
+    for (let j = 0; j < currentIndex; j++) {
+    getAmountOfTasksForTheDay(theWeek[j]).then((tasks) => {
       PushNotification.localNotificationSchedule({
         //... You can use all the options from localNotifications
-        id: day + "-" + index,
         title: tasks.amount === 1 ? `You have 1 task remaining for today!` : `You have ${tasks.amount} tasks remaining for today!`,
         message: tasks.amount === 0 ? `No tasks to worry about!` : `Only ${tasks.amount} to go.`, // (required)
-        date: new Date(moment().startOf('isoweek').add(index, 'days').add(16 , "hours").format()), // in 60 secs
+        date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days').add(10, "hours").format()),
         repeatType: "week"
       });
 
@@ -50,11 +121,10 @@ const configure = () => {
         if (task.reminder === true) {
           PushNotification.localNotificationSchedule({
             //... You can use all the options from localNotifications
-            id: day + "-" + task.id + "-" + index,
             title: "Reminder",
             message: task.text, // (required)
-            date: new Date(moment().startOf('isoweek').add(index, 'days')
-            .add(timeValues[task.reminderTime], "hours").format()), // in 60 secs
+            date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days')
+            .add(timeValues[task.reminderTime], "hours").format()),
             repeatType: "week"
           })
         } else {
@@ -65,10 +135,11 @@ const configure = () => {
     .catch((error) => {
       console.log(`Pushnotification catch error: ${error}`);
     })
-   })
+   }
  }
  
  export {
   configure,
-  localNotification
+  testLocalNotifications,
+  sendLocalNotification
  };

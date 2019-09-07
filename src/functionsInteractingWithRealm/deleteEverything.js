@@ -12,7 +12,7 @@ export const deleteEverything = () => {
             })
         })
         .then(() => {
-            pushNotifications.localNotification();
+            pushNotifications.sendLocalNotification();
             resolve();
         })
         .catch((error) => {

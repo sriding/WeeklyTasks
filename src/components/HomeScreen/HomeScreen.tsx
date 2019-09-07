@@ -36,6 +36,7 @@ import {
   NavigationState
 } from 'react-navigation';
 
+import migration from "./../../schemas/migration";
 import { pushNotifications } from "./../../services/Index";
 
 //FOR RESETING REALM COMPLETELY
@@ -169,6 +170,7 @@ class HomeScreen extends Component<AppProps, AppState> {
         getAllDaysData().then((data: DayObject[]) => {
           this.setState({
             dayInformation: data,
+            sideBarToggle: false
           })
         })
         .catch((error: string) => {
@@ -228,7 +230,7 @@ class HomeScreen extends Component<AppProps, AppState> {
   }
 
   setRemindersForTheDay = () => {
-    pushNotifications.localNotification(); 
+    pushNotifications.sendLocalNotification(); 
   }
 
   /*
@@ -334,7 +336,7 @@ class HomeScreen extends Component<AppProps, AppState> {
     return (
         <SafeAreaView style={{backgroundColor: "#EDF0FF"}}>
           <StatusBar />
-          <Header title="Home" date={this.state.date} 
+          <Header title="Weekly Task Planner" date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer}>
               {this.state.sideBarToggle !== false ?
@@ -357,7 +359,8 @@ class HomeScreen extends Component<AppProps, AppState> {
             <ScrollView style={styles.rightPaneContainer} 
               showsVerticalScrollIndicator={false} />
             <FAB style={styles.fabButton} icon="add" onPress={() => {
-              this.toggleDialogToggle()
+              this.toggleDialogToggle();
+              //pushNotifications.testLocalNotifications();
             }} />
             <NewTaskDialog dialogToggle={this.state.dialogToggle}
               dialogListToggle={this.state.dialogListToggle}
@@ -420,7 +423,7 @@ const styles = StyleSheet.create({
     margin: 20,
     right: 0,
     bottom: 140,
-    backgroundColor: "#4d4dff",
+    backgroundColor: "#6200ee",
     color: "white"
   }
 });

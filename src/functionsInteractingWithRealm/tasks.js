@@ -37,7 +37,7 @@ export const addTask = (text, dayID, reminder = false, reminderTime = "12:00 PM"
                 })
             })
             .then(() => {
-                pushNotifications.localNotification();
+                pushNotifications.sendLocalNotification();
                 resolve();
             })
             .catch((error) => {
@@ -66,7 +66,7 @@ export const updateTask = (text, taskID, reminder = false, reminderTime = "12:00
                 })
             })
             .then(() => {
-                pushNotifications.localNotification();
+                pushNotifications.sendLocalNotification();
                 resolve();
             })
             .catch((err) => {
@@ -84,7 +84,7 @@ export const checkTask = (taskID, isChecked) => {
             })
         })
         .then(() => {
-            pushNotifications.localNotification();
+            pushNotifications.sendLocalNotification();
             resolve();
         })
         .catch((err) => {
@@ -103,7 +103,7 @@ export const deleteTask = (taskID) => {
             })
         })
         .then(() => {
-            pushNotifications.localNotification();
+            pushNotifications.sendLocalNotification();
             resolve();
         })
         .catch((err) => {
@@ -132,7 +132,7 @@ export const checkAllTasks = (day) => {
             })
         })
         .then(() => {
-            pushNotifications.localNotification();
+            pushNotifications.sendLocalNotification();
             resolve();
         })
       .catch((error) => {
@@ -150,7 +150,7 @@ export const deleteAllTasks = (day) => {
             })
         })
         .then(() => {
-            pushNotifications.localNotification();
+            pushNotifications.sendLocalNotification();
             resolve();
         })
         .catch((err) => {
@@ -172,7 +172,7 @@ export const unCheckEveryTaskInTheDatabase = () => {
             })
         })
         .then(() => {
-            pushNotifications.localNotification();
+            pushNotifications.sendLocalNotification();
             resolve();
         })
         .catch((error) => {

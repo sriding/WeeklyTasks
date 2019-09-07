@@ -22,6 +22,7 @@ export default function SideBar(props: AppProps) {
                 <List.Item 
                     key={index}
                     title={day}
+                    titleStyle={{fontSize: 14}}
                     onPress={() => {
                         props.navigation.navigate("Day", {
                             id: day

@@ -6,7 +6,7 @@ export default function StatusBar() {
 
     return (
         <View>
-            <ReactNativeStatusBar backgroundColor="#EDF0FF" barStyle="dark-content" />
+            <ReactNativeStatusBar backgroundColor="#6200ee" barStyle={Platform.OS == "ios" ? "dark-content" : "light-content"} />
         </View>
     )
 }
