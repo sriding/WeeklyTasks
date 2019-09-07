@@ -1,8 +1,14 @@
 import React from 'react';
 
 import { Provider as PaperProvider } from "react-native-paper"
+import { pushNotifications } from "./src/services/Index";
 //Components
 import DrawerNavigator from "./src/navigation/navigator";
+
+import migration from "./src/schemas/migration";
+
+migration();
+pushNotifications.configure();
 
 const App = () => {
   return (

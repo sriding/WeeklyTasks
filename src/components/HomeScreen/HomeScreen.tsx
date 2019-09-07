@@ -36,6 +36,9 @@ import {
   NavigationState
 } from 'react-navigation';
 
+import migration from "./../../schemas/migration";
+import { pushNotifications } from "./../../services/Index";
+
 //FOR RESETING REALM COMPLETELY
 import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
 
@@ -68,9 +71,12 @@ interface AppState {
   dialogListToggle: boolean,
   dayInformation: DayObject[],
   dayOfTheWeek: string,
+  amountOfTasksForTheDay: number,
   keyboardHeight: number,
   keyboardOpen: boolean,
-  date: string
+  date: string,
+  reminder: boolean,
+  reminderTime: string
 }
 
 class HomeScreen extends Component<AppProps, AppState> {
@@ -105,9 +111,12 @@ class HomeScreen extends Component<AppProps, AppState> {
         }
       }],
       dayOfTheWeek: moment().format('dddd'),
+      amountOfTasksForTheDay: 0,
       keyboardHeight: 0,
       keyboardOpen: false,
-      date: moment().format('YYYY-MM-DD')
+      date: moment().format('YYYY-MM-DD'),
+      reminder: true,
+      reminderTime: "12:00 PM"
     }
 
     //Reference to the text input field in the dialog popup for creating a task
@@ -161,6 +170,7 @@ class HomeScreen extends Component<AppProps, AppState> {
         getAllDaysData().then((data: DayObject[]) => {
           this.setState({
             dayInformation: data,
+            sideBarToggle: false
           })
         })
         .catch((error: string) => {
@@ -219,12 +229,16 @@ class HomeScreen extends Component<AppProps, AppState> {
     this.setState({ taskInput: text})
   }
 
+  setRemindersForTheDay = () => {
+    pushNotifications.sendLocalNotification(); 
+  }
+
   /*
     Method that will create a task to be added to the realm db as both a task object and as 
     a property of a day's object
   */
   creatingTask = () => {
-    addTask(this.state.taskInput, this.state.dayOfTheWeek)
+    addTask(this.state.taskInput, this.state.dayOfTheWeek, this.state.reminder, this.state.reminderTime)
       .then(() => {
         getAllDaysData().then((data: DayObject[]) => {
           this.setState({
@@ -311,11 +325,18 @@ class HomeScreen extends Component<AppProps, AppState> {
     })
   }
 
+  changeReminderTime = (reminderTime: string) => {
+    this.setState({
+        reminder: reminderTime === "N/A" ? false : true,
+        reminderTime
+    })
+}
+
   render() {
     return (
         <SafeAreaView style={{backgroundColor: "#EDF0FF"}}>
           <StatusBar />
-          <Header title="Home" date={this.state.date} 
+          <Header title="Weekly Task Planner" date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer}>
               {this.state.sideBarToggle !== false ?
@@ -338,7 +359,8 @@ class HomeScreen extends Component<AppProps, AppState> {
             <ScrollView style={styles.rightPaneContainer} 
               showsVerticalScrollIndicator={false} />
             <FAB style={styles.fabButton} icon="add" onPress={() => {
-              this.toggleDialogToggle()
+              this.toggleDialogToggle();
+              //pushNotifications.testLocalNotifications();
             }} />
             <NewTaskDialog dialogToggle={this.state.dialogToggle}
               dialogListToggle={this.state.dialogListToggle}
@@ -354,7 +376,10 @@ class HomeScreen extends Component<AppProps, AppState> {
               taskInputError={this.state.taskInputError}
               taskInputErrorText={this.state.taskInputErrorText}
               keyboardHeight={this.state.keyboardHeight}
-              keyboardOpen={this.state.keyboardOpen}/>
+              keyboardOpen={this.state.keyboardOpen}
+              reminder={this.state.reminder}
+              reminderTime={this.state.reminderTime}
+              changeReminderTime={this.changeReminderTime}/>
             <SnackBarPopup visibility={this.state.snackBarVisibility}
               toggleSnackBarVisibility={this.toggleSnackBarVisibility}
               snackBarIsError={this.state.snackBarIsError}
@@ -398,7 +423,7 @@ const styles = StyleSheet.create({
     margin: 20,
     right: 0,
     bottom: 140,
-    backgroundColor: "#4d4dff",
+    backgroundColor: "#6200ee",
     color: "white"
   }
 });

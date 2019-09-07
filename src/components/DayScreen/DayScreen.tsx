@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
         margin: 20,
         right: 0,
         width: 55,
-        backgroundColor: "#4d4dff",
+        backgroundColor: "#6200ee",
         color: "white"
       },
 });

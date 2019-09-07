@@ -3,7 +3,7 @@ import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schem
 
 export const getASingleDaysData = (dayID) => { 
     return new Promise((resolve, reject) => {
-        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema]})
+        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
         .then((realm) => {
             let dayData = realm.objects("Day").filtered(`id == "${dayID}"`);
             let taskData = [];
@@ -14,14 +14,18 @@ export const getASingleDaysData = (dayID) => {
                         id: dayData[0].tasks[i].id, 
                         day: dayData[0].tasks[i].day,
                         text: dayData[0].tasks[i].text, 
-                        isChecked: dayData[0].tasks[i].isChecked
+                        isChecked: dayData[0].tasks[i].isChecked,
+                        reminder: dayData[0].tasks[i].reminder,
+                        reminderTime: dayData[0].tasks[i].reminderTime
                     })
                 } else {
                     taskData.push({
                         id: dayData[0].tasks[i].id, 
                         day: dayData[0].tasks[i].day,
                         text: dayData[0].tasks[i].text, 
-                        isChecked: dayData[0].tasks[i].isChecked
+                        isChecked: dayData[0].tasks[i].isChecked,
+                        reminder: dayData[0].tasks[i].reminder,
+                        reminderTime: dayData[0].tasks[i].reminderTime
                     })
             }}
 
