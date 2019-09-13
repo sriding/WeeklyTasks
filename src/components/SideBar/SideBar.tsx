@@ -9,13 +9,16 @@ import {
     NavigationScreenProp,
     NavigationState,
   } from 'react-navigation';
+import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
 
   interface AppProps {
     navigation: NavigationScreenProp<NavigationState, NavigationParams>,
+    date: string
   }
 export default function SideBar(props: AppProps) {
     return (
-        <List.Section style={{minHeight: "100%"}}>
+        <ScrollView>
+        <List.Section>
             <List.Subheader>Days</List.Subheader>
             {theWeek.map((day, index) => {
             return (
@@ -32,5 +35,14 @@ export default function SideBar(props: AppProps) {
             )
             })}
         </List.Section>
+        <TouchableHighlight onPress={() => {
+            console.log("Clicked")
+            props.navigation.navigate("Settings", {
+                navigation: props.navigation,
+            })
+        }}>
+            <List.Icon color="black" icon="settings" />
+        </TouchableHighlight>
+        </ScrollView>
     )
 }

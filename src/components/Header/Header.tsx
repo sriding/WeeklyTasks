@@ -9,7 +9,7 @@ import {
 
 interface AppProps {
     navigation: NavigationScreenProp<NavigationState, NavigationParams>,
-    sideBarIconClicked: () => void,
+    sideBarIconClicked?: () => void,
     title: string,
     date: string
 }
@@ -24,7 +24,7 @@ export default function Header(props: AppProps) {
             <Appbar.Action 
                 icon="view-headline"
                 size={27}
-                onPress={(() => props.sideBarIconClicked())}
+                onPress={(() => props.sideBarIconClicked ? props.sideBarIconClicked() : null)}
             /> }
             <Appbar.Content
                 title={props.title}

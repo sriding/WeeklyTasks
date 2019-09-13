@@ -336,7 +336,8 @@ class HomeScreen extends Component<AppProps, AppState> {
     return (
         <SafeAreaView style={{backgroundColor: "#EDF0FF"}}>
           <StatusBar />
-          <Header title="Weekly Task Planner" date={this.state.date} 
+          <Header title="Weekly Task Planner" 
+            date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
           <View style={styles.mainContainer}>
               {this.state.sideBarToggle !== false ?
