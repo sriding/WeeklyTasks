@@ -8,6 +8,7 @@ import {
   } from 'react-navigation';
 
 import moment from "moment";
+
 import Header from "./../Header/Header";
 import SetReminder from "./../SetReminder/SetReminder";
 
@@ -21,6 +22,8 @@ interface AppState {
     tasksRemindersSwitch: boolean,
     dailyUpdateReminder: boolean,
     dailyUpdatePersistenceSwitch: boolean,
+    sortTasksMenu: boolean,
+    sortTasksOption: string,
     darkThemeSwitch: boolean,
     dailyUpdateReminderTime: string
 }
@@ -34,13 +37,17 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             tasksRemindersSwitch: true,
             dailyUpdateReminder: true,
             dailyUpdatePersistenceSwitch: false,
+            sortTasksMenu: false,
+            sortTasksOption: "Reminder Time",
             darkThemeSwitch: false,
             dailyUpdateReminderTime: "10:00AM"
         }
     }
 
-    changeReminderTime = () => {
-
+    changeReminderTime = (time: string) => {
+        this.setState({
+            dailyUpdateReminderTime: time
+        })
     }
 
     render() {
@@ -89,16 +96,36 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                         </View>
                         <Divider style={{marginTop: 20, marginBottom: 20}} />
                         <Headline>Tasks</Headline>
-                        <View style={styles.tasksContainer}>
+                        <View style={{...styles.switchContainer, justifyContent: "center", alignItems: "center"}}>
                             <Subheading>Sort tasks by: </Subheading>
                             <Menu
-                            visible={false}
-                            onDismiss={() => {}}
+                            visible={this.state.sortTasksMenu}
+                            onDismiss={() => {
+                                this.setState({
+                                    sortTasksMenu: false
+                                })
+                            }}
                             anchor={
-                                <Button onPress={() => {}}>Show menu</Button>
+                                <Paragraph style={{fontSize: 15, padding: 4, margin: 4, 
+                                    borderWidth: 1}}
+                                    onPress={() => {
+                                        this.setState({
+                                            sortTasksMenu: true
+                                        })
+                                    }}>{this.state.sortTasksOption}</Paragraph>
                             }>
-                                <Menu.Item onPress={() => {}} title="Item 1" />
-                                <Menu.Item onPress={() => {}} title="Item 2" />
+                                <Menu.Item onPress={() => {
+                                    this.setState({
+                                        sortTasksMenu: false,
+                                        sortTasksOption: "Reminder Time"
+                                    })
+                                }} title="Reminder Time" />
+                                <Menu.Item onPress={() => {
+                                    this.setState({
+                                        sortTasksMenu: false,
+                                        sortTasksOption: "Recently Added"
+                                    })
+                                }} title="Recently Added" />
                             </Menu>
                         </View>
                         <Divider style={{marginTop: 20, marginBottom: 20}} />
