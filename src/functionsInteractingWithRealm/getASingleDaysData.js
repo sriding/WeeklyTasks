@@ -1,9 +1,9 @@
 const Realm = require("realm");
-import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
+import {DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema} from "./../schemas/schemas";
 
 export const getASingleDaysData = (dayID) => { 
     return new Promise((resolve, reject) => {
-        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
         .then((realm) => {
             let dayData = realm.objects("Day").filtered(`id == "${dayID}"`);
             let taskData = [];

@@ -36,7 +36,6 @@ export default function SideBar(props: AppProps) {
             })}
         </List.Section>
         <TouchableHighlight onPress={() => {
-            console.log("Clicked")
             props.navigation.navigate("Settings", {
                 navigation: props.navigation,
             })

@@ -1,14 +1,30 @@
 const Realm = require("realm");
 
-import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "../schemas/schemas";
+import {DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema} from "../schemas/schemas";
 
 import { pushNotifications } from "./../services/Index";
 import theWeek from "../utilities/theWeek";
 
 export const createInitialDays = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
         .then(realm => {
+            if (realm.objects('Settings')[0]) {
+                //Do Nothing
+            } else {
+                realm.write(() => {
+                    realm.create('Settings', {
+                        id: 0,
+                        dailyUpdate: true,
+                        dailyUpdatePersistance: false,
+                        dailyUpdateTime: "9:00 AM",
+                        taskReminders: true,
+                        sortTasksBy: "Reminder Time",
+                        theme: "light"
+                    });
+                })
+            }
+
             if (realm.objects('Day')[0]) {
                 resolve(null);
             } else {
@@ -27,7 +43,6 @@ export const createInitialDays = () => {
                             note: {id: i, text: "Create a note for the day here."}
                         });
                     }
-                    return;
                 });
             }
         })

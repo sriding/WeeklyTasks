@@ -1,5 +1,5 @@
 const Realm = require("realm");
-import {DaySchema, TaskSchema, NoteSchema, LoginSchema} from "./../schemas/schemas";
+import {DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema} from "./../schemas/schemas";
 
 import { pushNotifications } from "./../services/Index";
 
@@ -12,7 +12,7 @@ export const addTask = (text, dayID, reminder = false, reminderTime = "12:00 PM"
             return reject("Cannot exceed 350 characters.")
         }
 
-        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
             .then((realm) => {
                 if (realm.objects("Day").filtered(`id = "${dayID}"`).length > 15) {
                     return reject(null);
@@ -54,7 +54,7 @@ export const updateTask = (text, taskID, reminder = false, reminderTime = "12:00
         } else if (trimmedText.length > 350) {
             return reject("Cannot exceed 350 characters.")
         }
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
             .then((realm) => {
                 realm.write(() => {
                     realm.create("Task", {
@@ -77,7 +77,7 @@ export const updateTask = (text, taskID, reminder = false, reminderTime = "12:00
 
 export const checkTask = (taskID, isChecked) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Task", {id: taskID, isChecked: !isChecked}, true);
@@ -95,7 +95,7 @@ export const checkTask = (taskID, isChecked) => {
 
 export const deleteTask = (taskID) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
         .then((realm) => {
             realm.write(() => {
                 let taskToDelete = realm.create("Task", {id: taskID}, true);
@@ -114,7 +114,7 @@ export const deleteTask = (taskID) => {
 
 export const checkAllTasks = (day) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3 })
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4 })
         .then((realm) => {
             realm.write(() => {
                 let tasksToCheck = realm.objects("Task").filtered(`day == "${day}" AND isChecked == ${false}`);
@@ -143,7 +143,7 @@ export const checkAllTasks = (day) => {
 
 export const deleteAllTasks = (day) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
         .then((realm) => {
             realm.write(() => {
                 realm.delete(realm.objects("Task").filtered(`day == "${day}"`));
@@ -161,7 +161,7 @@ export const deleteAllTasks = (day) => {
 
 export const unCheckEveryTaskInTheDatabase = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
         .then((realm) => {
             realm.write(() => {
                 let amountOfTasks = realm.objects("Task");
@@ -183,7 +183,7 @@ export const unCheckEveryTaskInTheDatabase = () => {
 
 export const getAmountOfTasksForTheDay = (day = "Monday") => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
             .then((realm) => {
                 let taskObjects = realm.objects("Task").filtered(`day == "${day}" AND isChecked == ${false}`)
                 resolve({

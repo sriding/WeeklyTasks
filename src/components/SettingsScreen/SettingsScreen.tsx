@@ -9,6 +9,8 @@ import {
 
 import moment from "moment";
 
+import { getDailyUpdate, getDailyUpdatePersistance, getDailyUpdateTime, getSortTasksBy, getTaskReminders, getTheme, 
+changeDailyUpdate, changeDailyUpdatePersistance, changeDailyUpdateTime, changeSortTasksBy, changeTaskReminders, changeTheme } from "./../../functionsInteractingWithRealm/settings";
 import Header from "./../Header/Header";
 import SetReminder from "./../SetReminder/SetReminder";
 
@@ -20,11 +22,10 @@ interface AppState {
     date: string
     dailyUpdateSwitch: boolean,
     tasksRemindersSwitch: boolean,
-    dailyUpdateReminder: boolean,
     dailyUpdatePersistenceSwitch: boolean,
     sortTasksMenu: boolean,
     sortTasksOption: string,
-    darkThemeSwitch: boolean,
+    darkThemeSwitch: string,
     dailyUpdateReminderTime: string
 }
 
@@ -34,19 +35,43 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
         this.state = {
             date: moment().format('YYYY-MM-DD'),
             dailyUpdateSwitch: true,
-            tasksRemindersSwitch: true,
-            dailyUpdateReminder: true,
             dailyUpdatePersistenceSwitch: false,
+            dailyUpdateReminderTime: "10:00AM",
+            tasksRemindersSwitch: true,
             sortTasksMenu: false,
             sortTasksOption: "Reminder Time",
-            darkThemeSwitch: false,
-            dailyUpdateReminderTime: "10:00AM"
+            darkThemeSwitch: "light",
         }
     }
 
+    componentDidMount = () => {
+        getDailyUpdate().then((dailyUpdateSwitch: boolean) => {
+            getDailyUpdatePersistance().then((dailyUpdatePersistenceSwitch: boolean) => {
+                getDailyUpdateTime().then((dailyUpdateReminderTime: string) => {
+                    getTaskReminders().then((tasksRemindersSwitch: boolean) => {
+                        getSortTasksBy().then((sortTasksOption: string) => {
+                            getTheme().then((darkThemeSwitch: string) => {
+                                this.setState({
+                                    dailyUpdateSwitch,
+                                    dailyUpdatePersistenceSwitch,
+                                    dailyUpdateReminderTime,
+                                    tasksRemindersSwitch,
+                                    sortTasksOption,
+                                    darkThemeSwitch
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    }
+
     changeReminderTime = (time: string) => {
-        this.setState({
-            dailyUpdateReminderTime: time
+        changeDailyUpdateTime(time).then(() => {
+            this.setState({
+                dailyUpdateReminderTime: time
+            })
         })
     }
 
@@ -62,9 +87,11 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                         <View style={styles.switchContainer}>
                             <Switch style={styles.switchButton}
                                 value={this.state.dailyUpdateSwitch}
-                                onValueChange={() => { 
-                                    this.setState({ 
-                                        dailyUpdateSwitch: !this.state.dailyUpdateSwitch
+                                onValueChange={() => {
+                                    changeDailyUpdate(!this.state.dailyUpdateSwitch).then(() => {
+                                        this.setState({ 
+                                            dailyUpdateSwitch: !this.state.dailyUpdateSwitch
+                                        }) 
                                     }) 
                                 }
                             }/><Subheading style={{fontSize: 17}}>Daily Update</Subheading>
@@ -73,13 +100,15 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                             <Switch style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
                             value={this.state.dailyUpdatePersistenceSwitch}
                             onValueChange={() => {
-                                this.setState({
-                                    dailyUpdatePersistenceSwitch: !this.state.dailyUpdatePersistenceSwitch
+                                changeDailyUpdatePersistance(!this.state.dailyUpdatePersistenceSwitch).then(() => {
+                                    this.setState({
+                                        dailyUpdatePersistenceSwitch: !this.state.dailyUpdatePersistenceSwitch
+                                    })
                                 })
                             }}></Switch>
                             <Paragraph>Persistent Notification (Android Only)</Paragraph>
                         </View>
-                        <SetReminder reminder={this.state.dailyUpdateReminder}
+                        <SetReminder reminder={this.state.dailyUpdateSwitch}
                         reminderTime={this.state.dailyUpdateReminderTime}
                         changeReminderTime={this.changeReminderTime}
                         text="Daily update reminder at: " />
@@ -87,9 +116,11 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                             <Switch style={styles.switchButton}
                                 value={this.state.tasksRemindersSwitch}
                                 onValueChange={() => { 
-                                    this.setState({ 
-                                        tasksRemindersSwitch: !this.state.tasksRemindersSwitch
-                                    }) 
+                                    changeTaskReminders(!this.state.tasksRemindersSwitch).then(() => {
+                                        this.setState({ 
+                                            tasksRemindersSwitch: !this.state.tasksRemindersSwitch
+                                        }) 
+                                    })
                                 }
                             }/>
                             <Subheading style={{fontSize: 17}}>Task Reminders</Subheading>
@@ -115,15 +146,19 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                     }}>{this.state.sortTasksOption}</Paragraph>
                             }>
                                 <Menu.Item onPress={() => {
-                                    this.setState({
-                                        sortTasksMenu: false,
-                                        sortTasksOption: "Reminder Time"
+                                    changeSortTasksBy("Reminder Time").then(() => {
+                                        this.setState({
+                                            sortTasksMenu: false,
+                                            sortTasksOption: "Reminder Time"
+                                        })
                                     })
                                 }} title="Reminder Time" />
                                 <Menu.Item onPress={() => {
-                                    this.setState({
-                                        sortTasksMenu: false,
-                                        sortTasksOption: "Recently Added"
+                                    changeSortTasksBy("Recently Added").then(() => {
+                                        this.setState({
+                                            sortTasksMenu: false,
+                                            sortTasksOption: "Recently Added"
+                                        })
                                     })
                                 }} title="Recently Added" />
                             </Menu>
@@ -132,11 +167,13 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                         <Headline>Theme</Headline>
                         <View style={styles.switchContainer}>
                             <Switch style={styles.switchButton}
-                                    value={this.state.darkThemeSwitch}
+                                    value={this.state.darkThemeSwitch === "light" ? false : true}
                                     onValueChange={() => { 
-                                        this.setState({ 
-                                            darkThemeSwitch: !this.state.darkThemeSwitch
-                                        }) 
+                                        changeTheme(this.state.darkThemeSwitch === "light" ? "dark" : "light").then(() => {
+                                            this.setState({ 
+                                                darkThemeSwitch: this.state.darkThemeSwitch === "light" ? "dark" : "light"
+                                            }) 
+                                        })
                                     }
                                     }/>
                             <Subheading style={{fontSize: 17}}>Dark Theme</Subheading>
