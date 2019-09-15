@@ -30,7 +30,8 @@ interface AppProps {
     newNoteTextRef: React.RefObject<TextInput>,
     firstScrollView: React.RefObject<ScrollView>,
     keyboardHeight: number,
-    keyboardOpen: boolean
+    keyboardOpen: boolean,
+    theme: string
 
 }
 
@@ -248,8 +249,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         {this.state.newTaskTextErrorText}
                     </Paragraph> : null}
                     <View style={styles.addTaskEntry}>
-                        <Text style={styles.plusSign}>{"\u002B"}</Text>
-                        <TextInput style={styles.newTaskInput}
+                        {this.props.theme === "light" ?
+                        <Text style={styles.plusSign}>{"\u002B"}</Text> : 
+                        <Text style={styles.plusSign}></Text>
+                        }
+                        <TextInput style={{...styles.newTaskInput, backgroundColor: this.props.theme === "light" ? "white" : "#171617"}}
                             ref={this.props.newTaskTextRef}
                             label="New Task"
                             mode="flat"
@@ -257,6 +261,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             multiline={true}
                             value={this.state.newTaskText}
                             returnKeyType="done"
+                            selectionColor={this.props.theme === "light" ? "black" : "white"}
+                            placeholderTextColor={this.props.theme === "light" ? "gray" : "white"}
                             onChangeText={text => {
                                 this.setState({
                                     newTaskText: text
@@ -274,7 +280,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         { return (task.isChecked ? 
                         <View key={task.id}>
                             <Paragraph
-                                style={styles.paragraphTextStrikethrough}
+                                style={{...styles.paragraphTextStrikethrough, backgroundColor: this.props.theme === "light" ? "white" : "#121212"}}
                                 onPress={(target) => {
                                     this.setState({
                                         updateTaskTextState: {
@@ -326,7 +332,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                     </TouchableHighlight>  
                                 </View>
                                 <Paragraph
-                                    style={styles.paragraphText}
+                                    style={{...styles.paragraphText, backgroundColor: this.props.theme === "light" ? "white" : "#121212"}}
                                     onPress={(target) => {
                                         this.setState({
                                             updateTaskTextState: {
@@ -340,10 +346,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                     }}>{task.text}
                                 </Paragraph>
                                 <View style={styles.buttonCombiner}>
-                                    <Button mode="outlined" style={styles.buttonStyle} icon="check-circle" onPress={() => {
+                                    <Button mode="outlined" style={styles.buttonStyle} 
+                                        icon="check-circle" color={this.props.theme === "light" ? "#6200ee" : "#c2c2f0"} onPress={() => {
                                         this.props.checkTask(task.id, task.isChecked)
                                     }}>Check</Button>
-                                    <Button mode="outlined" style={styles.buttonStyle} color="#C00000" icon="highlight-off" onPress={() => {
+                                    <Button mode="outlined" style={styles.buttonStyle} color={this.props.theme === "light" ? "#C00000" : "#ff8080" } icon="highlight-off" onPress={() => {
                                         this.props.deleteTask(task.id)
                                     }}>Delete</Button>
                                 </View>
@@ -355,14 +362,15 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     <Button mode="contained" style={styles.subHeadingText}>Note</Button>
                     {this.props.Day && this.props.Day.note.text !== "" ? 
                     <Fragment>
-                        <Paragraph style={styles.paragraphText}
+                        <Paragraph style={{...styles.paragraphText, backgroundColor: this.props.theme === "light" ? "white" : "#121212"}}
                         onPress={() => {
                             this.updatingUpdateNoteTextState(this.props.Day.note.text, this.props.Day.note.id);
                             this.setState({
                                 updateNoteDialogVisible: true
                             })
                         }}>{this.props.Day && this.props.Day.note.text}</Paragraph>
-                        <Button mode="outlined" color="#C00000" style={styles.buttonStyleNote} icon="highlight-off" onPress={() => {
+                        <Button mode="outlined" color={this.props.theme === "light" ? "#C00000" : "#ff8080" } 
+                            style={styles.buttonStyleNote} icon="highlight-off" onPress={() => {
                             this.props.deleteNote(this.props.Day.note.id);
                             this.setState({
                                 newNoteText: ""
@@ -374,7 +382,10 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         {this.state.newNoteTextErrorText}
                     </Paragraph> : null}
                     <View style={styles.addTaskEntry}>
-                        <Text style={styles.plusSign}>{"\u002B"}</Text>
+                        {this.props.theme === "light" ? 
+                        <Text style={styles.plusSign}>{"\u002B"}</Text> : 
+                        <Text style={styles.plusSign}></Text>
+                        }
                         <TextInput style={styles.newTaskInput}
                             ref={this.props.newNoteTextRef}
                             label="New Note"
@@ -382,6 +393,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             multiline={true}
                             error={this.state.newNoteTextError}
                             value={this.state.newNoteText}
+                            selectionColor={this.props.theme === "light" ? "black" : "white"}
+                            placeholderTextColor={this.props.theme === "light" ? "gray" : "white"}
                             returnKeyType="done"
                             onChangeText={text => {
                                 this.setState({
@@ -432,7 +445,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 updateTaskTextRef={this.updateTaskTextRef}
                 reminder={this.state.reminder} 
                 reminderTime={this.state.reminderTime}
-                changeReminderTime={this.changeReminderTime}/>
+                changeReminderTime={this.changeReminderTime}
+                theme={this.props.theme}/>
             <UpdateNoteDialog 
                 updateNoteDialogVisible={this.state.updateNoteDialogVisible}
                 dismissNoteDialog={this.dismissNoteDialog}
@@ -443,7 +457,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 updateNoteTextErrorText={this.state.updateNoteTextErrorText}
                 keyboardHeight={this.props.keyboardHeight}
                 keyboardOpen={this.props.keyboardOpen}
-                updateNoteTextRef={this.updateNoteTextRef}/>
+                updateNoteTextRef={this.updateNoteTextRef}
+                theme={this.props.theme}/>
             </Fragment>
         )
     }
@@ -473,7 +488,6 @@ const styles = StyleSheet.create({
         width: "3%",
     },
     newTaskInput: {
-        backgroundColor: "white",
         width: "90%",
         maxHeight: 125
     },
@@ -501,13 +515,11 @@ const styles = StyleSheet.create({
     },
     paragraphText: {
         marginBottom: 15,
-        backgroundColor: "white",
         fontSize: 19,
         paddingTop: 10
     },
     paragraphTextStrikethrough: {
         marginBottom: 15,
-        backgroundColor: "white",
         fontSize: 19,
         textDecorationLine: "line-through",
         textDecorationStyle: "solid"

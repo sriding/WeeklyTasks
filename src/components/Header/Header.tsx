@@ -26,11 +26,17 @@ export default function Header(props: AppProps) {
                 size={27}
                 onPress={(() => props.sideBarIconClicked ? props.sideBarIconClicked() : null)}
             /> }
+            {props.date ? 
             <Appbar.Content
                 title={props.title}
                 titleStyle={{fontSize: 19}}
                 subtitle={props.date}
+            /> : 
+            <Appbar.Content
+                title={props.title}
+                titleStyle={{fontSize: 19}}
             />
+            } 
         </Appbar.Header>
         );
 }

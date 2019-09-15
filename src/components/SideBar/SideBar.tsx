@@ -13,11 +13,12 @@ import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
 
   interface AppProps {
     navigation: NavigationScreenProp<NavigationState, NavigationParams>,
-    date: string
+    date: string,
+    theme: string
   }
 export default function SideBar(props: AppProps) {
     return (
-        <ScrollView>
+        <ScrollView style={{backgroundColor: props.theme === "light" ? "white" : "#171617"}}>
         <List.Section>
             <List.Subheader>Days</List.Subheader>
             {theWeek.map((day, index) => {

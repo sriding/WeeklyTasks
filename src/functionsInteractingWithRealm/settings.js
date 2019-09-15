@@ -5,7 +5,7 @@ import { pushNotifications } from "./../services/Index";
 
 export const getDailyUpdate = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             resolve(realm.objects("Settings")[0].dailyUpdate);
         })
@@ -17,7 +17,7 @@ export const getDailyUpdate = () => {
 
 export const getDailyUpdatePersistance = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             resolve(realm.objects("Settings")[0].dailyUpdatePersistance);
         })
@@ -29,7 +29,7 @@ export const getDailyUpdatePersistance = () => {
 
 export const getDailyUpdateTime = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             resolve(realm.objects("Settings")[0].dailyUpdateTime);
         })
@@ -41,7 +41,7 @@ export const getDailyUpdateTime = () => {
 
 export const getTaskReminders = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             resolve(realm.objects("Settings")[0].taskReminders);
         })
@@ -53,7 +53,7 @@ export const getTaskReminders = () => {
 
 export const getSortTasksBy = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             resolve(realm.objects("Settings")[0].sortTasksBy);
         })
@@ -65,7 +65,7 @@ export const getSortTasksBy = () => {
 
 export const getTheme = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             resolve(realm.objects("Settings")[0].theme);
         })
@@ -77,7 +77,7 @@ export const getTheme = () => {
 
 export const changeDailyUpdate = (bool = true) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Settings", {
@@ -98,7 +98,7 @@ export const changeDailyUpdate = (bool = true) => {
 
 export const changeDailyUpdatePersistance = (bool = true) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Settings", {
@@ -119,7 +119,7 @@ export const changeDailyUpdatePersistance = (bool = true) => {
 
 export const changeDailyUpdateTime= (string = "9:00 AM") => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Settings", {
@@ -140,7 +140,7 @@ export const changeDailyUpdateTime= (string = "9:00 AM") => {
 
 export const changeTaskReminders = (bool = true) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Settings", {
@@ -161,7 +161,7 @@ export const changeTaskReminders = (bool = true) => {
 
 export const changeSortTasksBy = (string = "Reminder Time") => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Settings", {
@@ -179,7 +179,7 @@ export const changeSortTasksBy = (string = "Reminder Time") => {
 
 export const changeTheme = (string = "light") => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Settings", {

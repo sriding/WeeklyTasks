@@ -61,7 +61,9 @@ const configure = () => {
                   title: "Daily Update",
                   message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
                   date: new Date(moment().startOf('isoweek').add(i, 'days').add(timeValues[dailyUpdateTime] , "hours").format()),
-                  repeatType: "week"
+                  repeatType: "week",
+                  largeIcon: "ic_launcher", 
+                  smallIcon: "ic_notification",
                 });
               } else {
                 //Do Nothing
@@ -80,7 +82,9 @@ const configure = () => {
                     message: task.text, // (required)
                     date: new Date(moment().startOf('isoweek').add(i, 'days')
                     .add(timeValues[task.reminderTime], "hours").format()),
-                    repeatType: "week"
+                    repeatType: "week",
+                    largeIcon: "ic_launcher", 
+                    smallIcon: "ic_notification",
                   })
                 } else {
                   //Do nothing
@@ -99,7 +103,9 @@ const configure = () => {
                 title: "Daily Update",
                 message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
                 date: new Date(moment().startOf('isoweek').add(i, 'days').add(timeValues[dailyUpdateTime] , "hours").format()), // in 60 secs
-                repeatType: "week"
+                repeatType: "week",
+                largeIcon: "ic_launcher", 
+                smallIcon: "ic_notification",
               });
             } else {
               //Do nothing
@@ -116,7 +122,7 @@ const configure = () => {
                     date: new Date(moment().startOf('isoweek').add(i, 'days')
                     .add(timeValues[task.reminderTime], "hours").format()),
                     largeIcon: "ic_launcher", 
-                    smallIcon: "ic_launcher",
+                    smallIcon: "ic_notification",
                     repeatType: "week"
                   })
                 } else {
@@ -140,7 +146,9 @@ const configure = () => {
                   title: "Daily Update",
                   message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
                   date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days').add(timeValues[dailyUpdateTime], "hours").format()),
-                  repeatType: "week"
+                  repeatType: "week",
+                  largeIcon: "ic_launcher", 
+                  smallIcon: "ic_notification",
                 });
               } else {
                 //Do Nothing
@@ -156,7 +164,9 @@ const configure = () => {
                 message: task.text, // (required)
                 date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days')
                 .add(timeValues[task.reminderTime], "hours").format()),
-                repeatType: "week"
+                repeatType: "week",
+                largeIcon: "ic_launcher", 
+                smallIcon: "ic_notification",
               })
             } else {
               //Do nothing

@@ -28,6 +28,7 @@ import { createInitialDays } from "./../../functionsInteractingWithRealm/createI
 import { addTask } from "./../../functionsInteractingWithRealm/tasks";
 import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDaysData";
 import { saveLoginDate } from "./../../functionsInteractingWithRealm/login";
+import { getTheme } from "./../../functionsInteractingWithRealm/settings";
 import theWeek from "./../../utilities/theWeek";
 
 import {
@@ -76,7 +77,8 @@ interface AppState {
   keyboardOpen: boolean,
   date: string,
   reminder: boolean,
-  reminderTime: string
+  reminderTime: string,
+  theme: string
 }
 
 class HomeScreen extends Component<AppProps, AppState> {
@@ -116,7 +118,8 @@ class HomeScreen extends Component<AppProps, AppState> {
       keyboardOpen: false,
       date: moment().format('YYYY-MM-DD'),
       reminder: true,
-      reminderTime: "12:00 PM"
+      reminderTime: "12:00 PM",
+      theme: "light"
     }
 
     //Reference to the text input field in the dialog popup for creating a task
@@ -136,6 +139,11 @@ class HomeScreen extends Component<AppProps, AppState> {
     createInitialDays()
       .then(() => {
         //Nothing
+        getTheme().then((mark) => {
+          this.setState({
+            theme: mark
+          })
+        })
       })
       .catch((error: string) => {
         this.setSnackBarTextAndIfError(error, true);
@@ -334,8 +342,8 @@ class HomeScreen extends Component<AppProps, AppState> {
 
   render() {
     return (
-        <SafeAreaView style={{backgroundColor: "#EDF0FF"}}>
-          <StatusBar />
+        <SafeAreaView style={{backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617"}}>
+          <StatusBar theme={this.state.theme}/>
           <Header title="Weekly Task Planner" 
             date={this.state.date} 
             sideBarIconClicked={this.sideBarIconClicked}/>
@@ -353,13 +361,14 @@ class HomeScreen extends Component<AppProps, AppState> {
                 return (
                   <HomeScreenCard key={index} 
                     dayInformation={this.state.dayInformation && this.state.dayInformation[index]} 
-                    navigation={this.props.navigation}/>
+                    navigation={this.props.navigation}
+                    theme={this.state.theme}/>
                 )
               })}
             </ScrollView>
             <ScrollView style={styles.rightPaneContainer} 
               showsVerticalScrollIndicator={false} />
-            <FAB style={styles.fabButton} icon="add" onPress={() => {
+            <FAB style={{...styles.fabButton, backgroundColor: this.state.theme === "light" ? "#6200ee" : "#171617"}} icon="add" onPress={() => {
               this.toggleDialogToggle();
               //pushNotifications.testLocalNotifications();
             }} />
@@ -380,7 +389,8 @@ class HomeScreen extends Component<AppProps, AppState> {
               keyboardOpen={this.state.keyboardOpen}
               reminder={this.state.reminder}
               reminderTime={this.state.reminderTime}
-              changeReminderTime={this.changeReminderTime}/>
+              changeReminderTime={this.changeReminderTime}
+              theme={this.state.theme}/>
             <SnackBarPopup visibility={this.state.snackBarVisibility}
               toggleSnackBarVisibility={this.toggleSnackBarVisibility}
               snackBarIsError={this.state.snackBarIsError}
@@ -424,7 +434,6 @@ const styles = StyleSheet.create({
     margin: 20,
     right: 0,
     bottom: 140,
-    backgroundColor: "#6200ee",
     color: "white"
   }
 });

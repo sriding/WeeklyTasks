@@ -9,14 +9,15 @@ interface AppProps {
     toggleFabButtonOptions: () => void,
     checkAllTasks: () => void,
     deleteAllTasks: () => void,
-    topOffset: number
+    topOffset: number,
+    theme: string
 }
 
 const DayScreenFabButtonOptions = (props: AppProps) => {
     return (
         <View style={{...styles.chipStyles, top: props.topOffset - 100}}>
             <Chip textStyle={{fontSize: 15}} 
-                style={styles.chipStyleAdd} 
+                style={{...styles.chipStyleAdd, backgroundColor: props.theme === "light" ? "#EDF0FF" : "#121212"}} 
                 icon="create"
                 mode="outlined"
                 onPress={() => {
@@ -27,7 +28,7 @@ const DayScreenFabButtonOptions = (props: AppProps) => {
                 Add Task
             </Chip>
             <Chip textStyle={{fontSize: 15}} 
-                style={styles.chipStyleCheck} 
+                style={{...styles.chipStyleCheck, backgroundColor: props.theme === "light" ? "#EDF0FF" : "#121212"}} 
                 icon="check"
                 mode="outlined"
                 onPress={() => {
@@ -37,7 +38,7 @@ const DayScreenFabButtonOptions = (props: AppProps) => {
                 Check All
             </Chip>
             <Chip textStyle={{fontSize: 15}} 
-                style={styles.chipStyleDelete} 
+                style={{...styles.chipStyleDelete, backgroundColor: props.theme === "light" ? "#EDF0FF" : "#121212"}} 
                 icon="delete"
                 mode="outlined"
                 onPress={() => {
@@ -58,19 +59,16 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         paddingLeft: 7,
         paddingRight: 7,
-        backgroundColor: "#EDF0FF"
     },
     chipStyleCheck: {
         marginBottom: 15,
         paddingLeft: 7,
         paddingRight: 7,
-        backgroundColor: "#EDF0FF"
     },
     chipStyleDelete: {
         marginBottom: 15,
         paddingLeft: 7,
         paddingRight: 7,
-        backgroundColor: "#EDF0FF"
     },
 })
 

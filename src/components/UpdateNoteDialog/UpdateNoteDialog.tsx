@@ -16,7 +16,8 @@ interface AppProps {
     updateNoteTextErrorText: string,
     keyboardHeight: number,
     keyboardOpen: boolean,
-    updateNoteTextRef: React.RefObject<TextInput>
+    updateNoteTextRef: React.RefObject<TextInput>,
+    theme: string
 }
 
 export default function UpdateNoteDialog (props: AppProps) {
@@ -43,6 +44,8 @@ export default function UpdateNoteDialog (props: AppProps) {
                         numberOfLines={3}
                         style={{minHeight: 80, maxHeight: 125}}
                         error={props.updateNoteTextError}
+                        selectionColor={props.theme === "light" ? "black" : "white"}
+                        theme={props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}}}
                         onChangeText={(text) => {
                             props.updatingUpdateNoteTextState(text, props.updateNoteTextState.noteID);
                         }}
@@ -55,10 +58,11 @@ export default function UpdateNoteDialog (props: AppProps) {
                 </Dialog.Content>
                 {Platform.OS === "ios" && Dimensions.get("window").width > Dimensions.get("window").height && props.keyboardHeight > 0 ? null :
                 <Dialog.Actions>
-                    <Button onPress={props.dismissNoteDialog}>Cancel</Button>
+                    <Button onPress={props.dismissNoteDialog}
+                    color={props.theme === "light" ? "#6200ee" : "white"}>Cancel</Button>
                     <Button onPress={() => {
                         props.updateNoteText();
-                    }}>Update</Button>
+                    }} color={props.theme === "light" ? "#6200ee" : "white"}>Update</Button>
                 </Dialog.Actions>
                 }
             </Dialog>

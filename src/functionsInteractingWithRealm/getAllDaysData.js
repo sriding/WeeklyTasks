@@ -4,7 +4,7 @@ import {DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema} from "./
 export const getAllDaysData = () => { 
     console.log(Realm.defaultPath);
     return new Promise((resolve, reject) => {
-        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
             .then((realm) => {
                 let dayObjects = [];
                 let dayObject = realm.objects("Day");

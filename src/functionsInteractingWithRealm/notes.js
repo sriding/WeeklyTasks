@@ -9,7 +9,7 @@ export const addNote = (text, noteID) => {
         } else if (trimmedText.length > 350) {
             return reject("Cannot exceed 350 characters.")
         }
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Note", {
@@ -33,7 +33,7 @@ export const updateNote = (text, noteID) => {
         } else if (trimmedText.length > 350) {
             return reject("Cannot exceed 350 characters.")
         }
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.create("Note", {
@@ -51,7 +51,7 @@ export const updateNote = (text, noteID) => {
 
 export const deleteNote = (noteID) => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 4 })
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5 })
         .then((realm) => {
             realm.write(() => {
                 realm.create("Note", {

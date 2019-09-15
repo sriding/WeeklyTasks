@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
-import { Headline, Switch, Paragraph, Divider, Subheading, Menu, Button } from 'react-native-paper'
+import { Headline, Switch, Paragraph, Divider, Subheading, Menu, Button, Caption } from 'react-native-paper'
 import {
     NavigationParams,
     NavigationScreenProp,
@@ -26,7 +26,9 @@ interface AppState {
     sortTasksMenu: boolean,
     sortTasksOption: string,
     darkThemeSwitch: string,
-    dailyUpdateReminderTime: string
+    dailyUpdateReminderTime: string,
+    theme: string,
+    themeText: string
 }
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
@@ -41,6 +43,8 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             sortTasksMenu: false,
             sortTasksOption: "Reminder Time",
             darkThemeSwitch: "light",
+            theme: "light",
+            themeText: ""
         }
     }
 
@@ -57,7 +61,8 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                     dailyUpdateReminderTime,
                                     tasksRemindersSwitch,
                                     sortTasksOption,
-                                    darkThemeSwitch
+                                    darkThemeSwitch,
+                                    theme: darkThemeSwitch
                                 })
                             })
                         })
@@ -77,12 +82,12 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
 
     render() {
         return (
-            <SafeAreaView style={{backgroundColor: "#EDF0FF", minHeight: "100%"}}>
+            <SafeAreaView style={{backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617", minHeight: "100%"}}>
                     <Header 
                         title="Settings" 
                         date={this.state.date} 
                         navigation={this.props.navigation}/>
-                    <ScrollView style={styles.mainContainer}>
+                    <ScrollView style={{...styles.mainContainer, backgroundColor: this.state.theme === "light" ? "white" : "#121212"}}>
                         <Headline>Notifications</Headline>
                         <View style={styles.switchContainer}>
                             <Switch style={styles.switchButton}
@@ -171,13 +176,15 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                     onValueChange={() => { 
                                         changeTheme(this.state.darkThemeSwitch === "light" ? "dark" : "light").then(() => {
                                             this.setState({ 
-                                                darkThemeSwitch: this.state.darkThemeSwitch === "light" ? "dark" : "light"
+                                                darkThemeSwitch: this.state.darkThemeSwitch === "light" ? "dark" : "light",
+                                                themeText: "Restart the app to see changes."
                                             }) 
                                         })
                                     }
                                     }/>
                             <Subheading style={{fontSize: 17}}>Dark Theme</Subheading>
                         </View>
+                        <Caption>{this.state.themeText}</Caption>
                     </ScrollView>
             </SafeAreaView>
         )
@@ -186,7 +193,6 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
 
 const styles = StyleSheet.create({
     mainContainer: {
-        backgroundColor: "white", 
         width: "86%", 
         margin: "7%",
         padding: "4%",
