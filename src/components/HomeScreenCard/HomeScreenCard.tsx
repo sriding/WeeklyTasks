@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         maxHeight: 450,
         shadowRadius: 4,
-        elevation: 3
+        elevation: 4
     },
     tasksContainer: {
       maxHeight: 330,

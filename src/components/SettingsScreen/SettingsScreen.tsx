@@ -82,13 +82,15 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
 
     render() {
         return (
-            <SafeAreaView style={{backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617", minHeight: "100%"}}>
+            <SafeAreaView style={{backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617", minHeight: "100%", flex: 1}}>
                     <Header 
                         title="Settings" 
                         date={this.state.date} 
-                        navigation={this.props.navigation}/>
-                    <ScrollView style={{...styles.mainContainer, backgroundColor: this.state.theme === "light" ? "white" : "#121212"}}>
-                        <Headline>Notifications</Headline>
+                        navigation={this.props.navigation}
+                        back={true}/>
+                    <ScrollView contentContainerStyle={{...styles.mainContainer, backgroundColor: this.state.theme === "light" ? "white" : "#121212"}}>
+                        <View style={{}}>
+                        <Headline style={{marginBottom: 12}}>Notifications</Headline>
                         <View style={styles.switchContainer}>
                             <Switch style={styles.switchButton}
                                 value={this.state.dailyUpdateSwitch}
@@ -99,19 +101,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                         }) 
                                     }) 
                                 }
-                            }/><Subheading style={{fontSize: 17}}>Daily Update</Subheading>
-                        </View>
-                        <View style={{...styles.switchContainer, justifyContent: "center", alignItems: "center"}}>
-                            <Switch style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
-                            value={this.state.dailyUpdatePersistenceSwitch}
-                            onValueChange={() => {
-                                changeDailyUpdatePersistance(!this.state.dailyUpdatePersistenceSwitch).then(() => {
-                                    this.setState({
-                                        dailyUpdatePersistenceSwitch: !this.state.dailyUpdatePersistenceSwitch
-                                    })
-                                })
-                            }}></Switch>
-                            <Paragraph>Persistent Notification (Android Only)</Paragraph>
+                            }/><Subheading style={{fontSize: 19}}>Daily Update</Subheading>
                         </View>
                         <SetReminder reminder={this.state.dailyUpdateSwitch}
                         reminderTime={this.state.dailyUpdateReminderTime}
@@ -128,10 +118,10 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                     })
                                 }
                             }/>
-                            <Subheading style={{fontSize: 17}}>Task Reminders</Subheading>
+                            <Subheading style={{fontSize: 19}}>Task Reminders</Subheading>
                         </View>
                         <Divider style={{marginTop: 20, marginBottom: 20}} />
-                        <Headline>Tasks</Headline>
+                        <Headline style={{marginBottom: 12}}>Tasks</Headline>
                         <View style={{...styles.switchContainer, justifyContent: "center", alignItems: "center"}}>
                             <Subheading>Sort tasks by: </Subheading>
                             <Menu
@@ -142,7 +132,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                 })
                             }}
                             anchor={
-                                <Paragraph style={{fontSize: 15, padding: 4, margin: 4, 
+                                <Paragraph style={{fontSize: 16, padding: 4, margin: 4, 
                                     borderWidth: 1}}
                                     onPress={() => {
                                         this.setState({
@@ -169,7 +159,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                             </Menu>
                         </View>
                         <Divider style={{marginTop: 20, marginBottom: 20}} />
-                        <Headline>Theme</Headline>
+                        <Headline style={{marginBottom: 12}}>Theme</Headline>
                         <View style={styles.switchContainer}>
                             <Switch style={styles.switchButton}
                                     value={this.state.darkThemeSwitch === "light" ? false : true}
@@ -182,9 +172,10 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                                         })
                                     }
                                     }/>
-                            <Subheading style={{fontSize: 17}}>Dark Theme</Subheading>
+                            <Subheading style={{fontSize: 19}}>Dark Theme</Subheading>
                         </View>
                         <Caption>{this.state.themeText}</Caption>
+                        </View>
                     </ScrollView>
             </SafeAreaView>
         )
@@ -193,6 +184,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
 
 const styles = StyleSheet.create({
     mainContainer: {
+        flexGrow: 1,
         width: "86%", 
         margin: "7%",
         padding: "4%",
@@ -203,16 +195,34 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.7,
         shadowRadius: 1,
-        shadowColor: "black"
+        shadowColor: "black",
+        elevation: 3,
+        paddingBottom: 100
     },
     switchContainer: {
         display: "flex",
         flexDirection: "row",
     },
     switchButton: {
-        transform: [{ scaleX: .75 }, { scaleY: .75 }]
+        transform: [{ scaleX: .8 }, { scaleY: .8 }]
     },
     tasksContainer: {
         marginLeft: 8
     }
 })
+
+//Persistence Notifications
+    /*
+    <View style={{...styles.switchContainer, justifyContent: "center", alignItems: "center"}}>
+        <Switch style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
+        value={this.state.dailyUpdatePersistenceSwitch}
+        onValueChange={() => {
+            changeDailyUpdatePersistance(!this.state.dailyUpdatePersistenceSwitch).then(() => {
+                this.setState({
+                    dailyUpdatePersistenceSwitch: !this.state.dailyUpdatePersistenceSwitch
+                })
+            })
+        }}></Switch>
+        <Paragraph>Persistent Notification (Android Only)</Paragraph>
+    </View>
+    */

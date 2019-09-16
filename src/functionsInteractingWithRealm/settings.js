@@ -7,7 +7,11 @@ export const getDailyUpdate = () => {
     return new Promise((resolve, reject) => {
         Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
-            resolve(realm.objects("Settings")[0].dailyUpdate);
+            if (realm.objects("Settings")[0] == undefined) {
+                resolve(true);
+            } else {
+                resolve(realm.objects("Settings")[0].dailyUpdate);
+            }
         })
         .catch((error) => {
             reject(error);
@@ -31,7 +35,11 @@ export const getDailyUpdateTime = () => {
     return new Promise((resolve, reject) => {
         Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
-            resolve(realm.objects("Settings")[0].dailyUpdateTime);
+            if (realm.objects("Settings")[0] == undefined) {
+                resolve("9:00 AM");
+            } else {
+                resolve(realm.objects("Settings")[0].dailyUpdateTime);
+            }
         })
         .catch((error) => {
             reject(error);
@@ -67,7 +75,11 @@ export const getTheme = () => {
     return new Promise((resolve, reject) => {
         Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
-            resolve(realm.objects("Settings")[0].theme);
+            if (realm.objects("Settings")[0] == undefined) {
+                resolve("light");
+            } else {
+                resolve(realm.objects("Settings")[0].theme);
+            }
         })
         .catch((error) => {
             reject(error);

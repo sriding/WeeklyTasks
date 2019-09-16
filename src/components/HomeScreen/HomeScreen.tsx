@@ -346,7 +346,9 @@ class HomeScreen extends Component<AppProps, AppState> {
           <StatusBar theme={this.state.theme}/>
           <Header title="Weekly Task Planner" 
             date={this.state.date} 
-            sideBarIconClicked={this.sideBarIconClicked}/>
+            sideBarIconClicked={this.sideBarIconClicked}
+            navigation={this.props.navigation}
+            back={false}/>
           <View style={styles.mainContainer}>
               {this.state.sideBarToggle !== false ?
                 <ScrollView style={styles.leftPaneContainer} 

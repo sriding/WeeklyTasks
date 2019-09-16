@@ -386,7 +386,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         <Text style={styles.plusSign}>{"\u002B"}</Text> : 
                         <Text style={styles.plusSign}></Text>
                         }
-                        <TextInput style={styles.newTaskInput}
+                        <TextInput style={{...styles.newTaskInput, backgroundColor: this.props.theme === "light" ? "white" : "#171617"}}
                             ref={this.props.newNoteTextRef}
                             label="New Note"
                             mode="flat"
@@ -412,7 +412,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                     paddingBottom: 250
                                 })
                                 setTimeout(() => {
-                                    this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height - 50})
+                                    this.props.firstScrollView.current!.scrollTo({x: 0, y: Dimensions.get("window").height - 20})
                                 }, 300)
                             }}
                             onKeyPress={(e) => {

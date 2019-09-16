@@ -57,20 +57,57 @@ const configure = () => {
           if (moment(currentTime, "h:mm A").isBefore(moment(dailyUpdateTime, "h:mm A"))) {
             getDailyUpdate().then((mark) => {
               if (mark === true) {
-                PushNotification.localNotificationSchedule({
-                  title: "Daily Update",
-                  message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
-                  date: new Date(moment().startOf('isoweek').add(i, 'days').add(timeValues[dailyUpdateTime] , "hours").format()),
-                  repeatType: "week",
-                  largeIcon: "ic_launcher", 
-                  smallIcon: "ic_notification",
-                });
+                getDailyUpdatePersistance().then((persist) => {
+                  //if (persist === false) {
+                  PushNotification.localNotificationSchedule({
+                    title: "Daily Update",
+                    message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                    date: new Date(moment().startOf('isoweek').add(i, 'days').add(timeValues[dailyUpdateTime] , "hours").format()),
+                    repeatType: "week",
+                    largeIcon: "ic_launcher", 
+                    smallIcon: "ic_notification",
+                  })
+                /*} else {
+                  PushNotification.localNotificationSchedule({
+                    title: "Daily Update",
+                    message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                    date: theWeek[i] === currentDate ? new Date(Date.now() + 2 * 1000) : new Date(moment().startOf('isoweek').add(i, 'days').format()),
+                    largeIcon: "ic_launcher", 
+                    smallIcon: "ic_notification",
+                    ongoing: true,
+                    playSound: false,
+                    autoCancel: false,
+                    visibility: "secret",
+                    importance: "unspecified",
+                    priority: "min"
+                  })
+                }*/
+                })
               } else {
                 //Do Nothing
               }
             })
           } else {
-            //Do Nothing
+            /*getDailyUpdate().then((mark) => {
+              if (mark === true) {
+                getDailyUpdatePersistance().then((persist) => {
+                  if (persist === true) {
+                    PushNotification.localNotificationSchedule({
+                      title: "Daily Update",
+                      message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                      date: new Date(Date.now() + 2 * 1000),
+                      largeIcon: "ic_launcher", 
+                      smallIcon: "ic_notification",
+                      ongoing: true,
+                      playSound: false,
+                      autoCancel: false,
+                      visibility: "secret",
+                      importance: "unspecified",
+                      priority: "min"
+                    })
+                  }
+                })
+              }})*/
           }
 
           getTaskReminders().then((mark) => {
@@ -95,19 +132,36 @@ const configure = () => {
             }
           })
         } 
-        
         else {
           getDailyUpdate().then((mark) => {
             if (mark === true) {
-              PushNotification.localNotificationSchedule({
-                title: "Daily Update",
-                message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
-                date: new Date(moment().startOf('isoweek').add(i, 'days').add(timeValues[dailyUpdateTime] , "hours").format()), // in 60 secs
-                repeatType: "week",
-                largeIcon: "ic_launcher", 
-                smallIcon: "ic_notification",
-              });
-            } else {
+              getDailyUpdatePersistance().then((persist) => {
+                //if (persist === false) {
+                PushNotification.localNotificationSchedule({
+                  title: "Daily Update",
+                  message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                  date: new Date(moment().startOf('isoweek').add(i, 'days').add(timeValues[dailyUpdateTime] , "hours").format()), // in 60 secs
+                  repeatType: "week",
+                  largeIcon: "ic_launcher", 
+                  smallIcon: "ic_notification",
+                })
+              /*} else {
+                PushNotification.localNotificationSchedule({
+                  title: "Daily Update",
+                  message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                  date: theWeek[i] === currentDate ? new Date(Date.now() + 2 * 1000) : new Date(moment().startOf('isoweek').add(i, 'days').format()), // in 60 secs
+                  largeIcon: "ic_launcher", 
+                  smallIcon: "ic_notification",
+                  ongoing: true,
+                  playSound: false,
+                  autoCancel: false,
+                  visibility: "secret",
+                  importance: "unspecified",
+                  priority: "min"
+              })
+            }*/
+            })
+          } else {
               //Do nothing
             }
           })
@@ -142,14 +196,32 @@ const configure = () => {
           getAmountOfTasksForTheDay(theWeek[j]).then((tasks) => {
             getDailyUpdate().then((mark) => {
               if (mark === true) {
-                PushNotification.localNotificationSchedule({
-                  title: "Daily Update",
-                  message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
-                  date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days').add(timeValues[dailyUpdateTime], "hours").format()),
-                  repeatType: "week",
-                  largeIcon: "ic_launcher", 
-                  smallIcon: "ic_notification",
-                });
+                getDailyUpdatePersistance().then((persist) => {
+                  //if (persist === false) {
+                  PushNotification.localNotificationSchedule({
+                    title: "Daily Update",
+                    message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                    date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days').add(timeValues[dailyUpdateTime], "hours").format()),
+                    repeatType: "week",
+                    largeIcon: "ic_launcher", 
+                    smallIcon: "ic_notification",
+                  })
+                /*} else {
+                  PushNotification.localNotificationSchedule({
+                    title: "Daily Update",
+                    message: tasks.amount === 1 ? `You have 1 task remaining for today.` : `You have ${tasks.amount} tasks remaining for today.`, // (required)
+                    date: new Date(moment().startOf('isoweek').add(7, "days").add(j, 'days').format()),
+                    largeIcon: "ic_launcher", 
+                    smallIcon: "ic_notification",
+                    ongoing: true,
+                    playSound: false,
+                    autoCancel: false,
+                    visibility: "secret",
+                    importance: "unspecified",
+                    priority: "min"
+                  })
+                }*/
+                })
               } else {
                 //Do Nothing
               }

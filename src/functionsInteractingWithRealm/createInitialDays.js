@@ -38,7 +38,8 @@ export const createInitialDays = () => {
                                 text: "Create tasks for the day here.", 
                                 isChecked: false,
                                 reminder: false,
-                                reminderTime: "12:00 PM"
+                                reminderTime: "12:00 PM",
+                                reminderTimeValue: 12
                             }],
                             note: {id: i, text: "Create a note for the day here."}
                         });

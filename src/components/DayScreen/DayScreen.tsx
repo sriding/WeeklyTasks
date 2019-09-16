@@ -282,7 +282,8 @@ export default class DayScreen extends Component<AppProps, AppState> {
                 <View onLayout={this.onLayout}>
                 <Header 
                     title={this.state.id} 
-                    navigation={this.props.navigation}/>
+                    navigation={this.props.navigation}
+                    back={true}/>
                 <ScrollView
                     ref={this.firstScrollView} 
                     contentContainerStyle={styles.cardContainerViewContainer} 

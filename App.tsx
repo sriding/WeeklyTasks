@@ -8,6 +8,10 @@ import { getTheme } from "./src/functionsInteractingWithRealm/settings";
 import DrawerNavigator from "./src/navigation/navigator";
 import migration from "./src/schemas/migration";
 
+
+migration();
+pushNotifications.configure();
+
 const DarkTheme = {
   ...DefaultTheme,
   dark: true,
@@ -41,11 +45,8 @@ class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      theme: DefaultTheme
+      theme: null
     }
-
-    migration();
-    pushNotifications.configure();
   }
 
   componentDidMount = () => {
@@ -58,7 +59,7 @@ class App extends React.Component<any, any> {
 
   render() {
     return (
-      <PaperProvider theme={this.state.theme}>
+      <PaperProvider theme={this.state.theme !== null ? this.state.theme : DefaultTheme}>
         <DrawerNavigator />
       </PaperProvider>
     )
