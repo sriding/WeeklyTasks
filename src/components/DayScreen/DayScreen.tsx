@@ -6,6 +6,7 @@ import theWeek from "./../../utilities/theWeek";
 import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
 import { checkTask, deleteTask, checkAllTasks, deleteAllTasks } from "./../../functionsInteractingWithRealm/tasks";
 import { deleteNote } from "./../../functionsInteractingWithRealm/notes";
+import { getTheme } from "./../../functionsInteractingWithRealm/settings";
 
 import {
     NavigationParams,
@@ -43,7 +44,8 @@ interface AppState {
     keyboardHeight: number,
     keyboardOpen: boolean,
     date: string,
-    topOffset: number
+    topOffset: number,
+    theme: string
 }
 
 
@@ -75,7 +77,8 @@ export default class DayScreen extends Component<AppProps, AppState> {
             keyboardHeight: 0,
             keyboardOpen: false,
             date: "",
-            topOffset: Dimensions.get("window").height - 130
+            topOffset: Dimensions.get("window").height - 130,
+            theme: "light"
         }
 
         this.newTaskTextRef = React.createRef();
@@ -84,6 +87,12 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
 
     componentDidMount = () => {
+        getTheme().then((mark) => {
+            this.setState({
+                theme: mark
+            })
+        })
+
         if (Platform.OS === "ios") {
             this.setState({
                 topOffset: Dimensions.get("window").height - 175
@@ -269,12 +278,12 @@ export default class DayScreen extends Component<AppProps, AppState> {
 
     render() {
         return (
-            <SafeAreaView style={styles.mainContainer}>
+            <SafeAreaView style={{...styles.mainContainer, backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617"}}>
                 <View onLayout={this.onLayout}>
                 <Header 
                     title={this.state.id} 
-                    date={this.state.date} 
-                    navigation={this.props.navigation}/>
+                    navigation={this.props.navigation}
+                    back={true}/>
                 <ScrollView
                     ref={this.firstScrollView} 
                     contentContainerStyle={styles.cardContainerViewContainer} 
@@ -297,14 +306,15 @@ export default class DayScreen extends Component<AppProps, AppState> {
                         newNoteTextRef={this.newNoteTextRef}
                         keyboardHeight={this.state.keyboardHeight}
                         keyboardOpen={this.state.keyboardOpen}
-                        firstScrollView={this.firstScrollView}/>
+                        firstScrollView={this.firstScrollView}
+                        theme={this.state.theme}/>
                 </ScrollView>
                 <SnackBarPopup 
                     visibility={this.state.snackBarVisibility}
                     toggleSnackBarVisibility={this.toggleSnackBarVisibility}
                     snackBarIsError={this.state.snackBarIsError}
                     snackBarText={this.state.snackBarText} />
-                <FAB style={{...styles.fabButton, top: this.state.topOffset}} icon="list" onPress={() => {
+                <FAB style={{...styles.fabButton, top: this.state.topOffset, backgroundColor: this.state.theme === "light" ? "#6200ee" : "#171617"}} icon="list" onPress={() => {
                     this.toggleFabButtonOptions();
                 }} />
                 {this.state.fabButtonClicked ? 
@@ -315,6 +325,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
                     firstScrollView={this.firstScrollView}
                     toggleFabButtonOptions={this.toggleFabButtonOptions}
                     topOffset={this.state.topOffset}
+                    theme={this.state.theme}
                  /> : null}
                  </View>
             </SafeAreaView>
@@ -325,7 +336,6 @@ const styles = StyleSheet.create({
     mainContainer: {
         flexGrow: 1,
         flexWrap: "nowrap",
-        backgroundColor: "#EDF0FF",
         minHeight: "100%"
     },
     goBackButtonViewContainer: {
@@ -348,7 +358,6 @@ const styles = StyleSheet.create({
         margin: 20,
         right: 0,
         width: 55,
-        backgroundColor: "#6200ee",
         color: "white"
       },
 });

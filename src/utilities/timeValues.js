@@ -40,7 +40,7 @@ const timeValues = {
     "10:30 PM": 22.5,
     "11:00 PM": 23,
     "11:30 PM": 23.5,
-    "12:00 PM": 24
+    "12:00 AM": 24
 }
 
 export default timeValues;

@@ -20,7 +20,8 @@ interface AppProps {
     updateTaskTextRef: React.RefObject<TextInput>,
     reminder: boolean,
     reminderTime: string,
-    changeReminderTime: (reminderTime: string) => void
+    changeReminderTime: (reminderTime: string) => void,
+    theme: string
 }
 
 export default function UpdateTaskDialog(props: AppProps) {
@@ -51,6 +52,8 @@ export default function UpdateTaskDialog(props: AppProps) {
                         numberOfLines={3}
                         style={{minHeight: 80, maxHeight: 125}}
                         error={props.updateTaskTextError} 
+                        selectionColor={props.theme === "light" ? "black" : "white"}
+                        theme={props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}}}
                         onChangeText={(text) => {
                             props.updatingUpdateTaskTextState(text, props.updateTaskTextState.taskID);
                         }}
@@ -63,10 +66,11 @@ export default function UpdateTaskDialog(props: AppProps) {
                     </Dialog.Content>
                     {Platform.OS === "ios" && Dimensions.get("window").width > Dimensions.get("window").height && props.keyboardHeight > 0 ? null :
                     <Dialog.Actions>
-                        <Button onPress={props.dismissTaskDialog}>Cancel</Button>
+                        <Button onPress={props.dismissTaskDialog}
+                        color={props.theme === "light" ? "#6200ee" : "white"}>Cancel</Button>
                         <Button onPress={() => {
                             props.updateTaskText();
-                        }}>Update</Button>
+                        }} color={props.theme === "light" ? "#6200ee" : "white"}>Update</Button>
                     </Dialog.Actions>
                     }
                 </Dialog>

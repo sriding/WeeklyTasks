@@ -1,11 +1,11 @@
 import Realm from "realm";
-import { DaySchema, TaskSchema, NoteSchema, LoginSchema } from "../schemas/schemas";
+import { DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema } from "../schemas/schemas";
 
 import { pushNotifications } from "./../services/Index";
 
 export const deleteEverything = () => {
     return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema], schemaVersion: 3})
+        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
         .then((realm) => {
             realm.write(() => {
                 realm.deleteAll();

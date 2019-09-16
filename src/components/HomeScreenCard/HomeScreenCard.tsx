@@ -25,8 +25,9 @@ interface DayInformationObject {
   }
 }
 interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>
-  dayInformation: DayInformationObject
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>,
+  dayInformation: DayInformationObject,
+  theme: string
 }
 
 export default function HomeScreenCard(props: AppProps) {
@@ -35,7 +36,7 @@ export default function HomeScreenCard(props: AppProps) {
         props.navigation.navigate("Day", {
           id: props.dayInformation.id
         })
-      }} style={styles.cardContainer}>
+      }} style={{...styles.cardContainer, shadowColor: props.theme === "light" ? "#6200ee" : "#383838"}}>
         <Card.Content style={styles.tasksContainer}>
           <Title>{props.dayInformation && props.dayInformation.id}</Title>
           <Subheading>Tasks</Subheading>
@@ -64,9 +65,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 8,
         maxHeight: 450,
-        shadowColor: "#6200ee",
         shadowRadius: 4,
-        elevation: 3
+        elevation: 4
     },
     tasksContainer: {
       maxHeight: 330,

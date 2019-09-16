@@ -25,7 +25,8 @@ interface AppProps {
     keyboardOpen: boolean,
     reminder: boolean,
     reminderTime: string,
-    changeReminderTime: (reminderTime: string) => void
+    changeReminderTime: (reminderTime: string) => void,
+    theme: string
 }
 
 export default function NewTaskDialog(props: AppProps) {
@@ -51,7 +52,7 @@ export default function NewTaskDialog(props: AppProps) {
                             numberOfLines={3}
                             placeholder="Input"
                             error={props.taskInputError}
-                            style={{minHeight: 80, maxHeight: 125}}
+                            style={{minHeight: 80, maxHeight: 125, borderBottomColor: "white"}}
                             onChangeText={props.taskInputChange}
                             value={props.taskInput}
                             onKeyPress={(e) => {
@@ -59,6 +60,8 @@ export default function NewTaskDialog(props: AppProps) {
                                     props.textInputRef.current!.blur();
                                 }
                             }}
+                            selectionColor={props.theme === "light" ? "black" : "white"}
+                            theme={props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}}}
                             ref={props.textInputRef}
                         />
                         {props.taskInputError ? <Paragraph style={{color: "#C00000"}}>
@@ -74,7 +77,8 @@ export default function NewTaskDialog(props: AppProps) {
                                 props.toggleDialogList();
                                 props.textInputRef.current!.blur();
                             }}
-                            style={{marginBottom: 0}}>
+                            style={{marginBottom: 0}}
+                            theme={props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}}}>
                             <Dialog.ScrollArea style={{marginBottom: 0}}>
                             <ScrollView style={{maxHeight: Dimensions.get("window").height / 5, marginBottom: 0}}>
                                 {theWeek.map((day, index) => {
@@ -97,10 +101,12 @@ export default function NewTaskDialog(props: AppProps) {
                     {Platform.OS === "ios" && Dimensions.get("window").width > Dimensions.get("window").height && props.keyboardHeight > 0 ? null : 
                     <Dialog.Actions style={{marginTop: 0,}}>
                         <Button
-                            onPress={props.dismissDialogToggle}>Cancel
+                            onPress={props.dismissDialogToggle}
+                            color={props.theme === "light" ? "#6200ee" : "white"}>Cancel
                         </Button>
                         <Button
-                            onPress={props.creatingTask}>Create
+                            onPress={props.creatingTask}
+                            color={props.theme === "light" ? "#6200ee" : "white"}>Create
                         </Button>
                     </Dialog.Actions>
                     }

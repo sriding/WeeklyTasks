@@ -1,3 +1,6 @@
+import { booleanLiteral } from "@babel/types";
+import { bool } from "prop-types";
+
 export const DaySchema = {
     name: "Day",
     primaryKey: 'id',
@@ -17,7 +20,8 @@ export const TaskSchema = {
       text:  'string',
       isChecked: "bool",
       reminder: 'bool',
-      reminderTime: 'string'
+      reminderTime: 'string',
+      reminderTimeValue: 'double'
     }
 };
   
@@ -37,5 +41,19 @@ export const LoginSchema = {
     id: 'int',
     date: 'string',
     alreadyLoggedInToday: 'bool'
+  }
+}
+
+export const SettingsSchema = {
+  name: "Settings",
+  primaryKey: 'id',
+  properties: {
+    id: 'int',
+    dailyUpdate: 'bool',
+    dailyUpdatePersistance: 'bool',
+    dailyUpdateTime: 'string',
+    taskReminders: 'bool',
+    sortTasksBy: 'string',
+    theme: 'string'
   }
 }
