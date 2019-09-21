@@ -271,9 +271,13 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             onKeyPress={(e) => {
                                 if(e.nativeEvent.key == "Enter" && Platform.OS != "ios"){
                                     this.clearTaskText();
+                                } else if (e.nativeEvent.key == "Enter") {
+                                    this.props.newTaskTextRef.current!.blur();
                                 }
                             }}
                             onSubmitEditing={this.clearTaskText}
+                            theme={Platform.OS !== "ios" && Dimensions.get("window").width > Dimensions.get("window").height ? 
+                            this.props.theme === "light" ? {} : { colors: { text: 'gray', primary: 'white'}} : {}}
                         ></TextInput>
                     </View>
                     {this.props.Day && this.props.Day.tasks.map((task) => {
@@ -294,10 +298,12 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                 }}>{task.text}
                             </Paragraph>
                             <View style={styles.buttonCombiner}>
-                                <Button mode="outlined" style={styles.buttonStyle} icon="check-circle" onPress={() => {
+                                <Button mode="outlined" style={styles.buttonStyle} icon="check-circle" 
+                                color={this.props.theme === "light" ? "#6200ee" : "#c2c2f0"} onPress={() => {
                                     this.props.checkTask(task.id, task.isChecked)
                                 }}>Check</Button>
-                                <Button mode="outlined" style={styles.buttonStyle} color="#C00000" icon="highlight-off" onPress={() => {
+                                <Button mode="outlined" style={styles.buttonStyle} color={this.props.theme === "light" ? "#C00000" : "#ff8080" } 
+                                icon="highlight-off" onPress={() => {
                                     this.props.deleteTask(task.id)
                                 }}>Delete</Button>
                             </View>
@@ -393,7 +399,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             multiline={true}
                             error={this.state.newNoteTextError}
                             value={this.state.newNoteText}
-                            selectionColor={this.props.theme === "light" ? "black" : "white"}
+                            selectionColor={ this.props.theme === "light" ? "black" : "white"}
                             placeholderTextColor={this.props.theme === "light" ? "gray" : "white"}
                             returnKeyType="done"
                             onChangeText={text => {
@@ -418,6 +424,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             onKeyPress={(e) => {
                                 if(e.nativeEvent.key == "Enter" && Platform.OS != "ios"){
                                     this.clearNoteText();
+                                } else if (e.nativeEvent.key == "Enter") {
+                                    this.props.newNoteTextRef.current!.blur();
                                 }
                             }}
                             onBlur={() => {
@@ -425,6 +433,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                     paddingBottom: 175
                                 })
                             }}
+                            theme={Platform.OS !== "ios" && Dimensions.get("window").width > Dimensions.get("window").height ? 
+                            this.props.theme === "light" ? {} : { colors: { text: 'gray', primary: 'white'}} : {}}
                             onSubmitEditing={this.clearNoteText}
                         ></TextInput>                   
                     </View>

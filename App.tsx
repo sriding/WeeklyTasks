@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import color from "color";
 
@@ -46,7 +45,7 @@ class App extends React.Component<any, any> {
     super(props);
     this.state = {
       theme: null
-    }
+    };
   }
 
   componentDidMount = () => {

@@ -39,29 +39,29 @@ export default class SideBar extends Component<AppProps, AppState> {
     render() {
         return (
             <SafeAreaView style={{backgroundColor: this.state.theme === "light" ? "#fff" : "#171617", minHeight: "100%"}}>
-                <List.Section>
+                <List.Section style={{flex: 0.75}}>
                     <View style={{marginBottom: 0}}>
-                    <List.Subheader style={{fontSize: 22}}>Days</List.Subheader>
-                    <Divider />
+                        <List.Subheader style={{fontSize: 22}}>Days</List.Subheader>
+                        <Divider />
                     </View>
-                    <ScrollView style={{height: "70%", marginTop: 0}}>
-                    {theWeek.map((day, index) => {
-                    return (
-                        <List.Item 
-                            key={index}
-                            title={day}
-                            titleStyle={{fontSize: 20}}
-                            onPress={() => {
-                                this.props.navigation.navigate("Day", {
-                                    id: day
-                                })
-                            }}
-                        />
-                    )
-                    })}
-                </ScrollView>
+                    <ScrollView style={{marginTop: 0}}>
+                        {theWeek.map((day, index) => {
+                        return (
+                            <List.Item 
+                                key={index}
+                                title={day}
+                                titleStyle={{fontSize: 20}}
+                                onPress={() => {
+                                    this.props.navigation.navigate("Day", {
+                                        id: day
+                                    })
+                                }}
+                            />
+                        )
+                        })}
+                    </ScrollView>
                 </List.Section>
-                <View style={{height: "15%", display: "flex", justifyContent: "center"}}>
+                <View style={{display: "flex", justifyContent: "center", flex: 0.25}}>
                     <List.Item title="Settings" titleStyle={{fontSize: 24}}
                     left={props => <List.Icon {...props} style={{marginLeft: 0, marginRight: 0}} icon="settings" />} 
                     onPress={() => {

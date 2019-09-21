@@ -37,7 +37,7 @@ const configure = () => {
  const testLocalNotifications = () => {
   PushNotification.localNotification({
     title: "Title Test",
-    message: "Message Test" // (required)
+    message: "Message Test", // (required)  
   })
  }
 
