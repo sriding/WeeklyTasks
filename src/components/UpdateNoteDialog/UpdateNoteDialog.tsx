@@ -46,7 +46,7 @@ export default function UpdateNoteDialog (props: AppProps) {
                         error={props.updateNoteTextError}
                         selectionColor={props.theme === "light" ? "black" : "white"}
                         theme={Platform.OS == "ios" ? props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} : 
-                        Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
+                        props.theme === "light" ? {} : Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
                         { colors: { text: 'white', primary: 'white'}} }
                         onChangeText={(text) => {
                             props.updatingUpdateNoteTextState(text, props.updateNoteTextState.noteID);

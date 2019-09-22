@@ -276,8 +276,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                 }
                             }}
                             onSubmitEditing={this.clearTaskText}
-                            theme={Platform.OS !== "ios" && Dimensions.get("window").width > Dimensions.get("window").height ? 
-                            this.props.theme === "light" ? {} : { colors: { text: 'gray', primary: 'white'}} : {}}
+                            theme={Platform.OS == "ios" ? this.props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} :
+                            this.props.theme === "light" ? {} : Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
+                            { colors: { text: 'white', primary: 'white'}}}
                         ></TextInput>
                     </View>
                     {this.props.Day && this.props.Day.tasks.map((task) => {
@@ -433,8 +434,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                                     paddingBottom: 175
                                 })
                             }}
-                            theme={Platform.OS !== "ios" && Dimensions.get("window").width > Dimensions.get("window").height ? 
-                            this.props.theme === "light" ? {} : { colors: { text: 'gray', primary: 'white'}} : {}}
+                            theme={Platform.OS == "ios" ? this.props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} :
+                            this.props.theme === "light" ? {} : Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
+                            { colors: { text: 'white', primary: 'white'}}}
                             onSubmitEditing={this.clearNoteText}
                         ></TextInput>                   
                     </View>

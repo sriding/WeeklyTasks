@@ -61,9 +61,9 @@ export default function NewTaskDialog(props: AppProps) {
                                 }
                             }}
                             selectionColor={props.theme === "light" ? "black" : "white"}
-                            theme={Platform.OS == "ios" ? props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} : 
-                            Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
-                            { colors: { text: 'white', primary: 'white'}} }
+                            theme={Platform.OS == "ios" ? props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} :
+                            props.theme === "light" ? {} : Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
+                            { colors: { text: 'white', primary: 'white'}}}
                             ref={props.textInputRef}
                         />
                         {props.taskInputError ? <Paragraph style={{color: "#C00000"}}>

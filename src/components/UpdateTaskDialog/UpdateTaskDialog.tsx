@@ -53,8 +53,8 @@ export default function UpdateTaskDialog(props: AppProps) {
                         style={{minHeight: 80, maxHeight: 125}}
                         error={props.updateTaskTextError} 
                         selectionColor={props.theme === "light" ? "black" : "white"}
-                        theme={Platform.OS == "ios" ? props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} : 
-                        Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
+                        theme={Platform.OS == "ios" ? props.theme === "light" ? {} : { colors: { text: 'white', primary: 'white'}} :
+                        props.theme === "light" ? {} : Dimensions.get("window").width > Dimensions.get("window").height ? { colors: { text: 'gray', primary: 'white'}} : 
                         { colors: { text: 'white', primary: 'white'}} }
                         onChangeText={(text) => {
                             props.updatingUpdateTaskTextState(text, props.updateTaskTextState.taskID);
