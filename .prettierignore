@@ -1,0 +1,6 @@
+# Ignore artifacts:
+build
+.idea
+android
+ios
+node_modules
