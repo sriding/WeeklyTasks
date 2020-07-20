@@ -370,7 +370,7 @@ class HomeScreen extends Component<AppProps, AppState> {
             </ScrollView>
             <ScrollView style={styles.rightPaneContainer} 
               showsVerticalScrollIndicator={false} />
-            <FAB style={{...styles.fabButton, backgroundColor: this.state.theme === "light" ? "#6200ee" : "#171617"}} icon="add" onPress={() => {
+            <FAB style={{...styles.fabButton, backgroundColor: this.state.theme === "light" ? "#6200ee" : "#171617"}} icon="plus" onPress={() => {
               this.toggleDialogToggle();
               //pushNotifications.testLocalNotifications();
             }} />
