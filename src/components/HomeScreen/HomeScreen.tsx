@@ -192,6 +192,7 @@ class HomeScreen extends Component<AppProps, AppState> {
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+    //Removes event listener
     this.didFocusSubscription();
   }
 
