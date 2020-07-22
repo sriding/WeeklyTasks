@@ -2,60 +2,81 @@ const Realm = require("realm");
 
 import moment from "moment";
 
-import {DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema} from "./../schemas/schemas";
+import {
+  DaySchema,
+  TaskSchema,
+  NoteSchema,
+  LoginSchema,
+  SettingsSchema,
+} from "./../schemas/schemas";
 
 import { unCheckEveryTaskInTheDatabase } from "./tasks";
 
-export const saveLoginDate = () => {
-    return new Promise((resolve, reject) => {
-        Realm.open({ schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema], schemaVersion: 5})
-        .then((realm) => {
-            if (!realm.objects("Login")[0]) {
-                realm.write(() => {
-                    realm.create("Login", {
-                        id: 0,
-                        date: moment().format("YYYY-MM-DD"),
-                        alreadyLoggedInToday: true
-                    })
-                    resolve();
-                })
-            } else if (realm.objects("Login")[0].date !== moment().format("YYYY-MM-DD")) {
-                let oldDate = realm.objects("Login")[0].date;
-                let newDate = moment().format("YYYY-MM-DD");
-                let mondayOfThisWeek = moment().startOf('isoWeek').format("YYYY-MM-DD");
+export const saveLoginDate = async () => {
+  try {
+    const realmContainer = await Realm.open({
+      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schemaVersion: 5,
+    });
 
-                if (moment(newDate, "YYYY-MM-DD").diff(oldDate, "days") >= 7 || moment(newDate, "YYYY-MM-DD").diff(mondayOfThisWeek, "days") < moment(newDate, "YYYY-MM-DD").diff(oldDate, "days")) {
-                    unCheckEveryTaskInTheDatabase()
-                    .then(() => {
-                        realm.write(() => {
-                            realm.create("Login", {
-                                id: 0,
-                                date: newDate,
-                                alreadyLoggedInToday: true
-                            }, true)
-                            resolve("New Week: All Tasks Unchecked!");
-                        })
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    })
-                } else {
-                    realm.write(() => {
-                        realm.create("Login", {
-                            id: 0,
-                            date: newDate,
-                            alreadyLoggedInToday: true
-                        }, true)
-                        resolve();
-                    })
-                }
-            } else {
-                resolve();
-            }
-        })
-        .catch((error) => {
-            reject(error.toString());
-        })
-    })
-}
+    let loginDateExists = realmContainer.objects("Login")[0]
+      ? realmContainer.objects("Login")[0]
+      : null;
+    let currentDate = moment().format("YYYY-MM-DD");
 
+    if (!loginDateExists) {
+      realmContainer.write(() => {
+        realmContainer.create("Login", {
+          id: 0,
+          date: currentDate,
+          alreadyLoggedInToday: true,
+        });
+
+        return null;
+      });
+    } else if (loginDateExists.date !== currentDate) {
+      let mondayOfThisWeek = moment().startOf("isoWeek").format("YYYY-MM-DD");
+
+      if (
+        moment(currentDate, "YYYY-MM-DD").diff(loginDateExists.date, "days") >=
+          7 ||
+        moment(currentDate, "YYYY-MM-DD").diff(mondayOfThisWeek, "days") <
+          moment(currentDate, "YYYY-MM-DD").diff(loginDateExists.date, "days")
+      ) {
+        const unCheckedTasksInDatabase = await unCheckEveryTaskInTheDatabase();
+
+        realmContainer.write(() => {
+          realmContainer.create(
+            "Login",
+            {
+              id: 0,
+              date: currentDate,
+              alreadyLoggedInToday: true,
+            },
+            true
+          );
+
+          return "New Week: All Tasks Unchecked!";
+        });
+      } else {
+        realmContainer.write(() => {
+          realmContainer.create(
+            "Login",
+            {
+              id: 0,
+              date: currentDate,
+              alreadyLoggedInToday: true,
+            },
+            true
+          );
+
+          return null;
+        });
+      }
+    } else {
+      return null;
+    }
+  } catch (err) {
+    return err.toString();
+  }
+};

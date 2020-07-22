@@ -1,6 +1,3 @@
-import { booleanLiteral } from "@babel/types";
-import { bool } from "prop-types";
-
 export const DaySchema = {
   name: "Day",
   primaryKey: "id",

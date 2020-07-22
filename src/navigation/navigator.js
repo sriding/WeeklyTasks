@@ -11,7 +11,10 @@ const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
   return (
-    <Drawer.Navigator initialRouteName="Home">
+    <Drawer.Navigator
+      initialRouteName="Home"
+      drawerContent={(props) => <SideBar {...props} />}
+    >
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="Day" component={DayScreen} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />

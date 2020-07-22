@@ -15,7 +15,7 @@ export const getAllDaysData = async () => {
       schemaVersion: 5,
     });
 
-    let daysContainer = await realmContainer.objects("Day");
+    let daysContainer = realmContainer.objects("Day");
     let customObjectToReturn = {};
 
     daysContainer.forEach((day) => {
@@ -28,6 +28,6 @@ export const getAllDaysData = async () => {
 
     return customObjectToReturn;
   } catch (err) {
-    console.log(err);
+    return err.toString();
   }
 };

@@ -74,14 +74,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
     super(props);
     this.state = {
       id: "",
-      Day: {
-        id: "",
-        tasks: [{ id: 0, day: "", text: "", isChecked: false }],
-        note: {
-          id: 0,
-          text: "",
-        },
-      },
+      Day: null,
       fabButtonClicked: false,
       snackBarVisibility: false,
       snackBarIsError: false,
