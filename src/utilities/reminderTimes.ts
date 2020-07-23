@@ -1,4 +1,4 @@
-const timeValues = {
+export const reminderTimes: { [key: string]: number } = {
   "N/A": 0,
   "4:00 AM": 4,
   "4:30 AM": 4.5,
@@ -43,4 +43,4 @@ const timeValues = {
   "12:00 AM": 24,
 };
 
-export default timeValues;
+export default reminderTimes;

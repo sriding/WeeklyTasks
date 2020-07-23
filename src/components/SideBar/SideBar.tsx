@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { List, Paragraph, Divider } from "react-native-paper";
 
-import theWeek from "./../../utilities/theWeek";
+import theWeek from "../../utilities/theWeek";
 
 import {
   NavigationParams,
@@ -12,9 +12,9 @@ import {
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { SafeAreaView, Text, View } from "react-native";
 
-import { getTheme } from "./../../functionsInteractingWithRealm/settings";
+import { getTheme } from "../../controllers/settings";
 interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
+  navigation: any;
 }
 
 interface AppState {

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 //React Native Paper, Material Design elements
-import { FAB, TextInput } from "react-native-paper";
+import { FAB } from "react-native-paper";
 
 //Library to deal with the time object in javascript
 import moment from "moment";
@@ -24,12 +24,12 @@ import NewTaskDialog from "../NewTaskDialog/NewTaskDialog";
 import StatusBar from "./../StatusBar/StatusBar";
 
 //Additional function/object imports
-import { createInitialDays } from "./../../functionsInteractingWithRealm/createInitialDays";
-import { addTask } from "./../../functionsInteractingWithRealm/tasks";
-import { getAllDaysData } from "./../../functionsInteractingWithRealm/getAllDaysData";
-import { saveLoginDate } from "./../../functionsInteractingWithRealm/login";
-import { getTheme } from "./../../functionsInteractingWithRealm/settings";
-import theWeek from "./../../utilities/theWeek";
+import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
+import { addTask } from "../../controllers/database/Tasks/tasks";
+import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllDaysData/getAllDaysData";
+import { saveLoginDate } from "../../controllers/database/Login/login";
+import { getTheme } from "../../controllers/database/Settings/settings";
+import theWeek from "../../utilities/theWeek";
 
 import {
   NavigationParams,
@@ -37,11 +37,10 @@ import {
   NavigationState,
 } from "react-navigation";
 
-import migration from "./../../schemas/migration";
 import { pushNotifications } from "./../../services/Index";
 
 //FOR RESETING REALM COMPLETELY
-import { deleteEverything } from "./../../functionsInteractingWithRealm/deleteEverything";
+import deleteEverythingInDB from "../../controllers/database/Miscellaneous/DeleteEverythingInDB";
 
 interface DayObject {
   id: string;

@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Dimensions, ScrollView } from "react-native";
-import { Chip, TextInput } from "react-native-paper";
-import { deleteAllTasks } from "../../functionsInteractingWithRealm/tasks";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { Chip } from "react-native-paper";
 
 interface AppProps {
   firstScrollView: React.RefObject<ScrollView>;

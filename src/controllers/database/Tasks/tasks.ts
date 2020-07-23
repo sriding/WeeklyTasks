@@ -1,20 +1,18 @@
 const Realm = require("realm");
-import {
-  DaySchema,
-  TaskSchema,
-  NoteSchema,
-  LoginSchema,
-  SettingsSchema,
-} from "./../schemas/schemas";
+import { DayModel } from "../../../models/database/DayModels";
+import { TaskModel } from "../../../models/database/TaskModels";
+import { NoteModel } from "../../../models/database/NoteModels";
+import { LoginModel } from "../../../models/database/LoginModels";
+import { SettingsModel } from "../../../models/database/SettingsModels";
 
-import { pushNotifications } from "./../services/Index";
-import timeValues from "./../utilities/timeValues";
+import { pushNotifications } from "../../../services/Index";
+import { reminderTimes } from "../../../utilities/reminderTimes";
 
 export const addTask = async (
-  text,
-  dayID,
-  reminder = false,
-  reminderTime = "12:00 PM"
+  text: string,
+  dayID: string,
+  reminder: boolean = false,
+  reminderTime: string = "12:00 PM"
 ) => {
   try {
     let trimmedText = text.trim();
@@ -25,14 +23,14 @@ export const addTask = async (
     }
 
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     if (realmContainer.objects("Day").filtered(`id = "${dayID}"`).length > 15) {
       return null;
     }
-    const arrayOfIds = [];
-    realmContainer.objects("Task").forEach((task) => {
+    const arrayOfIds: number[] = [];
+    realmContainer.objects("Task").forEach((task: any) => {
       arrayOfIds.push(task.id);
     });
     realmContainer.write(() => {
@@ -43,7 +41,7 @@ export const addTask = async (
         isChecked: false,
         reminder,
         reminderTime,
-        reminderTimeValue: timeValues[reminderTime],
+        reminderTimeValue: reminderTimes[reminderTime],
       });
       let dayToUpdate = realmContainer.create(
         "Day",
@@ -62,10 +60,10 @@ export const addTask = async (
 };
 
 export const updateTask = async (
-  text,
-  taskID,
-  reminder = false,
-  reminderTime = "12:00 PM"
+  text: string,
+  taskID: number,
+  reminder: boolean = false,
+  reminderTime: string = "12:00 PM"
 ) => {
   try {
     let trimmedText = text.trim();
@@ -75,7 +73,7 @@ export const updateTask = async (
       return "Cannot exceed 350 characters.";
     }
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -86,7 +84,7 @@ export const updateTask = async (
           text: trimmedText,
           reminder,
           reminderTime,
-          reminderTimeValue: timeValues[reminderTime],
+          reminderTimeValue: reminderTimes[reminderTime],
         },
         true
       );
@@ -98,10 +96,10 @@ export const updateTask = async (
   }
 };
 
-export const checkTask = async (taskID, isChecked) => {
+export const checkTask = async (taskID: number, isChecked: boolean) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -118,10 +116,10 @@ export const checkTask = async (taskID, isChecked) => {
   }
 };
 
-export const deleteTask = async (taskID) => {
+export const deleteTask = async (taskID: number) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -135,10 +133,10 @@ export const deleteTask = async (taskID) => {
   }
 };
 
-export const checkAllTasks = async (day) => {
+export const checkAllTasks = async (day: string) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -164,10 +162,10 @@ export const checkAllTasks = async (day) => {
   }
 };
 
-export const deleteAllTasks = async (day) => {
+export const deleteAllTasks = async (day: string) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -185,7 +183,7 @@ export const deleteAllTasks = async (day) => {
 export const unCheckEveryTaskInTheDatabase = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -202,10 +200,10 @@ export const unCheckEveryTaskInTheDatabase = async () => {
   }
 };
 
-export const getAmountOfTasksForTheDay = async (day = "Monday") => {
+export const getAmountOfTasksForTheDay = async (day: string = "Monday") => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     let taskObjects = realmContainer

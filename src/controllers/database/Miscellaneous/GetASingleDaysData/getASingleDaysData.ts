@@ -1,23 +1,21 @@
 const Realm = require("realm");
-import {
-  DaySchema,
-  TaskSchema,
-  NoteSchema,
-  LoginSchema,
-  SettingsSchema,
-} from "./../schemas/schemas";
+import { DayModel } from "../../../../models/database/DayModels";
+import { TaskModel } from "../../../../models/database/TaskModels";
+import { NoteModel } from "../../../../models/database/NoteModels";
+import { LoginModel } from "../../../../models/database/LoginModels";
+import { SettingsModel } from "../../../../models/database/SettingsModels";
 
-import { getSortTasksBy } from "./../functionsInteractingWithRealm/settings";
+import { getSortTasksBy } from "../../Settings/settings";
 
-export const getASingleDaysData = async (dayID) => {
+export const getASingleDaysData = async (dayID: string) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
 
     let sortedTaskData = [];
-    let sortedTaskDataChecked = [];
+    let sortedTaskDataChecked: any[] = [];
 
     let realmTaskDataSortedByReminderTime = realmContainer
       .objects("Task")
@@ -35,7 +33,7 @@ export const getASingleDaysData = async (dayID) => {
 
     switch (mark) {
       case "Recently Added":
-        realmTaskDataSortedByDescendingId.forEach((tasks) => {
+        realmTaskDataSortedByDescendingId.forEach((tasks: any) => {
           if (tasks.isChecked === true) {
             sortedTaskDataChecked.push({ tasks });
           } else {
@@ -56,7 +54,7 @@ export const getASingleDaysData = async (dayID) => {
 
       case "Reminder Time":
       default:
-        realmTaskDataSortedByReminderTime.forEach((tasks) => {
+        realmTaskDataSortedByReminderTime.forEach((tasks: any) => {
           if (tasks.isChecked === false) {
             sortedTaskData.push({ tasks });
           } else {

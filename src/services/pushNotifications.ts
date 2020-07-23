@@ -4,15 +4,15 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { Platform } from "react-native";
 import moment from "moment";
 
-import { getAmountOfTasksForTheDay } from "./../functionsInteractingWithRealm/tasks";
+import { getAmountOfTasksForTheDay } from "../controllers/database/Tasks/tasks";
 import {
   getDailyUpdate,
   getDailyUpdatePersistance,
   getDailyUpdateTime,
   getTaskReminders,
-} from "./../functionsInteractingWithRealm/settings";
-import theWeek from "./../utilities/theWeek";
-import timeValues from "./../utilities/timeValues";
+} from "../controllers/database/Settings/settings";
+import theWeek from "../utilities/theWeek";
+import timeValues from "../utilities/reminderTimes";
 
 const configure = () => {
   PushNotification.configure({

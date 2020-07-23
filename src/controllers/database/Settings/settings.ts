@@ -1,18 +1,16 @@
 const Realm = require("realm");
-import {
-  DaySchema,
-  TaskSchema,
-  NoteSchema,
-  LoginSchema,
-  SettingsSchema,
-} from "./../schemas/schemas";
+import { DayModel } from "../../../models/database/DayModels";
+import { TaskModel } from "../../../models/database/TaskModels";
+import { NoteModel } from "../../../models/database/NoteModels";
+import { LoginModel } from "../../../models/database/LoginModels";
+import { SettingsModel } from "../../../models/database/SettingsModels";
 
-import { pushNotifications } from "./../services/Index";
+import { pushNotifications } from "../../../services/Index";
 
 export const getDailyUpdate = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     if (realmContainer.objects("Settings")[0] === undefined) {
@@ -28,7 +26,7 @@ export const getDailyUpdate = async () => {
 export const getDailyUpdatePersistance = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     return realmContainer.objects("Settings")[0].dailyUpdatePersistance;
@@ -40,7 +38,7 @@ export const getDailyUpdatePersistance = async () => {
 export const getDailyUpdateTime = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     if (realmContainer.objects("Settings")[0] === undefined) {
@@ -56,7 +54,7 @@ export const getDailyUpdateTime = async () => {
 export const getTaskReminders = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     return realmContainer.objects("Settings")[0].taskReminders;
@@ -68,7 +66,7 @@ export const getTaskReminders = async () => {
 export const getSortTasksBy = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     return realmContainer.objects("Settings")[0].sortTasksBy;
@@ -80,7 +78,7 @@ export const getSortTasksBy = async () => {
 export const getTheme = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     if (realmContainer.objects("Settings")[0] === undefined) {
@@ -93,10 +91,10 @@ export const getTheme = async () => {
   }
 };
 
-export const changeDailyUpdate = async (bool = true) => {
+export const changeDailyUpdate = async (bool: boolean = true) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -116,10 +114,10 @@ export const changeDailyUpdate = async (bool = true) => {
   }
 };
 
-export const changeDailyUpdatePersistance = async (bool = true) => {
+export const changeDailyUpdatePersistance = async (bool: boolean = true) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -139,10 +137,10 @@ export const changeDailyUpdatePersistance = async (bool = true) => {
   }
 };
 
-export const changeDailyUpdateTime = async (string = "9:00 AM") => {
+export const changeDailyUpdateTime = async (string: string = "9:00 AM") => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -162,10 +160,10 @@ export const changeDailyUpdateTime = async (string = "9:00 AM") => {
   }
 };
 
-export const changeTaskReminders = async (bool = true) => {
+export const changeTaskReminders = async (bool: boolean = true) => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -185,10 +183,10 @@ export const changeTaskReminders = async (bool = true) => {
   }
 };
 
-export const changeSortTasksBy = async (string = "Reminder Time") => {
+export const changeSortTasksBy = async (string: string = "Reminder Time") => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {
@@ -207,10 +205,10 @@ export const changeSortTasksBy = async (string = "Reminder Time") => {
   }
 };
 
-export const changeTheme = async (string = "light") => {
+export const changeTheme = async (string: string = "light") => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
     realmContainer.write(() => {

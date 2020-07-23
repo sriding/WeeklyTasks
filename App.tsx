@@ -3,12 +3,13 @@ import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import color from "color";
 
 import { pushNotifications } from "./src/services/Index";
-import { getTheme } from "./src/functionsInteractingWithRealm/settings";
+import { getTheme } from "./src/controllers/database/Settings/settings";
 import { NavigationContainer } from "@react-navigation/native";
-import MyDrawer from "./src/navigation/navigator";
-import migration from "./src/schemas/migration";
+import MyDrawer from "./src/navigation/drawer/Drawer";
+import { lastMigration } from "./src/migrations/currentMigration/currentMigration";
+import { pastMigrations } from "./src/migrations/pastMigrations/pastMigrations";
 
-migration();
+lastMigration();
 pushNotifications.configure();
 
 const DarkTheme = {

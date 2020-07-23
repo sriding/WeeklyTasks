@@ -9,18 +9,18 @@ import {
   Keyboard,
   EmitterSubscription,
 } from "react-native";
-import { FAB, TextInput } from "react-native-paper";
-import theWeek from "./../../utilities/theWeek";
+import { FAB } from "react-native-paper";
+import theWeek from "../../utilities/theWeek";
 
-import { getASingleDaysData } from "./../../functionsInteractingWithRealm/getASingleDaysData";
+import { getASingleDaysData } from "../../controllers/database/Miscellaneous/GetASingleDaysData/getASingleDaysData";
 import {
   checkTask,
   deleteTask,
   checkAllTasks,
   deleteAllTasks,
-} from "./../../functionsInteractingWithRealm/tasks";
-import { deleteNote } from "./../../functionsInteractingWithRealm/notes";
-import { getTheme } from "./../../functionsInteractingWithRealm/settings";
+} from "../../controllers/database/Tasks/tasks";
+import { deleteNote } from "../../controllers/database/Notes/notes";
+import { getTheme } from "../../controllers/database/Settings/settings";
 
 import {
   NavigationParams,

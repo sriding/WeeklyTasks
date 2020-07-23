@@ -2,20 +2,18 @@ const Realm = require("realm");
 
 import moment from "moment";
 
-import {
-  DaySchema,
-  TaskSchema,
-  NoteSchema,
-  LoginSchema,
-  SettingsSchema,
-} from "./../schemas/schemas";
+import { DayModel } from "../../../models/database/DayModels";
+import { TaskModel } from "../../../models/database/TaskModels";
+import { NoteModel } from "../../../models/database/NoteModels";
+import { LoginModel } from "../../../models/database/LoginModels";
+import { SettingsModel } from "../../../models/database/SettingsModels";
 
-import { unCheckEveryTaskInTheDatabase } from "./tasks";
+import { unCheckEveryTaskInTheDatabase } from "../Tasks/tasks";
 
 export const saveLoginDate = async () => {
   try {
     const realmContainer = await Realm.open({
-      schema: [DaySchema, TaskSchema, NoteSchema, LoginSchema, SettingsSchema],
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
 

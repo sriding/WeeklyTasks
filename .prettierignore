@@ -4,3 +4,6 @@ build
 android
 ios
 node_modules
+babel.config.js
+jest.config.js
+.eslintrc.js

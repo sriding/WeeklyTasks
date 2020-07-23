@@ -16,19 +16,14 @@ import {
   Paragraph,
   Checkbox,
   Caption,
-  Menu,
-  Divider,
 } from "react-native-paper";
 
-import {
-  addTask,
-  updateTask,
-} from "./../../functionsInteractingWithRealm/tasks";
+import { addTask, updateTask } from "../../controllers/database/Tasks/tasks";
+import { addNote, updateNote } from "../../controllers/database/Notes/notes";
 
 import UpdateTaskDialog from "./../UpdateTaskDialog/UpdateTaskDialog";
 import UpdateNoteDialog from "./../UpdateNoteDialog/UpdateNoteDialog";
 import SetReminder from "./../SetReminder/SetReminder";
-import { addNote, updateNote } from "../../functionsInteractingWithRealm/notes";
 
 interface DayObject {
   id: string;

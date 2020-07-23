@@ -1,4 +1,4 @@
-export const theWeek = [
+export const theWeek: string[] = [
   "Monday",
   "Tuesday",
   "Wednesday",
