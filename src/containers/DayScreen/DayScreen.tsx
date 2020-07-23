@@ -1,3 +1,4 @@
+//Core React and React Native modules
 import React, { Component } from "react";
 import {
   View,
@@ -8,10 +9,22 @@ import {
   Platform,
   Keyboard,
   EmitterSubscription,
+  TextInput,
 } from "react-native";
+
+//React Native Paper modules
 import { FAB } from "react-native-paper";
+
+//3rd Party modules
+import moment from "moment";
+
+//Interfaces
+import { DayObject, AppProps, AppState } from "./Interfaces-DayScreen";
+
+//Utilities
 import theWeek from "../../utilities/theWeek";
 
+//Functions
 import { getASingleDaysData } from "../../controllers/database/Miscellaneous/GetASingleDaysData/getASingleDaysData";
 import {
   checkTask,
@@ -22,53 +35,19 @@ import {
 import { deleteNote } from "../../controllers/database/Notes/notes";
 import { getTheme } from "../../controllers/database/Settings/settings";
 
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from "react-navigation";
-
 //Components
-import Header from "./../Header/Header";
-import SnackBarPopup from "./../SnackBarPopup/SnackBarPopup";
-import DayScreenCard from "./../DayScreenCard/DayScreenCard";
-import DayScreenFabButtonOptions from "./../DayScreenFabButtonOptions/DayScreenFabButtonOptions";
-
-import moment from "moment";
-
-interface DayObject {
-  id: string;
-  tasks: { id: number; day: string; text: string; isChecked: boolean }[];
-  note: {
-    id: number;
-    text: string;
-  };
-}
-interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-}
-
-interface AppState {
-  id: string;
-  Day: DayObject;
-  fabButtonClicked: boolean;
-  snackBarVisibility: boolean;
-  snackBarIsError: boolean;
-  snackBarText: string;
-  keyboardHeight: number;
-  keyboardOpen: boolean;
-  date: string;
-  topOffset: number;
-  theme: string;
-}
+import Header from "../../components/Header/Header";
+import SnackBarPopup from "../../components/SnackBarPopup/SnackBarPopup";
+import DayScreenCard from "../../components/DayScreenCard/DayScreenCard";
+import DayScreenFabButtonOptions from "../../components/DayScreenFabButtonOptions/DayScreenFabButtonOptions";
 
 export default class DayScreen extends Component<AppProps, AppState> {
-  protected newTaskTextRef: React.RefObject<TextInput>;
-  protected newNoteTextRef: React.RefObject<TextInput>;
-  protected firstScrollView: React.RefObject<ScrollView>;
-  public keyboardDidShowListener!: EmitterSubscription;
-  public keyboardDidHideListener!: EmitterSubscription;
-  public didFocusSubscription: any;
+  newTaskTextRef: React.RefObject<TextInput>;
+  newNoteTextRef: React.RefObject<TextInput>;
+  firstScrollView: React.RefObject<ScrollView>;
+  focusSubscription: any;
+  keyboardDidShowListener: EmitterSubscription | null;
+  keyboardDidHideListener: EmitterSubscription | null;
 
   constructor(props: AppProps) {
     super(props);
@@ -89,13 +68,15 @@ export default class DayScreen extends Component<AppProps, AppState> {
     this.newTaskTextRef = React.createRef();
     this.newNoteTextRef = React.createRef();
     this.firstScrollView = React.createRef();
+    this.focusSubscription = null;
+    this.keyboardDidShowListener = null;
+    this.keyboardDidHideListener = null;
   }
 
-  componentDidMount = () => {
-    getTheme().then((mark) => {
-      this.setState({
-        theme: mark,
-      });
+  componentDidMount = async () => {
+    let themeName = await getTheme();
+    this.setState({
+      theme: themeName,
     });
 
     if (Platform.OS === "ios") {
@@ -103,24 +84,23 @@ export default class DayScreen extends Component<AppProps, AppState> {
         topOffset: Dimensions.get("window").height - 175,
       });
     }
-    this.didFocusSubscription = this.props.navigation.addListener(
+
+    try {
+      await this.getDataForASingleDay();
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
+
+    this.focusSubscription = this.props.navigation.addListener(
       "focus",
-      () => {
-        getASingleDaysData(this.props.route.params.id)
-          .then((data: DayObject) => {
-            this.setState({
-              id: this.props.route.params.id,
-              Day: data,
-              date: moment()
-                .startOf("isoWeek")
-                .add(theWeek.indexOf(this.props.route.params.id), "days")
-                .format("YYYY-MM-DD"),
-            });
-          })
-          .catch((error: string) => {
-            this.setSnackBarTextAndIfError(error, true);
-            this.toggleSnackBarVisibility();
-          });
+      async () => {
+        try {
+          await this.getDataForASingleDay();
+        } catch (err) {
+          this.setSnackBarTextAndIfError(err, true);
+          this.toggleSnackBarVisibility();
+        }
       }
     );
 
@@ -136,9 +116,9 @@ export default class DayScreen extends Component<AppProps, AppState> {
   };
 
   componentWillUnmount = () => {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-    this.didFocusSubscription();
+    this.keyboardDidShowListener?.remove();
+    this.keyboardDidHideListener?.remove();
+    //this.focusSubscription();
   };
 
   componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
@@ -149,8 +129,25 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
   };
 
+  getDataForASingleDay = async () => {
+    try {
+      let singleDayData = await getASingleDaysData(this.props.route.params.id);
+      this.setState({
+        id: this.props.route.params.id,
+        Day: singleDayData,
+        date: moment()
+          .startOf("isoWeek")
+          .add(theWeek.indexOf(this.props.route.params.id), "days")
+          .format("YYYY-MM-DD"),
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
+  };
+
   _keyboardDidShow = (event: any) => {
-    if (Platform.OS == "ios") {
+    if (Platform.OS === "ios") {
       this.setState({
         keyboardHeight: event.endCoordinates.height,
         keyboardOpen: true,
@@ -159,7 +156,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
   };
 
   _keyboardDidHide = () => {
-    if (Platform.OS == "ios") {
+    if (Platform.OS === "ios") {
       this.setState({
         keyboardHeight: 0,
         keyboardOpen: false,
@@ -191,21 +188,20 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
   };
 
-  submitTaskText = (useSnackBar = true, snackBarText?: string) => {
-    getASingleDaysData(this.state.id)
-      .then((data: DayObject) => {
-        this.setState({
-          Day: data,
-        });
-        if (useSnackBar) {
-          this.setSnackBarTextAndIfError(snackBarText!, false);
-          this.toggleSnackBarVisibility();
-        }
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
+  submitTaskText = async (useSnackBar = true, snackBarText?: string) => {
+    try {
+      let singleDaysData = await getASingleDaysData(this.state.id);
+      this.setState({
+        Day: singleDaysData,
       });
+      if (useSnackBar) {
+        this.setSnackBarTextAndIfError(snackBarText!, false);
+        this.toggleSnackBarVisibility();
+      }
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
   //Toggles snackbar appearance
@@ -229,59 +225,54 @@ export default class DayScreen extends Component<AppProps, AppState> {
     });
   };
 
-  checkTask = (taskID: number, isChecked: boolean) => {
-    checkTask(taskID, isChecked)
-      .then(() => {
-        this.submitTaskText(false);
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
-      });
+  checkTask = async (taskID: number, isChecked: boolean) => {
+    try {
+      await checkTask(taskID, isChecked);
+      this.submitTaskText(false);
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
-  deleteTask = (taskID: number) => {
-    deleteTask(taskID)
-      .then(() => {
-        this.submitTaskText(true, "Task Deleted!");
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
-      });
+  deleteTask = async (taskID: number) => {
+    try {
+      await deleteTask(taskID);
+      this.submitTaskText(true, "Task Deleted!");
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
-  deleteNote = (noteID: number) => {
-    deleteNote(noteID)
-      .then(() => {
-        this.submitTaskText(true, "Note Deleted!");
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
-      });
+  deleteNote = async (noteID: number) => {
+    try {
+      await deleteNote(noteID);
+      this.submitTaskText(true, "Note Deleted!");
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
-  checkAllTasks = () => {
-    checkAllTasks(this.state.id)
-      .then(() => {
-        this.submitTaskText(false);
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
-      });
+  checkAllTasks = async () => {
+    try {
+      await checkAllTasks(this.state.id);
+      this.submitTaskText(false);
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
-  deleteAllTasks = () => {
-    deleteAllTasks(this.state.id)
-      .then(() => {
-        this.submitTaskText(true, "All Tasks Deleted!");
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
-      });
+  deleteAllTasks = async () => {
+    try {
+      await deleteAllTasks(this.state.id);
+      this.submitTaskText(true, "All Tasks Deleted!");
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
   render() {

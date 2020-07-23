@@ -1,7 +1,7 @@
 import React from "react";
-import HomeScreen from "../../components/HomeScreen/HomeScreen";
-import DayScreen from "../../components/DayScreen/DayScreen";
-import SettingsScreen from "../../components/SettingsScreen/SettingsScreen";
+import HomeScreen from "../../containers/HomeScreen/HomeScreen";
+import DayScreen from "../../containers/DayScreen/DayScreen";
+import SettingsScreen from "../../containers/SettingsScreen/SettingsScreen";
 import SideBar from "../../components/SideBar/SideBar";
 
 import { createDrawerNavigator } from "@react-navigation/drawer";

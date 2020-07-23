@@ -8,7 +8,7 @@ import { SettingsModel } from "../../../../models/database/SettingsModels";
 
 import { pushNotifications } from "../../../../services/Index";
 
-export const deleteEverythingInDb = async () => {
+export const deleteEverythingInDB = async () => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -25,4 +25,4 @@ export const deleteEverythingInDb = async () => {
   }
 };
 
-export default deleteEverythingInDb;
+export default deleteEverythingInDB;

@@ -1,5 +1,6 @@
+//Core React and React Native modules
 import React, { Component } from "react";
-import { Text, View, SafeAreaView, ScrollView, StyleSheet } from "react-native";
+import { View, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import {
   Headline,
   Switch,
@@ -7,17 +8,16 @@ import {
   Divider,
   Subheading,
   Menu,
-  Button,
   Caption,
 } from "react-native-paper";
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from "react-navigation";
 
+//3rd Party modules
 import moment from "moment";
 
+//Interfaces
+import { AppProps, AppState } from "./Interfaces-SettingsScreen";
+
+//Functions
 import {
   getDailyUpdate,
   getDailyUpdatePersistance,
@@ -26,80 +26,55 @@ import {
   getTaskReminders,
   getTheme,
   changeDailyUpdate,
-  changeDailyUpdatePersistance,
   changeDailyUpdateTime,
   changeSortTasksBy,
   changeTaskReminders,
   changeTheme,
-} from "../../controllers/settings";
-import Header from "./../Header/Header";
-import SetReminder from "./../SetReminder/SetReminder";
+} from "../../controllers/database/Settings/settings";
 
-interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-}
-
-interface AppState {
-  date: string;
-  dailyUpdateSwitch: boolean;
-  tasksRemindersSwitch: boolean;
-  dailyUpdatePersistenceSwitch: boolean;
-  sortTasksMenu: boolean;
-  sortTasksOption: string;
-  darkThemeSwitch: string;
-  dailyUpdateReminderTime: string;
-  theme: string;
-  themeText: string;
-}
+//Components
+import Header from "../../components/Header/Header";
+import SetReminder from "../../components/SetReminder/SetReminder";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
       date: moment().format("YYYY-MM-DD"),
-      dailyUpdateSwitch: true,
-      dailyUpdatePersistenceSwitch: false,
-      dailyUpdateReminderTime: "10:00AM",
-      tasksRemindersSwitch: true,
+      dailyUpdateStatus: true,
+      dailyPersistanceStatus: false,
+      dailyUpdateTimeStatus: "10:00AM",
+      taskReminderStatus: true,
       sortTasksMenu: false,
-      sortTasksOption: "Reminder Time",
-      darkThemeSwitch: "light",
+      sortTasksByStatus: "Reminder Time",
+      themeStatus: "light",
       theme: "light",
       themeText: "",
     };
   }
 
-  componentDidMount = () => {
-    getDailyUpdate().then((dailyUpdateSwitch: boolean) => {
-      getDailyUpdatePersistance().then(
-        (dailyUpdatePersistenceSwitch: boolean) => {
-          getDailyUpdateTime().then((dailyUpdateReminderTime: string) => {
-            getTaskReminders().then((tasksRemindersSwitch: boolean) => {
-              getSortTasksBy().then((sortTasksOption: string) => {
-                getTheme().then((darkThemeSwitch: string) => {
-                  this.setState({
-                    dailyUpdateSwitch,
-                    dailyUpdatePersistenceSwitch,
-                    dailyUpdateReminderTime,
-                    tasksRemindersSwitch,
-                    sortTasksOption,
-                    darkThemeSwitch,
-                    theme: darkThemeSwitch,
-                  });
-                });
-              });
-            });
-          });
-        }
-      );
+  componentDidMount = async () => {
+    const dailyUpdateStatus = await getDailyUpdate();
+    const dailyPersistanceStatus = await getDailyUpdatePersistance();
+    const dailyUpdateTimeStatus = await getDailyUpdateTime();
+    const taskReminderStatus = await getTaskReminders();
+    const sortTasksByStatus = await getSortTasksBy();
+    const themeStatus = await getTheme();
+    this.setState({
+      dailyUpdateStatus,
+      dailyPersistanceStatus,
+      dailyUpdateTimeStatus,
+      taskReminderStatus,
+      sortTasksByStatus,
+      themeStatus,
+      theme: themeStatus,
     });
   };
 
-  changeReminderTime = (time: string) => {
-    changeDailyUpdateTime(time).then(() => {
-      this.setState({
-        dailyUpdateReminderTime: time,
-      });
+  changeReminderTime = async (time: string) => {
+    await changeDailyUpdateTime(time);
+    this.setState({
+      dailyUpdateTimeStatus: time,
     });
   };
 
@@ -129,11 +104,11 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             <View style={styles.switchContainer}>
               <Switch
                 style={styles.switchButton}
-                value={this.state.dailyUpdateSwitch}
+                value={this.state.dailyUpdateStatus}
                 onValueChange={() => {
-                  changeDailyUpdate(!this.state.dailyUpdateSwitch).then(() => {
+                  changeDailyUpdate(!this.state.dailyUpdateStatus).then(() => {
                     this.setState({
-                      dailyUpdateSwitch: !this.state.dailyUpdateSwitch,
+                      dailyUpdateStatus: !this.state.dailyUpdateStatus,
                     });
                   });
                 }}
@@ -141,20 +116,20 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
               <Subheading style={{ fontSize: 19 }}>Daily Update</Subheading>
             </View>
             <SetReminder
-              reminder={this.state.dailyUpdateSwitch}
-              reminderTime={this.state.dailyUpdateReminderTime}
+              reminder={this.state.dailyUpdateStatus}
+              reminderTime={this.state.dailyUpdateTimeStatus}
               changeReminderTime={this.changeReminderTime}
               text="Daily update reminder at: "
             />
             <View style={styles.switchContainer}>
               <Switch
                 style={styles.switchButton}
-                value={this.state.tasksRemindersSwitch}
+                value={this.state.taskReminderStatus}
                 onValueChange={() => {
-                  changeTaskReminders(!this.state.tasksRemindersSwitch).then(
+                  changeTaskReminders(!this.state.taskReminderStatus).then(
                     () => {
                       this.setState({
-                        tasksRemindersSwitch: !this.state.tasksRemindersSwitch,
+                        taskReminderStatus: !this.state.taskReminderStatus,
                       });
                     }
                   );
@@ -193,7 +168,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                       });
                     }}
                   >
-                    {this.state.sortTasksOption}
+                    {this.state.sortTasksByStatus}
                   </Paragraph>
                 }
               >
@@ -202,7 +177,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                     changeSortTasksBy("Reminder Time").then(() => {
                       this.setState({
                         sortTasksMenu: false,
-                        sortTasksOption: "Reminder Time",
+                        sortTasksByStatus: "Reminder Time",
                       });
                     });
                   }}
@@ -213,7 +188,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                     changeSortTasksBy("Recently Added").then(() => {
                       this.setState({
                         sortTasksMenu: false,
-                        sortTasksOption: "Recently Added",
+                        sortTasksByStatus: "Recently Added",
                       });
                     });
                   }}
@@ -226,16 +201,14 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             <View style={styles.switchContainer}>
               <Switch
                 style={styles.switchButton}
-                value={this.state.darkThemeSwitch === "light" ? false : true}
+                value={this.state.themeStatus === "light" ? false : true}
                 onValueChange={() => {
                   changeTheme(
-                    this.state.darkThemeSwitch === "light" ? "dark" : "light"
+                    this.state.themeStatus === "light" ? "dark" : "light"
                   ).then(() => {
                     this.setState({
-                      darkThemeSwitch:
-                        this.state.darkThemeSwitch === "light"
-                          ? "dark"
-                          : "light",
+                      themeStatus:
+                        this.state.themeStatus === "light" ? "dark" : "light",
                       themeText: "Restart the app to see changes.",
                     });
                   });
@@ -284,11 +257,11 @@ const styles = StyleSheet.create({
 /*
     <View style={{...styles.switchContainer, justifyContent: "center", alignItems: "center"}}>
         <Switch style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
-        value={this.state.dailyUpdatePersistenceSwitch}
+        value={this.state.dailyPersistanceStatus}
         onValueChange={() => {
-            changeDailyUpdatePersistance(!this.state.dailyUpdatePersistenceSwitch).then(() => {
+            changeDailyUpdatePersistance(!this.state.dailyPersistanceStatus).then(() => {
                 this.setState({
-                    dailyUpdatePersistenceSwitch: !this.state.dailyUpdatePersistenceSwitch
+                    dailyPersistanceStatus: !this.state.dailyPersistanceStatus
                 })
             })
         }}></Switch>

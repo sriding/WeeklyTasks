@@ -12,7 +12,7 @@ import {
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { SafeAreaView, Text, View } from "react-native";
 
-import { getTheme } from "../../controllers/settings";
+import { getTheme } from "../../controllers/database/Settings/settings";
 interface AppProps {
   navigation: any;
 }
@@ -78,9 +78,7 @@ export default class SideBar extends Component<AppProps, AppState> {
               />
             )}
             onPress={() => {
-              this.props.navigation.navigate("Settings", {
-                navigation: this.props.navigation,
-              });
+              this.props.navigation.navigate("Settings");
             }}
           />
         </View>

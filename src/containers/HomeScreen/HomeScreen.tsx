@@ -1,3 +1,4 @@
+//Core React and React Native Modules
 import React, { Component } from "react";
 import {
   SafeAreaView,
@@ -7,84 +8,47 @@ import {
   Keyboard,
   Platform,
   EmitterSubscription,
+  TextInput,
 } from "react-native";
 
-//React Native Paper, Material Design elements
+//React Native Paper Modules
 import { FAB } from "react-native-paper";
 
-//Library to deal with the time object in javascript
+//3rd Party Modules
 import moment from "moment";
 
-//Components
-import HomeScreenCard from "../HomeScreenCard/HomeScreenCard";
-import Header from "../Header/Header";
-import SideBar from "../SideBar/SideBar";
-import SnackBarPopup from "../SnackBarPopup/SnackBarPopup";
-import NewTaskDialog from "../NewTaskDialog/NewTaskDialog";
-import StatusBar from "./../StatusBar/StatusBar";
+//Interfaces
+import { DayObject, AppProps, AppState } from "./Interfaces-HomeScreen";
 
-//Additional function/object imports
+//Components
+import HomeScreenCard from "../../components/HomeScreenCard/HomeScreenCard";
+import Header from "../../components/Header/Header";
+import SideBar from "../../components/SideBar/SideBar";
+import SnackBarPopup from "../../components/SnackBarPopup/SnackBarPopup";
+import NewTaskDialog from "../../components/NewTaskDialog/NewTaskDialog";
+import StatusBar from "../../components/StatusBar/StatusBar";
+
+//Functions
 import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
 import { addTask } from "../../controllers/database/Tasks/tasks";
 import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllDaysData/getAllDaysData";
 import { saveLoginDate } from "../../controllers/database/Login/login";
 import { getTheme } from "../../controllers/database/Settings/settings";
+
+//Utilities
 import theWeek from "../../utilities/theWeek";
 
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from "react-navigation";
+//Services
+import { pushNotifications } from "../../services/Index";
 
-import { pushNotifications } from "./../../services/Index";
-
-//FOR RESETING REALM COMPLETELY
-import deleteEverythingInDB from "../../controllers/database/Miscellaneous/DeleteEverythingInDB";
-
-interface DayObject {
-  id: string;
-  tasks: {
-    id: number;
-    day: string;
-    text: string;
-    isChecked: boolean;
-  }[];
-  note: {
-    id: number;
-    text: string;
-  };
-}
-interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-}
-
-interface AppState {
-  taskInput: string;
-  taskInputError: boolean;
-  taskInputErrorText: string;
-  snackBarVisibility: boolean;
-  snackBarIsError: boolean;
-  snackBarText: string;
-  sideBarToggle: boolean;
-  dialogToggle: boolean;
-  dialogListToggle: boolean;
-  dayInformation: any;
-  dayOfTheWeek: string;
-  amountOfTasksForTheDay: number;
-  keyboardHeight: number;
-  keyboardOpen: boolean;
-  date: string;
-  reminder: boolean;
-  reminderTime: string;
-  theme: string;
-}
-
+/**
+ * Add shouldcomponentupdate method in case theme does not change from light
+ * */
 class HomeScreen extends Component<AppProps, AppState> {
-  protected textInputRef: React.RefObject<TextInput>;
-  public keyboardDidShowListener!: EmitterSubscription;
-  public keyboardDidHideListener!: EmitterSubscription;
-  public didFocusSubscription: any;
+  textInputRef: React.RefObject<TextInput>;
+  focusSubscription: any;
+  keyboardDidShowListener: EmitterSubscription | null;
+  keyboardDidHideListener: EmitterSubscription | null;
 
   constructor(props: AppProps) {
     super(props);
@@ -111,68 +75,57 @@ class HomeScreen extends Component<AppProps, AppState> {
 
     //Reference to the text input field in the dialog popup for creating a task
     this.textInputRef = React.createRef();
+    this.focusSubscription = null;
+    this.keyboardDidShowListener = null;
+    this.keyboardDidHideListener = null;
   }
 
-  componentDidMount = () => {
-    //deleteEverything();
-    //.then(() => {
+  componentDidMount = async () => {
+    try {
+      await createInitialDays();
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
 
-    /*
-      Will check if there is already a realm file with the initial days of the week data 
-      in it; if there is no realm file or no initial data, this will create/update the realm file
-      to be used as a database storage
-    */
-    createInitialDays()
-      .then(() => {
-        //Nothing
-        getTheme().then((mark) => {
-          this.setState({
-            theme: mark,
-          });
-        });
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
+    try {
+      const themeName = await getTheme();
+      this.setState({
+        theme: themeName,
       });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
 
-    /*
-      Saves the date the user logs in to the embedded database to determine when
-      the app should reset all the tasks to unchecked. This reset should be happening
-      every monday.
-    */
+    try {
+      const userLoginMessage = await saveLoginDate();
+      if (userLoginMessage !== undefined) {
+        this.setSnackBarTextAndIfError(userLoginMessage, false);
+        this.toggleSnackBarVisibility();
+      }
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
 
-    saveLoginDate()
-      .then((message?: string) => {
-        if (message != undefined) {
-          this.setSnackBarTextAndIfError(message, false);
+    try {
+      await this.getDataForAllDays();
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
+
+    //Listenering that listens for when the home screen is in focus (i.e. moving from day screen back to home screen)
+    this.focusSubscription = this.props.navigation.addListener(
+      "focus",
+      async () => {
+        try {
+          await this.getDataForAllDays();
+        } catch (err) {
+          this.setSnackBarTextAndIfError(err, true);
           this.toggleSnackBarVisibility();
         }
-      })
-      .catch((error: string) => {
-        this.setSnackBarTextAndIfError(error, true);
-        this.toggleSnackBarVisibility();
-      });
-
-    /*
-      This event listener is for when a user taps the back arrow on the day screen;
-      this listener will fire because the homescreen is now in focus and can update
-      any tasks/notes on the homescreen that were updated on the day screen
-    */
-    this.didFocusSubscription = this.props.navigation.addListener(
-      "focus",
-      () => {
-        getAllDaysData()
-          .then((data: DayObject[]) => {
-            this.setState({
-              dayInformation: data,
-              sideBarToggle: false,
-            });
-          })
-          .catch((error: string) => {
-            this.setSnackBarTextAndIfError(error, true);
-            this.toggleSnackBarVisibility();
-          });
       }
     );
 
@@ -185,18 +138,30 @@ class HomeScreen extends Component<AppProps, AppState> {
       "keyboardDidHide",
       this._keyboardDidHide
     );
-    //})
   };
 
   componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-    //Removes event listener
-    this.didFocusSubscription();
+    //Removing Event Listeners
+    this.focusSubscription();
+    this.keyboardDidShowListener?.remove();
+    this.keyboardDidHideListener?.remove();
   }
 
+  getDataForAllDays = async () => {
+    try {
+      let dataForAllDays = await getAllDaysData();
+      this.setState({
+        dayInformation: dataForAllDays,
+        sideBarToggle: false,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
+  };
+
   _keyboardDidShow = (event: any) => {
-    if (Platform.OS == "ios") {
+    if (Platform.OS === "ios") {
       this.setState({
         keyboardHeight: event.endCoordinates.height,
         keyboardOpen: true,
@@ -209,7 +174,7 @@ class HomeScreen extends Component<AppProps, AppState> {
   };
 
   _keyboardDidHide = () => {
-    if (Platform.OS == "ios") {
+    if (Platform.OS === "ios") {
       this.setState({
         keyboardHeight: 0,
         keyboardOpen: false,
@@ -221,7 +186,6 @@ class HomeScreen extends Component<AppProps, AppState> {
     }
   };
 
-  //Saves input that user plans on submitting as a new task to save
   taskInputChange = (text: string) => {
     this.setState({ taskInput: text });
   };
@@ -230,40 +194,35 @@ class HomeScreen extends Component<AppProps, AppState> {
     pushNotifications.sendLocalNotification();
   };
 
-  /*
-    Method that will create a task to be added to the realm db as both a task object and as 
-    a property of a day's object
-  */
-  creatingTask = () => {
-    addTask(
-      this.state.taskInput,
-      this.state.dayOfTheWeek,
-      this.state.reminder,
-      this.state.reminderTime
-    )
-      .then(() => {
-        getAllDaysData()
-          .then((data: DayObject[]) => {
-            this.setState({
-              dayInformation: data,
-              taskInputError: false,
-              taskInputErrorText: "",
-            });
-            this.dismissDialogToggle();
-            this.setSnackBarTextAndIfError("Task Created!", false);
-            this.toggleSnackBarVisibility();
-          })
-          .catch((error: string) => {
-            this.setSnackBarTextAndIfError(error, true);
-            this.toggleSnackBarVisibility();
-          });
-      })
-      .catch((error: string) => {
-        this.setState({
-          taskInputError: true,
-          taskInputErrorText: error,
-        });
+  creatingTask = async () => {
+    try {
+      await addTask(
+        this.state.taskInput,
+        this.state.dayOfTheWeek,
+        this.state.reminder,
+        this.state.reminderTime
+      );
+    } catch (err) {
+      this.setState({
+        taskInputError: true,
+        taskInputErrorText: err,
       });
+    }
+
+    try {
+      let allDaysData = await getAllDaysData();
+      this.setState({
+        dayInformation: allDaysData,
+        taskInputError: false,
+        taskInputErrorText: "",
+      });
+      this.dismissDialogToggle();
+      this.setSnackBarTextAndIfError("Task Created!", false);
+      this.toggleSnackBarVisibility();
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
   //Toggles sidebar to appear or disappear
@@ -391,7 +350,6 @@ class HomeScreen extends Component<AppProps, AppState> {
             icon="plus"
             onPress={() => {
               this.toggleDialogToggle();
-              //pushNotifications.testLocalNotifications();
             }}
           />
           <NewTaskDialog
@@ -460,7 +418,6 @@ const styles = StyleSheet.create({
     margin: 20,
     right: 0,
     bottom: 140,
-    color: "white",
   },
 });
 

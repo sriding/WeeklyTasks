@@ -1,1 +1,3 @@
-export const pastMigrations = () => {};
+export const pastMigrations = () => {
+  return null;
+};

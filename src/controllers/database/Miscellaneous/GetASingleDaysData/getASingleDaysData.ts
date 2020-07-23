@@ -27,17 +27,35 @@ export const getASingleDaysData = async (dayID: string) => {
       .filtered(`day == "${dayID}"`)
       .sorted("id", true);
 
-    let realmDayData = realmContainer.objects("Day").filtered(`id == ${dayID}`);
+    let realmDayData = realmContainer
+      .objects("Day")
+      .filtered(`id == "${dayID}"`);
 
     const mark = await getSortTasksBy();
 
     switch (mark) {
       case "Recently Added":
-        realmTaskDataSortedByDescendingId.forEach((tasks: any) => {
-          if (tasks.isChecked === true) {
-            sortedTaskDataChecked.push({ tasks });
+        realmTaskDataSortedByDescendingId.forEach((realmTasks: any) => {
+          if (realmTasks.isChecked === true) {
+            sortedTaskDataChecked.push({
+              id: realmTasks.id,
+              day: realmTasks.day,
+              text: realmTasks.text,
+              isChecked: realmTasks.isChecked,
+              reminder: realmTasks.reminder,
+              reminderTime: realmTasks.reminderTime,
+              reminderTimeValue: realmTasks.reminderTimeValue,
+            });
           } else {
-            sortedTaskData.push({ tasks });
+            sortedTaskData.push({
+              id: realmTasks.id,
+              day: realmTasks.day,
+              text: realmTasks.text,
+              isChecked: realmTasks.isChecked,
+              reminder: realmTasks.reminder,
+              reminderTime: realmTasks.reminderTime,
+              reminderTimeValue: realmTasks.reminderTimeValue,
+            });
           }
         });
 
@@ -54,11 +72,27 @@ export const getASingleDaysData = async (dayID: string) => {
 
       case "Reminder Time":
       default:
-        realmTaskDataSortedByReminderTime.forEach((tasks: any) => {
-          if (tasks.isChecked === false) {
-            sortedTaskData.push({ tasks });
+        realmTaskDataSortedByReminderTime.forEach((realmTasks: any) => {
+          if (realmTasks.isChecked === false) {
+            sortedTaskData.push({
+              id: realmTasks.id,
+              day: realmTasks.day,
+              text: realmTasks.text,
+              isChecked: realmTasks.isChecked,
+              reminder: realmTasks.reminder,
+              reminderTime: realmTasks.reminderTime,
+              reminderTimeValue: realmTasks.reminderTimeValue,
+            });
           } else {
-            sortedTaskDataChecked.push({ tasks });
+            sortedTaskDataChecked.push({
+              id: realmTasks.id,
+              day: realmTasks.day,
+              text: realmTasks.text,
+              isChecked: realmTasks.isChecked,
+              reminder: realmTasks.reminder,
+              reminderTime: realmTasks.reminderTime,
+              reminderTimeValue: realmTasks.reminderTimeValue,
+            });
           }
         });
 

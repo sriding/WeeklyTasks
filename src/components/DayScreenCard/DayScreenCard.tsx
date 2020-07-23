@@ -1,3 +1,4 @@
+//Core React and React Native modules
 import React, { Component, Fragment } from "react";
 import {
   StyleSheet,
@@ -7,8 +8,10 @@ import {
   ScrollView,
   Platform,
   TouchableHighlight,
+  TextInput as NativeTextInput,
 } from "react-native";
 
+//React Native Paper modules
 import {
   Card,
   Button,
@@ -18,68 +21,23 @@ import {
   Caption,
 } from "react-native-paper";
 
+//Interfaces
+import { DayObject, AppProps, AppState } from "./InterfacesDayScreenCard";
+
+//Functions
 import { addTask, updateTask } from "../../controllers/database/Tasks/tasks";
 import { addNote, updateNote } from "../../controllers/database/Notes/notes";
-
 import UpdateTaskDialog from "./../UpdateTaskDialog/UpdateTaskDialog";
 import UpdateNoteDialog from "./../UpdateNoteDialog/UpdateNoteDialog";
+
+//Components
 import SetReminder from "./../SetReminder/SetReminder";
 
-interface DayObject {
-  id: string;
-  tasks: { id: number; day: string; text: string; isChecked: boolean }[];
-  note: {
-    id: number;
-    text: string;
-  };
-}
-
-interface AppProps {
-  Day: DayObject;
-  checkTask: (taskID: number, isChecked: boolean) => void;
-  deleteTask: (taskID: number) => void;
-  deleteNote: (noteID: number) => void;
-  submitTaskText: (useSnackBar: boolean, snackBarText?: string) => void;
-  id: string;
-  newTaskTextRef: React.RefObject<TextInput>;
-  newNoteTextRef: React.RefObject<TextInput>;
-  firstScrollView: React.RefObject<ScrollView>;
-  keyboardHeight: number;
-  keyboardOpen: boolean;
-  theme: string;
-}
-
-interface AppState {
-  newTaskText: string;
-  newNoteText: string;
-  newTaskTextError: boolean;
-  newNoteTextError: boolean;
-  newTaskTextErrorText: string;
-  newNoteTextErrorText: string;
-  updateTaskTextError: boolean;
-  updateNoteTextError: boolean;
-  updateTaskTextErrorText: string;
-  updateNoteTextErrorText: string;
-  updateTaskTextState: {
-    text: string;
-    taskID: number;
-  };
-  updateNoteTextState: {
-    text: string;
-    noteID: number;
-  };
-  updateTaskDialogVisible: boolean;
-  updateNoteDialogVisible: boolean;
-  paddingBottom: number;
-  menuVisibility: boolean;
-  reminder: boolean;
-  reminderTime: string;
-}
 export default class DayScreenCard extends Component<AppProps, AppState> {
-  protected taskTextRef: React.RefObject<HTMLInputElement>;
-  protected newNoteScrollViewRef: React.RefObject<ScrollView>;
-  protected updateTaskTextRef: React.RefObject<TextInput>;
-  protected updateNoteTextRef: React.RefObject<TextInput>;
+  taskTextRef: React.RefObject<HTMLInputElement>;
+  newNoteScrollViewRef: React.RefObject<ScrollView>;
+  updateTaskTextRef: React.RefObject<NativeTextInput>;
+  updateNoteTextRef: React.RefObject<NativeTextInput>;
 
   constructor(props: AppProps) {
     super(props);
@@ -116,108 +74,103 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     this.updateNoteTextRef = React.createRef();
   }
 
-  clearTaskText = () => {
-    addTask(
-      this.state.newTaskText,
-      this.props.id,
-      this.state.reminder,
-      this.state.reminderTime
-    )
-      .then(() => {
-        this.props.submitTaskText(true, "Task Created!");
-      })
-      .then(() => {
-        this.props.newTaskTextRef.current!.blur();
-        setTimeout(() => {
-          this.setState({
-            newTaskText: "",
-            newTaskTextError: false,
-            newTaskTextErrorText: "",
-          });
-        }, 800);
-      })
-      .catch((error: string) => {
+  clearTaskText = async () => {
+    try {
+      await addTask(
+        this.state.newTaskText,
+        this.props.id,
+        this.state.reminder,
+        this.state.reminderTime
+      );
+      this.props.submitTaskText(true, "Task Created!");
+      this.props.newTaskTextRef.current!.blur();
+      setTimeout(() => {
         this.setState({
-          newTaskTextError: true,
-          newTaskTextErrorText: error,
+          newTaskText: "",
+          newTaskTextError: false,
+          newTaskTextErrorText: "",
         });
-        setTimeout(() => {
-          this.setState({
-            newTaskText: "",
-          });
-        }, 800);
+      }, 800);
+    } catch (err) {
+      this.setState({
+        newTaskTextError: true,
+        newTaskTextErrorText: err,
       });
+      setTimeout(() => {
+        this.setState({
+          newTaskText: "",
+        });
+      }, 800);
+    }
   };
 
-  clearNoteText = () => {
-    addNote(this.state.newNoteText, this.state.updateNoteTextState.noteID)
-      .then(() => {
-        this.props.submitTaskText(true, "Note Created!");
-      })
-      .then(() => {
-        setTimeout(() => {
-          this.setState({
-            newNoteText: "",
-            newNoteTextError: false,
-            newNoteTextErrorText: "",
-          });
-        }, 800);
-      })
-      .catch((error: string) => {
+  clearNoteText = async () => {
+    try {
+      await addNote(
+        this.state.newNoteText,
+        this.state.updateNoteTextState.noteID
+      );
+      this.props.submitTaskText(true, "Note Created!");
+      setTimeout(() => {
         this.setState({
-          newNoteTextError: true,
-          newNoteTextErrorText: error,
+          newNoteText: "",
+          newNoteTextError: false,
+          newNoteTextErrorText: "",
         });
-        setTimeout(() => {
-          this.setState({
-            newNoteText: "",
-          });
-        }, 800);
+      }, 800);
+    } catch (err) {
+      this.setState({
+        newNoteTextError: true,
+        newNoteTextErrorText: err,
       });
+      setTimeout(() => {
+        this.setState({
+          newNoteText: "",
+        });
+      }, 800);
+    }
   };
 
-  updateTaskText = () => {
-    updateTask(
-      this.state.updateTaskTextState.text,
-      this.state.updateTaskTextState.taskID,
-      this.state.reminder,
-      this.state.reminderTime
-    )
-      .then(() => {
-        this.props.submitTaskText(true, "Task Updated!");
-        this.setState({
-          updateTaskTextError: false,
-          updateTaskTextErrorText: "",
-        });
-        this.dismissTaskDialog();
-      })
-      .catch((error: string) => {
-        this.setState({
-          updateTaskTextError: true,
-          updateTaskTextErrorText: error,
-        });
+  updateTaskText = async () => {
+    try {
+      await updateTask(
+        this.state.updateTaskTextState.text,
+        this.state.updateTaskTextState.taskID,
+        this.state.reminder,
+        this.state.reminderTime
+      );
+      this.props.submitTaskText(true, "Task Updated!");
+      this.setState({
+        updateTaskTextError: false,
+        updateTaskTextErrorText: "",
       });
+      this.dismissTaskDialog();
+    } catch (err) {
+      this.setState({
+        updateTaskTextError: true,
+        updateTaskTextErrorText: err,
+      });
+    }
   };
 
-  updateNoteText = () => {
-    updateNote(
-      this.state.updateNoteTextState.text,
-      this.state.updateNoteTextState.noteID
-    )
-      .then(() => {
-        this.props.submitTaskText(true, "Note Updated!");
-        this.setState({
-          updateNoteTextError: false,
-          updateNoteTextErrorText: "",
-        });
-        this.dismissNoteDialog();
-      })
-      .catch((error: string) => {
-        this.setState({
-          updateNoteTextError: true,
-          updateNoteTextErrorText: error,
-        });
+  updateNoteText = async () => {
+    try {
+      await updateNote(
+        this.state.updateNoteTextState.text,
+        this.state.updateNoteTextState.noteID
+      );
+      this.props.submitTaskText(true, "Note Updated!");
+      this.setState({
+        updateNoteTextError: false,
+        updateNoteTextErrorText: "",
       });
+      this.dismissNoteDialog();
+    } catch (err) {
+      this.setState({
+        updateNoteTextError: true,
+        updateNoteTextErrorText: err,
+      });
+    }
   };
 
   updatingUpdateTaskTextState = (text: string, taskID: number) => {
@@ -338,16 +291,16 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               />
             </View>
             {this.props.Day &&
-              this.props.Day.tasks.map((task) => {
+              this.props.Day.tasks.map((task, index) => {
                 return task.isChecked ? (
-                  <View key={task.id}>
+                  <View key={index}>
                     <Paragraph
                       style={{
                         ...styles.paragraphTextStrikethrough,
                         backgroundColor:
                           this.props.theme === "light" ? "white" : "#121212",
                       }}
-                      onPress={(target) => {
+                      onPress={() => {
                         this.setState({
                           updateTaskTextState: {
                             text: task.text,
@@ -392,7 +345,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     </View>
                   </View>
                 ) : (
-                  <View key={task.id}>
+                  <View key={index}>
                     <View
                       style={{
                         display: "flex",
