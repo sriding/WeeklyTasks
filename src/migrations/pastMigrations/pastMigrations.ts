@@ -1,3 +1,3 @@
-export const pastMigrations = () => {
+export const pastMigrations = async () => {
   return null;
 };

@@ -33,7 +33,7 @@ export const addTask = async (
     realmContainer.objects("Task").forEach((task: any) => {
       arrayOfIds.push(task.id);
     });
-    realmContainer.write(() => {
+    await realmContainer.write(() => {
       let newTask = realmContainer.create("Task", {
         id: Math.max(...arrayOfIds) + 1,
         day: dayID,
@@ -50,9 +50,11 @@ export const addTask = async (
         },
         true
       );
+
+      pushNotifications.addAWeeklyRepeatingLocalNotification(newTask.id);
+
       return dayToUpdate.tasks.push(newTask);
     });
-    pushNotifications.sendLocalNotification();
     return null;
   } catch (err) {
     return err.toString();
@@ -126,7 +128,7 @@ export const deleteTask = async (taskID: number) => {
       let taskToDelete = realmContainer.create("Task", { id: taskID }, true);
       realmContainer.delete(taskToDelete);
     });
-    pushNotifications.sendLocalNotification();
+    pushNotifications.removeALocalScheduledNotification(taskID);
     return null;
   } catch (err) {
     return err.toString();
