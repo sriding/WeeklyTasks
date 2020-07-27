@@ -1,12 +1,14 @@
+//Realm modules
 const Realm = require("realm");
 
+//Models
 import { DayModel } from "../../../../models/database/DayModels";
 import { TaskModel } from "../../../../models/database/TaskModels";
 import { NoteModel } from "../../../../models/database/NoteModels";
 import { LoginModel } from "../../../../models/database/LoginModels";
 import { SettingsModel } from "../../../../models/database/SettingsModels";
 
-import { pushNotifications } from "../../../../services/Index";
+//Utilities
 import theWeek from "../../../../utilities/theWeek";
 
 export const createInitialDays = async () => {
@@ -58,9 +60,7 @@ export const createInitialDays = async () => {
         }
       });
     }
-
-    pushNotifications.sendLocalNotification();
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };

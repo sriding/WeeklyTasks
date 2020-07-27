@@ -19,7 +19,7 @@ export const deleteEverythingInDB = async () => {
       realmContainer.deleteAll();
     });
 
-    pushNotifications.sendLocalNotification();
+    pushNotifications.removeAllLocalNotifications();
   } catch (err) {
     return err.toString();
   }

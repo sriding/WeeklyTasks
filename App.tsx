@@ -23,7 +23,7 @@ class App extends React.Component<any, any> {
   componentDidMount = async () => {
     await pastMigrations();
     await currentMigration();
-    pushNotifications.testLocalNotifications();
+    //pushNotifications.testLocalNotifications();
     //pushNotifications.removeAllLocalNotifications();
 
     const themeName = await getTheme();

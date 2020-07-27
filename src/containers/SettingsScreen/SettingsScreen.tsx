@@ -252,19 +252,3 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
-
-//Persistence Notifications
-/*
-    <View style={{...styles.switchContainer, justifyContent: "center", alignItems: "center"}}>
-        <Switch style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
-        value={this.state.dailyPersistanceStatus}
-        onValueChange={() => {
-            changeDailyUpdatePersistance(!this.state.dailyPersistanceStatus).then(() => {
-                this.setState({
-                    dailyPersistanceStatus: !this.state.dailyPersistanceStatus
-                })
-            })
-        }}></Switch>
-        <Paragraph>Persistent Notification (Android Only)</Paragraph>
-    </View>
-    */

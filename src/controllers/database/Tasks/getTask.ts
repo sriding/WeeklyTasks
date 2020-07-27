@@ -12,17 +12,17 @@ export const getTask = async (taskId: number) => {
     schemaVersion: 5,
   });
 
-  const realmTaskObject = realmContainer
+  const realmTaskArray = realmContainer
     .objects("Task")
     .filtered(`id == "${taskId}"`);
 
   return {
-    id: realmTaskObject.id,
-    day: realmTaskObject.day,
-    text: realmTaskObject.text,
-    isChecked: realmTaskObject.isChecked,
-    reminder: realmTaskObject.reminder,
-    reminderTime: realmTaskObject.reminderTime,
-    reminderTimeValue: realmTaskObject.reminderTimeValue,
+    id: realmTaskArray[0].id,
+    day: realmTaskArray[0].day,
+    text: realmTaskArray[0].text,
+    isChecked: realmTaskArray[0].isChecked,
+    reminder: realmTaskArray[0].reminder,
+    reminderTime: realmTaskArray[0].reminderTime,
+    reminderTimeValue: realmTaskArray[0].reminderTimeValue,
   };
 };
