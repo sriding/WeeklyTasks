@@ -190,10 +190,6 @@ class HomeScreen extends Component<AppProps, AppState> {
     this.setState({ taskInput: text });
   };
 
-  setRemindersForTheDay = () => {
-    pushNotifications.sendLocalNotification();
-  };
-
   creatingTask = async () => {
     try {
       await addTask(

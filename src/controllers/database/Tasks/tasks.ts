@@ -287,10 +287,40 @@ export const getAllUncheckedTaskIdsForASingleDay = async (day: string) => {
       .objects("Task")
       .filtered(`day == "${day}" AND isChecked == ${false}`);
 
+    console.log(taskObjectsArray);
+
     let taskIdsArray: any = [];
 
     taskObjectsArray.forEach((task: any) => {
-      taskIdsArray.push(task);
+      taskIdsArray.push(task.id);
+    });
+
+    return taskIdsArray;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getAllCheckedTaskIdsForASingleDay = async (day: string) => {
+  try {
+    const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
+    const realmContainer = await Realm.open({
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+      schemaVersion: 5,
+    });
+
+    const taskObjectsArray = realmContainer
+      .objects("Task")
+      .filtered(`day == "${day}" AND isChecked == ${true}`);
+
+    let taskIdsArray: any = [];
+
+    taskObjectsArray.forEach((task: any) => {
+      taskIdsArray.push(task.id);
     });
 
     return taskIdsArray;
@@ -318,7 +348,7 @@ export const getAllTaskIdsForASingleDay = async (day: string) => {
     let taskIdsArray: any = [];
 
     taskObjectsArray.forEach((task: any) => {
-      taskIdsArray.push(task);
+      taskIdsArray.push(task.id);
     });
 
     return taskIdsArray;

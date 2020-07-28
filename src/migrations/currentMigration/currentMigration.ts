@@ -8,7 +8,7 @@ import { SettingsModel } from "../../models/database/SettingsModels";
 
 import { reminderTimes } from "../../utilities/reminderTimes";
 
-//MAKE SURE THAT IF YOU MAKE ANY NEW CHANGES TO ISSUE A NEW MIGRATION, YOU ADD THE CODE THAT IS
+//MAKE SURE THAT IF YOU MAKE ANY NEW CHANGES HERE TO ISSUE A NEW MIGRATION, YOU ADD THE CODE THAT IS
 //ALREADY HERE TO THE PAST MIGRATIONS FILE!
 export const currentMigration = async () => {
   //Version 5 --->

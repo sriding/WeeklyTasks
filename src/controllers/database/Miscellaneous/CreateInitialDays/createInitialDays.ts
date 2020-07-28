@@ -10,6 +10,7 @@ import { SettingsModel } from "../../../../models/database/SettingsModels";
 
 //Utilities
 import theWeek from "../../../../utilities/theWeek";
+import { pushNotifications } from "../../../../services/Index";
 
 export const createInitialDays = async () => {
   try {
@@ -38,6 +39,8 @@ export const createInitialDays = async () => {
         });
       });
     }
+
+    pushNotifications.createDailyRepeatingNotification("9:00 AM");
 
     if (!realmContainer.objects("Day")[0]) {
       realmContainer.write(() => {

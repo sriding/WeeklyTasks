@@ -19,10 +19,11 @@ export const getDailyUpdate = async () => {
       return realmContainer.objects("Settings")[0].dailyUpdate;
     }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
+//Not implemented yet
 export const getDailyUpdatePersistance = async () => {
   try {
     const realmContainer = await Realm.open({
@@ -31,7 +32,7 @@ export const getDailyUpdatePersistance = async () => {
     });
     return realmContainer.objects("Settings")[0].dailyUpdatePersistance;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -47,7 +48,7 @@ export const getDailyUpdateTime = async () => {
       return realmContainer.objects("Settings")[0].dailyUpdateTime;
     }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -57,9 +58,10 @@ export const getTaskReminders = async () => {
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     return realmContainer.objects("Settings")[0].taskReminders;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -69,9 +71,10 @@ export const getSortTasksBy = async () => {
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     return realmContainer.objects("Settings")[0].sortTasksBy;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -87,7 +90,7 @@ export const getTheme = async () => {
       return realmContainer.objects("Settings")[0].theme;
     }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -97,6 +100,7 @@ export const changeDailyUpdate = async (bool: boolean = true) => {
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.create(
         "Settings",
@@ -107,13 +111,22 @@ export const changeDailyUpdate = async (bool: boolean = true) => {
         true
       );
     });
-    pushNotifications.sendLocalNotification();
+
+    const updateTime = await getDailyUpdateTime();
+
+    if (bool === true) {
+      pushNotifications.createDailyRepeatingNotification(updateTime);
+    } else if (bool === false) {
+      pushNotifications.removeDailyRepeatingNotification();
+    }
+
     return null;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
+//Not implemented yet
 export const changeDailyUpdatePersistance = async (bool: boolean = true) => {
   try {
     const realmContainer = await Realm.open({
@@ -130,10 +143,10 @@ export const changeDailyUpdatePersistance = async (bool: boolean = true) => {
         true
       );
     });
-    pushNotifications.sendLocalNotification();
+    //pushNotifications.sendLocalNotification();
     return null;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -143,6 +156,7 @@ export const changeDailyUpdateTime = async (string: string = "9:00 AM") => {
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.create(
         "Settings",
@@ -153,10 +167,15 @@ export const changeDailyUpdateTime = async (string: string = "9:00 AM") => {
         true
       );
     });
-    pushNotifications.sendLocalNotification();
+
+    console.log(string);
+    console.log("is this running? - inside function");
+    pushNotifications.createDailyRepeatingNotification(string);
+    console.log("after push notifications - in function.");
     return null;
   } catch (err) {
-    return err.toString();
+    console.log("error - inside function");
+    return err;
   }
 };
 
@@ -166,6 +185,7 @@ export const changeTaskReminders = async (bool: boolean = true) => {
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.create(
         "Settings",
@@ -176,10 +196,16 @@ export const changeTaskReminders = async (bool: boolean = true) => {
         true
       );
     });
-    pushNotifications.sendLocalNotification();
+
+    if (bool === true) {
+      await pushNotifications.addingAllTasksNotifications();
+    } else if (bool === false) {
+      await pushNotifications.removingAllTasksNotifications();
+    }
+
     return null;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -201,7 +227,7 @@ export const changeSortTasksBy = async (string: string = "Reminder Time") => {
       return null;
     });
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
@@ -211,6 +237,7 @@ export const changeTheme = async (string: string = "light") => {
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.create(
         "Settings",
@@ -223,6 +250,6 @@ export const changeTheme = async (string: string = "light") => {
       return null;
     });
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };

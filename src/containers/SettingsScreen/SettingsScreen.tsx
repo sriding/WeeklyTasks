@@ -72,7 +72,9 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
   };
 
   changeReminderTime = async (time: string) => {
-    await changeDailyUpdateTime(time);
+    console.log("app prop function before");
+    const done = await changeDailyUpdateTime(time);
+    console.log("app prop function after");
     this.setState({
       dailyUpdateTimeStatus: time,
     });
