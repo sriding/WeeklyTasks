@@ -6,8 +6,11 @@ export const addEH = (
   day: string,
   reminder: boolean,
   reminderTime: string
-) => {
-  const errorsObject: any = { errorsExist: false };
+): { errorsExist: boolean; errors: any } => {
+  const errorsObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
 
   //Required
   if (typeof text !== "string") {
@@ -53,8 +56,11 @@ export const updateEH = (
   taskId: number,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-) => {
-  const errorsObject: any = { errorsExist: false };
+): { errorsExist: boolean; errors: any } => {
+  const errorsObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
 
   //Required
   if (typeof text !== "string") {
@@ -92,8 +98,14 @@ export const updateEH = (
   return errorsObject;
 };
 
-export const checkEH = (taskID: number, isChecked: boolean) => {
-  const errorObject: any = { errorsExist: false };
+export const checkEH = (
+  taskID: number,
+  isChecked: boolean
+): { errorsExist: boolean; errors: any } => {
+  const errorObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
 
   //Required
   if (typeof taskID !== "number") {
@@ -110,8 +122,13 @@ export const checkEH = (taskID: number, isChecked: boolean) => {
   return errorObject;
 };
 
-export const deleteEH = (taskID: number) => {
-  const errorObject: any = { errorsExist: false };
+export const deleteEH = (
+  taskID: number
+): { errorsExist: boolean; errors: any } => {
+  const errorObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
 
   //Required
   if (typeof taskID !== "number") {
@@ -122,8 +139,13 @@ export const deleteEH = (taskID: number) => {
   return errorObject;
 };
 
-export const checkAllDeleteAllGetDayTaskIdsEH = (day: string) => {
-  const errorObject: any = { errorsExist: false };
+export const checkAllDeleteAllGetDayTaskIdsEH = (
+  day: string
+): { errorsExist: boolean; errors: any } => {
+  const errorObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
 
   //Required
   if (typeof day !== "string") {

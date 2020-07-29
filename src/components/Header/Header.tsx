@@ -1,20 +1,6 @@
 import React from "react";
 import { Appbar } from "react-native-paper";
-
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-  NavigationActions,
-} from "react-navigation";
-
-interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-  sideBarIconClicked?: () => void;
-  title: string;
-  date: string;
-  back: boolean;
-}
+import { AppProps } from "./Header.interface";
 
 export default function Header(props: AppProps) {
   return (
@@ -25,18 +11,11 @@ export default function Header(props: AppProps) {
         <Appbar.Action
           icon="view-headline"
           size={27}
-          onPress={
-            () => props.navigation.openDrawer()
-            //props.sideBarIconClicked ? props.sideBarIconClicked() : null
-          }
+          onPress={() => props.navigation.openDrawer()}
         />
       )}
       {props.date ? (
-        <Appbar.Content
-          title={props.title}
-          titleStyle={{ fontSize: 19 }}
-          subtitle={props.date}
-        />
+        <Appbar.Content title={props.title} titleStyle={{ fontSize: 19 }} />
       ) : (
         <Appbar.Content title={props.title} titleStyle={{ fontSize: 19 }} />
       )}

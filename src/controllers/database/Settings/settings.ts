@@ -1,4 +1,5 @@
 const Realm = require("realm");
+
 import { DayModel } from "../../../models/database/DayModels";
 import { TaskModel } from "../../../models/database/TaskModels";
 import { NoteModel } from "../../../models/database/NoteModels";
@@ -7,7 +8,7 @@ import { SettingsModel } from "../../../models/database/SettingsModels";
 
 import { pushNotifications } from "../../../services/Index";
 
-export const getDailyUpdate = async () => {
+export const getDailyUpdate = async (): Promise<boolean> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -24,7 +25,7 @@ export const getDailyUpdate = async () => {
 };
 
 //Not implemented yet
-export const getDailyUpdatePersistance = async () => {
+export const getDailyUpdatePersistance = async (): Promise<boolean> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -36,7 +37,7 @@ export const getDailyUpdatePersistance = async () => {
   }
 };
 
-export const getDailyUpdateTime = async () => {
+export const getDailyUpdateTime = async (): Promise<string> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -52,7 +53,7 @@ export const getDailyUpdateTime = async () => {
   }
 };
 
-export const getTaskReminders = async () => {
+export const getTaskReminders = async (): Promise<boolean> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -65,7 +66,7 @@ export const getTaskReminders = async () => {
   }
 };
 
-export const getSortTasksBy = async () => {
+export const getSortTasksBy = async (): Promise<string> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -78,12 +79,13 @@ export const getSortTasksBy = async () => {
   }
 };
 
-export const getTheme = async () => {
+export const getTheme = async (): Promise<string> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     if (realmContainer.objects("Settings")[0] === undefined) {
       return "light";
     } else {
@@ -94,7 +96,9 @@ export const getTheme = async () => {
   }
 };
 
-export const changeDailyUpdate = async (bool: boolean = true) => {
+export const changeDailyUpdate = async (
+  bool: boolean = true
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -113,21 +117,24 @@ export const changeDailyUpdate = async (bool: boolean = true) => {
     });
 
     const updateTime = await getDailyUpdateTime();
-
-    if (bool === true) {
-      pushNotifications.createDailyRepeatingNotification(updateTime);
-    } else if (bool === false) {
-      pushNotifications.removeDailyRepeatingNotification();
+    if (typeof updateTime !== "string") {
+      throw updateTime;
     }
 
-    return null;
+    if (bool === true) {
+      await pushNotifications.createDailyRepeatingNotification(updateTime);
+    } else if (bool === false) {
+      await pushNotifications.removeDailyRepeatingNotification();
+    }
   } catch (err) {
     return err;
   }
 };
 
 //Not implemented yet
-export const changeDailyUpdatePersistance = async (bool: boolean = true) => {
+export const changeDailyUpdatePersistance = async (
+  bool: boolean = true
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -144,13 +151,14 @@ export const changeDailyUpdatePersistance = async (bool: boolean = true) => {
       );
     });
     //pushNotifications.sendLocalNotification();
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const changeDailyUpdateTime = async (string: string = "9:00 AM") => {
+export const changeDailyUpdateTime = async (
+  string: string = "9:00 AM"
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -168,18 +176,15 @@ export const changeDailyUpdateTime = async (string: string = "9:00 AM") => {
       );
     });
 
-    console.log(string);
-    console.log("is this running? - inside function");
-    pushNotifications.createDailyRepeatingNotification(string);
-    console.log("after push notifications - in function.");
-    return null;
+    await pushNotifications.createDailyRepeatingNotification(string);
   } catch (err) {
-    console.log("error - inside function");
     return err;
   }
 };
 
-export const changeTaskReminders = async (bool: boolean = true) => {
+export const changeTaskReminders = async (
+  bool: boolean = true
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -202,14 +207,14 @@ export const changeTaskReminders = async (bool: boolean = true) => {
     } else if (bool === false) {
       await pushNotifications.removingAllTasksNotifications();
     }
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const changeSortTasksBy = async (string: string = "Reminder Time") => {
+export const changeSortTasksBy = async (
+  string: string = "Reminder Time"
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -224,14 +229,13 @@ export const changeSortTasksBy = async (string: string = "Reminder Time") => {
         },
         true
       );
-      return null;
     });
   } catch (err) {
     return err;
   }
 };
 
-export const changeTheme = async (string: string = "light") => {
+export const changeTheme = async (string: string = "light"): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -247,7 +251,6 @@ export const changeTheme = async (string: string = "light") => {
         },
         true
       );
-      return null;
     });
   } catch (err) {
     return err;

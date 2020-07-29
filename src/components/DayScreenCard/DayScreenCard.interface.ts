@@ -2,15 +2,12 @@ import { TextInput as NativeTextInput, ScrollView } from "react-native";
 
 export interface DayObject {
   id: string;
-  tasks: { id: number; day: string; text: string; isChecked: boolean }[];
-  note: {
-    id: number;
-    text: string;
-  };
+  tasks: object[];
+  note: object;
 }
 
 export interface AppProps {
-  Day: DayObject;
+  Day: DayObject | null;
   checkTask: (taskID: number, isChecked: boolean) => void;
   deleteTask: (taskID: number) => void;
   deleteNote: (noteID: number) => void;

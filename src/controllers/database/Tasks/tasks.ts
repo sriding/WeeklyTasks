@@ -23,12 +23,33 @@ import {
   checkAllDeleteAllGetDayTaskIdsEH,
 } from "../../../error_handling/tasksEH";
 
+export const getTask = async (taskId: number): Promise<any> => {
+  const realmContainer = await Realm.open({
+    schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+    schemaVersion: 5,
+  });
+
+  const realmTaskArray = realmContainer
+    .objects("Task")
+    .filtered(`id == "${taskId}"`);
+
+  return {
+    id: realmTaskArray[0].id,
+    day: realmTaskArray[0].day,
+    text: realmTaskArray[0].text,
+    isChecked: realmTaskArray[0].isChecked,
+    reminder: realmTaskArray[0].reminder,
+    reminderTime: realmTaskArray[0].reminderTime,
+    reminderTimeValue: realmTaskArray[0].reminderTimeValue,
+  };
+};
+
 export const addTask = async (
   text: string,
   dayID: string,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-) => {
+): Promise<void> => {
   try {
     const errorObject = addEH(text, dayID, reminder, reminderTime);
     if (errorObject.errorsExist) {
@@ -71,8 +92,6 @@ export const addTask = async (
     });
 
     await pushNotifications.addARepeatingLocalNotification(newTaskId);
-
-    return null;
   } catch (err) {
     return err;
   }
@@ -83,7 +102,7 @@ export const updateTask = async (
   taskId: number,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-) => {
+): Promise<void> => {
   try {
     const errorObject = updateEH(text, taskId, reminder, reminderTime);
     if (errorObject.errorsExist) {
@@ -113,14 +132,15 @@ export const updateTask = async (
 
     await pushNotifications.removeALocalScheduledNotification(taskId);
     await pushNotifications.addARepeatingLocalNotification(taskId);
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const checkTask = async (taskID: number, isChecked: boolean) => {
+export const checkTask = async (
+  taskID: number,
+  isChecked: boolean
+): Promise<void> => {
   try {
     const errorObject = checkEH(taskID, isChecked);
     if (errorObject.errorsExist) {
@@ -145,14 +165,12 @@ export const checkTask = async (taskID: number, isChecked: boolean) => {
     } else if (isChecked === false) {
       await pushNotifications.checkingATaskNotification(taskID, 1);
     }
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const deleteTask = async (taskID: number) => {
+export const deleteTask = async (taskID: number): Promise<void> => {
   try {
     const errorObject = deleteEH(taskID);
     if (errorObject.errorsExist) {
@@ -170,14 +188,12 @@ export const deleteTask = async (taskID: number) => {
     });
 
     pushNotifications.removeALocalScheduledNotification(taskID);
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const checkAllTasks = async (day: string) => {
+export const checkAllTasks = async (day: string): Promise<void> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -214,14 +230,12 @@ export const checkAllTasks = async (day: string) => {
     for (let taskIds of taskIdsArray) {
       await pushNotifications.removeALocalScheduledNotification(taskIds);
     }
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const deleteAllTasks = async (day: string) => {
+export const deleteAllTasks = async (day: string): Promise<void> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -245,33 +259,32 @@ export const deleteAllTasks = async (day: string) => {
     for (let taskIds of taskIdsArray) {
       await pushNotifications.removeALocalScheduledNotification(taskIds);
     }
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const unCheckEveryTaskInTheDatabase = async () => {
+export const unCheckEveryTaskInTheDatabase = async (): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       let amountOfTasks = realmContainer.objects("Task");
-      for (task of amountOfTasks) {
+      for (let task of amountOfTasks) {
         task.isChecked = false;
       }
     });
-
-    return null;
   } catch (err) {
     return err;
   }
 };
 
-export const getAllUncheckedTaskIdsForASingleDay = async (day: string) => {
+export const getAllUncheckedTaskIdsForASingleDay = async (
+  day: string
+): Promise<number[]> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -289,7 +302,7 @@ export const getAllUncheckedTaskIdsForASingleDay = async (day: string) => {
 
     console.log(taskObjectsArray);
 
-    let taskIdsArray: any = [];
+    let taskIdsArray: number[] = [];
 
     taskObjectsArray.forEach((task: any) => {
       taskIdsArray.push(task.id);
@@ -301,7 +314,9 @@ export const getAllUncheckedTaskIdsForASingleDay = async (day: string) => {
   }
 };
 
-export const getAllCheckedTaskIdsForASingleDay = async (day: string) => {
+export const getAllCheckedTaskIdsForASingleDay = async (
+  day: string
+): Promise<number[]> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -317,7 +332,7 @@ export const getAllCheckedTaskIdsForASingleDay = async (day: string) => {
       .objects("Task")
       .filtered(`day == "${day}" AND isChecked == ${true}`);
 
-    let taskIdsArray: any = [];
+    let taskIdsArray: number[] = [];
 
     taskObjectsArray.forEach((task: any) => {
       taskIdsArray.push(task.id);
@@ -329,7 +344,9 @@ export const getAllCheckedTaskIdsForASingleDay = async (day: string) => {
   }
 };
 
-export const getAllTaskIdsForASingleDay = async (day: string) => {
+export const getAllTaskIdsForASingleDay = async (
+  day: string
+): Promise<number[]> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -345,7 +362,7 @@ export const getAllTaskIdsForASingleDay = async (day: string) => {
       .objects("Task")
       .filtered(`day == "${day}"`);
 
-    let taskIdsArray: any = [];
+    let taskIdsArray: number[] = [];
 
     taskObjectsArray.forEach((task: any) => {
       taskIdsArray.push(task.id);

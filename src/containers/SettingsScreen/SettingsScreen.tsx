@@ -15,7 +15,7 @@ import {
 import moment from "moment";
 
 //Interfaces
-import { AppProps, AppState } from "./Interfaces-SettingsScreen";
+import { AppProps, AppState } from "./SettingsScreen.interface";
 
 //Functions
 import {
@@ -35,6 +35,7 @@ import {
 //Components
 import Header from "../../components/Header/Header";
 import SetReminder from "../../components/SetReminder/SetReminder";
+import SnackBarPopup from "../../components/SnackBarPopup/SnackBarPopup";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -45,6 +46,9 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
       dailyPersistanceStatus: false,
       dailyUpdateTimeStatus: "10:00AM",
       taskReminderStatus: true,
+      snackBarIsError: false,
+      snackBarText: "",
+      snackBarVisibility: false,
       sortTasksMenu: false,
       sortTasksByStatus: "Reminder Time",
       themeStatus: "light",
@@ -54,29 +58,132 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
   }
 
   componentDidMount = async () => {
-    const dailyUpdateStatus = await getDailyUpdate();
-    const dailyPersistanceStatus = await getDailyUpdatePersistance();
-    const dailyUpdateTimeStatus = await getDailyUpdateTime();
-    const taskReminderStatus = await getTaskReminders();
-    const sortTasksByStatus = await getSortTasksBy();
-    const themeStatus = await getTheme();
+    try {
+      const dailyUpdateStatus: boolean = await getDailyUpdate();
+      if (typeof dailyUpdateStatus !== "boolean") {
+        throw dailyUpdateStatus;
+      }
+      this.setState({
+        dailyUpdateStatus,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error getting daily update boolean.",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+
+    try {
+      const dailyPersistanceStatus: boolean = await getDailyUpdatePersistance();
+      if (typeof dailyPersistanceStatus !== "boolean") {
+        throw dailyPersistanceStatus;
+      }
+      this.setState({
+        dailyPersistanceStatus,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error getting daily persistance boolean",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+
+    try {
+      const dailyUpdateTimeStatus: string = await getDailyUpdateTime();
+      if (typeof dailyUpdateTimeStatus !== "string") {
+        throw dailyUpdateTimeStatus;
+      }
+      this.setState({
+        dailyUpdateTimeStatus,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error setting specific theme. Using default instead.",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+
+    try {
+      const taskReminderStatus: boolean = await getTaskReminders();
+      if (typeof taskReminderStatus !== "boolean") {
+        throw taskReminderStatus;
+      }
+      this.setState({
+        taskReminderStatus,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error setting specific theme. Using default instead.",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+
+    try {
+      const sortTasksByStatus: string = await getSortTasksBy();
+      if (typeof sortTasksByStatus !== "string") {
+        throw sortTasksByStatus;
+      }
+      this.setState({
+        sortTasksByStatus,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error setting specific theme. Using default instead.",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+
+    try {
+      const themeStatus: string = await getTheme();
+      if (typeof themeStatus !== "string") {
+        throw themeStatus;
+      }
+      this.setState({
+        themeStatus,
+        theme: themeStatus,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error setting specific theme. Using default instead.",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+  };
+
+  changeReminderTime = async (time: string): Promise<void> => {
+    try {
+      const expectVoid: void = await changeDailyUpdateTime(time);
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
+      this.setState({
+        dailyUpdateTimeStatus: time,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Error setting specific theme. Using default instead.",
+        true
+      );
+      this.toggleSnackBarVisibility();
+    }
+  };
+
+  toggleSnackBarVisibility = (): void => {
     this.setState({
-      dailyUpdateStatus,
-      dailyPersistanceStatus,
-      dailyUpdateTimeStatus,
-      taskReminderStatus,
-      sortTasksByStatus,
-      themeStatus,
-      theme: themeStatus,
+      snackBarVisibility: !this.state.snackBarVisibility,
     });
   };
 
-  changeReminderTime = async (time: string) => {
-    console.log("app prop function before");
-    const done = await changeDailyUpdateTime(time);
-    console.log("app prop function after");
+  setSnackBarTextAndIfError = (text: string, isError: boolean): void => {
     this.setState({
-      dailyUpdateTimeStatus: time,
+      snackBarText: text,
+      snackBarIsError: isError,
     });
   };
 
@@ -91,7 +198,6 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
       >
         <Header
           title="Settings"
-          date={this.state.date}
           navigation={this.props.navigation}
           back={true}
         />
@@ -220,6 +326,12 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             </View>
             <Caption>{this.state.themeText}</Caption>
           </View>
+          <SnackBarPopup
+            visibility={this.state.snackBarVisibility}
+            toggleSnackBarVisibility={this.toggleSnackBarVisibility}
+            snackBarIsError={this.state.snackBarIsError}
+            snackBarText={this.state.snackBarText}
+          />
         </ScrollView>
       </SafeAreaView>
     );

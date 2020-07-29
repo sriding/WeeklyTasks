@@ -10,25 +10,7 @@ import { Dimensions, StyleSheet, Platform } from "react-native";
 
 import SetReminder from "./../SetReminder/SetReminder";
 
-interface AppProps {
-  updateTaskDialogVisible: boolean;
-  dismissTaskDialog: () => void;
-  updateTaskText: () => void;
-  updateTaskTextState: {
-    text: string;
-    taskID: number;
-  };
-  updatingUpdateTaskTextState: (text: string, taskID: number) => void;
-  updateTaskTextError: boolean;
-  updateTaskTextErrorText: string;
-  keyboardHeight: number;
-  keyboardOpen: boolean;
-  updateTaskTextRef: React.RefObject<TextInput>;
-  reminder: boolean;
-  reminderTime: string;
-  changeReminderTime: (reminderTime: string) => void;
-  theme: string;
-}
+import { AppProps } from "./UpdateTaskDialog.interface";
 
 export default function UpdateTaskDialog(props: AppProps) {
   return (

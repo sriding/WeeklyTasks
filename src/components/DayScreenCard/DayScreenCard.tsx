@@ -22,7 +22,7 @@ import {
 } from "react-native-paper";
 
 //Interfaces
-import { DayObject, AppProps, AppState } from "./InterfacesDayScreenCard";
+import { AppProps, AppState } from "./DayScreenCard.interface";
 
 //Functions
 import { addTask, updateTask } from "../../controllers/database/Tasks/tasks";
@@ -74,16 +74,22 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     this.updateNoteTextRef = React.createRef();
   }
 
-  clearTaskText = async () => {
+  clearTaskText = async (): Promise<void> => {
     try {
-      await addTask(
+      let expectVoid: void = await addTask(
         this.state.newTaskText,
         this.props.id,
         this.state.reminder,
         this.state.reminderTime
       );
+      if (expectVoid !== undefined && expectVoid !== null) {
+        throw expectVoid;
+      }
+
       this.props.submitTaskText(true, "Task Created!");
       this.props.newTaskTextRef.current!.blur();
+
+      //Why is there a timeout here again?
       setTimeout(() => {
         this.setState({
           newTaskText: "",
@@ -106,11 +112,17 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
 
   clearNoteText = async () => {
     try {
-      await addNote(
+      let expectVoidOrString: void | string = await addNote(
         this.state.newNoteText,
         this.state.updateNoteTextState.noteID
       );
+      if (expectVoidOrString && typeof expectVoidOrString !== "string") {
+        throw expectVoidOrString;
+      }
+
       this.props.submitTaskText(true, "Note Created!");
+
+      //Timeout?
       setTimeout(() => {
         this.setState({
           newNoteText: "",
@@ -131,14 +143,18 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     }
   };
 
-  updateTaskText = async () => {
+  updateTaskText = async (): Promise<void> => {
     try {
-      await updateTask(
+      let expectVoid: void = await updateTask(
         this.state.updateTaskTextState.text,
         this.state.updateTaskTextState.taskID,
         this.state.reminder,
         this.state.reminderTime
       );
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
+
       this.props.submitTaskText(true, "Task Updated!");
       this.setState({
         updateTaskTextError: false,
@@ -153,12 +169,16 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     }
   };
 
-  updateNoteText = async () => {
+  updateNoteText = async (): Promise<void> => {
     try {
-      await updateNote(
+      let expectVoidOrString: void | string = await updateNote(
         this.state.updateNoteTextState.text,
         this.state.updateNoteTextState.noteID
       );
+      if (expectVoidOrString && typeof expectVoidOrString !== "string") {
+        throw expectVoidOrString;
+      }
+
       this.props.submitTaskText(true, "Note Updated!");
       this.setState({
         updateNoteTextError: false,
@@ -173,45 +193,71 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     }
   };
 
-  updatingUpdateTaskTextState = (text: string, taskID: number) => {
-    this.setState({
-      updateTaskTextState: {
-        text,
-        taskID,
-      },
-    });
+  updatingUpdateTaskTextState = (text: string, taskID: number): void => {
+    try {
+      this.setState({
+        updateTaskTextState: {
+          text,
+          taskID,
+        },
+      });
+    } catch (err) {
+      this.setState({
+        updateNoteTextError: true,
+        updateNoteTextErrorText: err,
+      });
+    }
   };
 
-  updatingUpdateNoteTextState = (text: string, noteID: number) => {
-    this.setState({
-      updateNoteTextState: {
-        text,
-        noteID,
-      },
-    });
+  updatingUpdateNoteTextState = (text: string, noteID: number): void => {
+    try {
+      this.setState({
+        updateNoteTextState: {
+          text,
+          noteID,
+        },
+      });
+    } catch (err) {
+      this.setState({
+        updateNoteTextError: true,
+        updateNoteTextErrorText: err,
+      });
+    }
   };
 
-  dismissTaskDialog = () => {
-    this.setState({
-      updateTaskDialogVisible: false,
-      updateTaskTextError: false,
-      updateTaskTextErrorText: "",
-    });
+  dismissTaskDialog = (): void => {
+    try {
+      this.setState({
+        updateTaskDialogVisible: false,
+        updateTaskTextError: false,
+        updateTaskTextErrorText: "",
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  dismissNoteDialog = () => {
-    this.setState({
-      updateNoteDialogVisible: false,
-      updateNoteTextError: false,
-      updateNoteTextErrorText: "",
-    });
+  dismissNoteDialog = (): void => {
+    try {
+      this.setState({
+        updateNoteDialogVisible: false,
+        updateNoteTextError: false,
+        updateNoteTextErrorText: "",
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   changeReminderTime = (reminderTime: string) => {
-    this.setState({
-      reminder: reminderTime === "N/A" ? false : true,
-      reminderTime,
-    });
+    try {
+      this.setState({
+        reminder: reminderTime === "N/A" ? false : true,
+        reminderTime,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   render() {

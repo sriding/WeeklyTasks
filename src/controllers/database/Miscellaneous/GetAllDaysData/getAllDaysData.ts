@@ -6,7 +6,7 @@ import { NoteModel } from "../../../../models/database/NoteModels";
 import { LoginModel } from "../../../../models/database/LoginModels";
 import { SettingsModel } from "../../../../models/database/SettingsModels";
 
-export const getAllDaysData = async () => {
+export const getAllDaysData = async (): Promise<any> => {
   console.log(Realm.defaultPath);
   try {
     const realmContainer = await Realm.open({
@@ -29,6 +29,6 @@ export const getAllDaysData = async () => {
 
     return customObjectToReturn;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };

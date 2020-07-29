@@ -10,7 +10,7 @@ import { reminderTimes } from "../../utilities/reminderTimes";
 
 //MAKE SURE THAT IF YOU MAKE ANY NEW CHANGES HERE TO ISSUE A NEW MIGRATION, YOU ADD THE CODE THAT IS
 //ALREADY HERE TO THE PAST MIGRATIONS FILE!
-export const currentMigration = async () => {
+export const currentMigration = async (): Promise<void> => {
   //Version 5 --->
   await Realm.open({
     schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],

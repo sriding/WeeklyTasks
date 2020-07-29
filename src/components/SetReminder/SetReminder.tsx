@@ -3,17 +3,7 @@ import { View, ScrollView } from "react-native";
 import { Paragraph, Menu, Divider } from "react-native-paper";
 
 import reminderTimes from "../../utilities/reminderTimes";
-
-interface AppProps {
-  reminder: boolean;
-  reminderTime: string;
-  changeReminderTime: (reminderTime: string) => void;
-  text: string;
-}
-
-interface AppState {
-  menuVisibility: boolean;
-}
+import { AppProps, AppState } from "./SetReminder.interface";
 
 class SetReminder extends Component<AppProps, AppState> {
   constructor(props: AppProps) {

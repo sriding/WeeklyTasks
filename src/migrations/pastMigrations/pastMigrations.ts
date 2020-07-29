@@ -1,3 +1,1 @@
-export const pastMigrations = async () => {
-  return null;
-};
+export const pastMigrations = async (): Promise<void> => {};

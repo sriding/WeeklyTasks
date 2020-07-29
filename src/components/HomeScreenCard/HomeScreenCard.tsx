@@ -1,31 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, Title, Paragraph, Subheading, Text } from "react-native-paper";
-
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from "react-navigation";
-
-interface DayInformationObject {
-  id: string;
-  tasks: {
-    id: number;
-    day: string;
-    text: string;
-    isChecked: boolean;
-  }[];
-  note: {
-    id: number;
-    text: string;
-  };
-}
-interface AppProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-  dayInformation: DayInformationObject;
-  theme: string;
-}
+import { AppProps } from "./HomeScreenCard.interface";
 
 export default function HomeScreenCard(props: AppProps) {
   return (

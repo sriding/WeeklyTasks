@@ -4,28 +4,22 @@ import {
   NavigationState,
 } from "react-navigation";
 
-export interface DayObject {
-  id: string;
-  tasks: { id: number; day: string; text: string; isChecked: boolean }[];
-  note: {
-    id: number;
-    text: string;
-  };
-}
 export interface AppProps {
   navigation: NavigationScreenProp<NavigationState, NavigationParams>;
 }
 
 export interface AppState {
-  id: string;
-  Day: DayObject;
-  fabButtonClicked: boolean;
+  date: string;
+  dailyUpdateStatus: boolean;
+  taskReminderStatus: boolean;
+  dailyPersistanceStatus: boolean;
   snackBarVisibility: boolean;
   snackBarIsError: boolean;
   snackBarText: string;
-  keyboardHeight: number;
-  keyboardOpen: boolean;
-  date: string;
-  topOffset: number;
+  sortTasksMenu: boolean;
+  sortTasksByStatus: string;
+  themeStatus: string;
+  dailyUpdateTimeStatus: string;
   theme: string;
+  themeText: string;
 }

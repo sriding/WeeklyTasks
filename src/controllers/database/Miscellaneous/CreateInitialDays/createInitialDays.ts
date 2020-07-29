@@ -12,7 +12,7 @@ import { SettingsModel } from "../../../../models/database/SettingsModels";
 import theWeek from "../../../../utilities/theWeek";
 import { pushNotifications } from "../../../../services/Index";
 
-export const createInitialDays = async () => {
+export const createInitialDays = async (): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -23,7 +23,7 @@ export const createInitialDays = async () => {
       realmContainer.objects("Settings")[0] &&
       realmContainer.objects("Day")[0]
     ) {
-      return null;
+      return;
     }
 
     if (!realmContainer.objects("Settings")[0]) {

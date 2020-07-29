@@ -7,14 +7,14 @@ import { SettingsModel } from "../../../../models/database/SettingsModels";
 
 import { getSortTasksBy } from "../../Settings/settings";
 
-export const getASingleDaysData = async (dayID: string) => {
+export const getASingleDaysData = async (dayID: string): Promise<any> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
 
-    let sortedTaskData = [];
+    let sortedTaskData: any[] = [];
     let sortedTaskDataChecked: any[] = [];
 
     let realmTaskDataSortedByReminderTime = realmContainer
@@ -108,6 +108,6 @@ export const getASingleDaysData = async (dayID: string) => {
         };
     }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };

@@ -5,7 +5,10 @@ import { NoteModel } from "../../../models/database/NoteModels";
 import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
 
-export const addNote = async (text: string, noteID: number) => {
+export const addNote = async (
+  text: string,
+  noteID: number
+): Promise<void | string> => {
   try {
     let trimmedText = text.trim();
     if (trimmedText.length === 0) {
@@ -27,15 +30,16 @@ export const addNote = async (text: string, noteID: number) => {
         },
         true
       );
-
-      return null;
     });
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const updateNote = async (text: string, noteID: number) => {
+export const updateNote = async (
+  text: string,
+  noteID: number
+): Promise<void | string> => {
   try {
     let trimmedText = text.trim();
     if (trimmedText.length === 0) {
@@ -56,14 +60,13 @@ export const updateNote = async (text: string, noteID: number) => {
         },
         true
       );
-      return null;
     });
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const deleteNote = async (noteID: number) => {
+export const deleteNote = async (noteID: number): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -78,9 +81,8 @@ export const deleteNote = async (noteID: number) => {
         },
         true
       );
-      return null;
     });
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
