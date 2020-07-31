@@ -29,7 +29,10 @@ class App extends React.PureComponent<AppProps, AppState> {
   componentDidMount = async () => {
     try {
       await pastMigrations();
-      await currentMigration();
+      const expectVoid = await currentMigration();
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
       //pushNotifications.testLocalNotifications();
       //pushNotifications.removeAllLocalNotifications();
     } catch (err) {

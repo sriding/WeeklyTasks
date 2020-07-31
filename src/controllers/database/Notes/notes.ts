@@ -1,21 +1,28 @@
+//Realm modules
 const Realm = require("realm");
+
+//Models
 import { DayModel } from "../../../models/database/DayModels";
 import { TaskModel } from "../../../models/database/TaskModels";
 import { NoteModel } from "../../../models/database/NoteModels";
 import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
+import {
+  addNoteUpdateNoteEH,
+  deleteNoteEH,
+} from "../../../error-handling/notesEH";
 
 export const addNote = async (
   text: string,
   noteID: number
 ): Promise<void | string> => {
   try {
-    let trimmedText = text.trim();
-    if (trimmedText.length === 0) {
-      return "No text!";
-    } else if (trimmedText.length > 350) {
-      return "Cannot exceed 350 characters.";
+    const errorsObject = addNoteUpdateNoteEH(text, noteID);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
     }
+
+    let trimmedText = text.trim();
 
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -41,12 +48,13 @@ export const updateNote = async (
   noteID: number
 ): Promise<void | string> => {
   try {
-    let trimmedText = text.trim();
-    if (trimmedText.length === 0) {
-      return "No text!";
-    } else if (trimmedText.length > 350) {
-      return "Cannot exceed 350 characters.";
+    const errorsObject = addNoteUpdateNoteEH(text, noteID);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
     }
+
+    let trimmedText = text.trim();
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
@@ -68,6 +76,11 @@ export const updateNote = async (
 
 export const deleteNote = async (noteID: number): Promise<void> => {
   try {
+    const errorsObject = deleteNoteEH(noteID);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,

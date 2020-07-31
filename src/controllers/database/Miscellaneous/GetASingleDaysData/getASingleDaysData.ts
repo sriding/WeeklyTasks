@@ -6,9 +6,15 @@ import { LoginModel } from "../../../../models/database/LoginModels";
 import { SettingsModel } from "../../../../models/database/SettingsModels";
 
 import { getSortTasksBy } from "../../Settings/settings";
+import { getASingleDaysDataEH } from "../../../../error-handling/getASingleDaysDataEH";
 
 export const getASingleDaysData = async (dayID: string): Promise<any> => {
   try {
+    const errorsObject = getASingleDaysDataEH(dayID);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,

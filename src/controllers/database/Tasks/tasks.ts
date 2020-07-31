@@ -21,9 +21,15 @@ import {
   checkEH,
   deleteEH,
   checkAllDeleteAllGetDayTaskIdsEH,
-} from "../../../error_handling/tasksEH";
+  getTaskEH,
+} from "../../../error-handling/tasksEH";
 
 export const getTask = async (taskId: number): Promise<any> => {
+  const errorObject = getTaskEH(taskId);
+  if (errorObject.errorsExist) {
+    throw errorObject.errors;
+  }
+
   const realmContainer = await Realm.open({
     schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
     schemaVersion: 5,

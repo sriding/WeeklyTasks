@@ -1,6 +1,20 @@
 import theWeek from "../utilities/theWeek";
 import reminderTimes from "../utilities/reminderTimes";
 
+export const getTaskEH = (taskId: number) => {
+  const errorsObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
+
+  if (typeof taskId !== "number") {
+    errorsObject.errors.text = "The task id is not in the proper format.";
+    errorsObject.errorsExist = true;
+  }
+
+  return errorsObject;
+};
+
 export const addEH = (
   text: string,
   day: string,

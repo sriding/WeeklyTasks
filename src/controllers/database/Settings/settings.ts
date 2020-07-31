@@ -1,12 +1,23 @@
+//Realm modules
 const Realm = require("realm");
 
+//Models
 import { DayModel } from "../../../models/database/DayModels";
 import { TaskModel } from "../../../models/database/TaskModels";
 import { NoteModel } from "../../../models/database/NoteModels";
 import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
 
+//Services
 import { pushNotifications } from "../../../services/Index";
+import {
+  changeDailyUpdateEH,
+  changeDailyUpdatePersistanceEH,
+  changeDailyUpdateTimeEH,
+  changeTaskRemindersEH,
+  changeSortTasksByEH,
+  changeThemeEH,
+} from "../../../error-handling/settingsEH";
 
 export const getDailyUpdate = async (): Promise<boolean> => {
   try {
@@ -100,6 +111,11 @@ export const changeDailyUpdate = async (
   bool: boolean = true
 ): Promise<void> => {
   try {
+    const errorsObject = changeDailyUpdateEH(bool);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
@@ -136,6 +152,11 @@ export const changeDailyUpdatePersistance = async (
   bool: boolean = true
 ): Promise<void> => {
   try {
+    const errorsObject = changeDailyUpdatePersistanceEH(bool);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
@@ -160,6 +181,11 @@ export const changeDailyUpdateTime = async (
   string: string = "9:00 AM"
 ): Promise<void> => {
   try {
+    const errorsObject = changeDailyUpdateTimeEH(string);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
@@ -186,6 +212,11 @@ export const changeTaskReminders = async (
   bool: boolean = true
 ): Promise<void> => {
   try {
+    const errorsObject = changeTaskRemindersEH(bool);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
@@ -216,6 +247,11 @@ export const changeSortTasksBy = async (
   string: string = "Reminder Time"
 ): Promise<void> => {
   try {
+    const errorsObject = changeSortTasksByEH(string);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
@@ -237,6 +273,11 @@ export const changeSortTasksBy = async (
 
 export const changeTheme = async (string: string = "light"): Promise<void> => {
   try {
+    const errorsObject = changeThemeEH(string);
+    if (errorsObject.errorsExist) {
+      throw errorsObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,

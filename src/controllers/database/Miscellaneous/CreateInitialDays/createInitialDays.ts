@@ -10,13 +10,18 @@ import { SettingsModel } from "../../../../models/database/SettingsModels";
 
 //Utilities
 import theWeek from "../../../../utilities/theWeek";
+
+//Services
 import { pushNotifications } from "../../../../services/Index";
 
-export const createInitialDays = async (): Promise<void> => {
+export const createInitialDays = async (
+  path: null | string = null
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
+      path: path || Realm.defaultPath,
     });
 
     if (
@@ -63,6 +68,7 @@ export const createInitialDays = async (): Promise<void> => {
         }
       });
     }
+    return;
   } catch (err) {
     return err;
   }
