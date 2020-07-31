@@ -1,26 +1,34 @@
+//Realm modules
 const Realm = require("realm");
 
+//Models
 import { DayModel } from "../../../../models/database/DayModels";
 import { TaskModel } from "../../../../models/database/TaskModels";
 import { NoteModel } from "../../../../models/database/NoteModels";
 import { LoginModel } from "../../../../models/database/LoginModels";
 import { SettingsModel } from "../../../../models/database/SettingsModels";
 
-import { pushNotifications } from "../../../../services/Index";
+//Utilities
 import theWeek from "../../../../utilities/theWeek";
 
-export const createInitialDays = async () => {
+//Services
+import { pushNotifications } from "../../../../services/Index";
+
+export const createInitialDays = async (
+  path: null | string = null
+): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
+      path: path || Realm.defaultPath,
     });
 
     if (
       realmContainer.objects("Settings")[0] &&
       realmContainer.objects("Day")[0]
     ) {
-      return null;
+      return;
     }
 
     if (!realmContainer.objects("Settings")[0]) {
@@ -36,6 +44,8 @@ export const createInitialDays = async () => {
         });
       });
     }
+
+    pushNotifications.createDailyRepeatingNotification("9:00 AM");
 
     if (!realmContainer.objects("Day")[0]) {
       realmContainer.write(() => {
@@ -58,9 +68,8 @@ export const createInitialDays = async () => {
         }
       });
     }
-
-    pushNotifications.sendLocalNotification();
+    return;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };

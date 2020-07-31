@@ -2,15 +2,7 @@ import React, { Component } from "react";
 import { View, StyleSheet, Dimensions, Text } from "react-native";
 
 import { Snackbar } from "react-native-paper";
-
-interface AppProps {
-  snackBarIsError: boolean;
-  visibility: boolean;
-  toggleSnackBarVisibility: () => void;
-  snackBarText: string;
-}
-
-interface AppState {}
+import { AppProps, AppState } from "./SnackBarPopup.interface";
 
 export default class SnackBarPopup extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -48,7 +40,7 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
             onDismiss={() => {
               this.props.toggleSnackBarVisibility();
             }}
-            duration={2500}
+            duration={3000}
             style={{ backgroundColor: "#C00000" }}
             action={{
               label: "FAIL",
@@ -65,7 +57,7 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
             onDismiss={() => {
               this.props.toggleSnackBarVisibility();
             }}
-            duration={2500}
+            duration={3000}
             style={{ backgroundColor: "#6200ee" }}
             action={{
               label: "PASS",

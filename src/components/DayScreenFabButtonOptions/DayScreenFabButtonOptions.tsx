@@ -1,16 +1,8 @@
 import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Chip } from "react-native-paper";
 
-interface AppProps {
-  firstScrollView: React.RefObject<ScrollView>;
-  newTaskTextRef: React.RefObject<TextInput>;
-  toggleFabButtonOptions: () => void;
-  checkAllTasks: () => void;
-  deleteAllTasks: () => void;
-  topOffset: number;
-  theme: string;
-}
+import { AppProps } from "./DayScreenFabButtonOptions.interface";
 
 const DayScreenFabButtonOptions = (props: AppProps) => {
   return (

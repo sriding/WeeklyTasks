@@ -13,28 +13,7 @@ import {
 import theWeek from "../../utilities/theWeek";
 
 import SetReminder from "./../SetReminder/SetReminder";
-
-interface AppProps {
-  dialogToggle: boolean;
-  dialogListToggle: boolean;
-  dismissDialogToggle: () => void;
-  dismissDialogList: () => void;
-  taskInputChange: (text: string) => void;
-  taskInput: string;
-  textInputRef: React.RefObject<TextInput>;
-  toggleDialogList: () => void;
-  creatingTask: () => void;
-  setDayOfTheWeek: (day: string) => void;
-  dayOfTheWeek: string;
-  taskInputError: boolean;
-  taskInputErrorText: string;
-  keyboardHeight: number;
-  keyboardOpen: boolean;
-  reminder: boolean;
-  reminderTime: string;
-  changeReminderTime: (reminderTime: string) => void;
-  theme: string;
-}
+import { AppProps } from "./NewTaskDialog.interface";
 
 export default function NewTaskDialog(props: AppProps) {
   return (

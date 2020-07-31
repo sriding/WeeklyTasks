@@ -1,25 +1,15 @@
 import React, { Component } from "react";
 
-import { List, Paragraph, Divider } from "react-native-paper";
+import { List, Divider } from "react-native-paper";
 
 import theWeek from "../../utilities/theWeek";
 
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from "react-navigation";
-import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
-import { SafeAreaView, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView, View } from "react-native";
 
 import { getTheme } from "../../controllers/database/Settings/settings";
-interface AppProps {
-  navigation: any;
-}
+import { AppProps, AppState } from "./SideBar.interface";
 
-interface AppState {
-  theme: string;
-}
 export default class SideBar extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
@@ -28,12 +18,15 @@ export default class SideBar extends Component<AppProps, AppState> {
     };
   }
 
-  componentDidMount = () => {
-    getTheme().then((mark) => {
+  componentDidMount = async () => {
+    try {
+      let mark: string = await getTheme();
       this.setState({
         theme: mark,
       });
-    });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   render() {

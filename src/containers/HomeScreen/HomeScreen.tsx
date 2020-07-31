@@ -18,7 +18,7 @@ import { FAB } from "react-native-paper";
 import moment from "moment";
 
 //Interfaces
-import { DayObject, AppProps, AppState } from "./Interfaces-HomeScreen";
+import { AppProps, AppState } from "./HomeScreen.interface";
 
 //Components
 import HomeScreenCard from "../../components/HomeScreenCard/HomeScreenCard";
@@ -38,12 +38,6 @@ import { getTheme } from "../../controllers/database/Settings/settings";
 //Utilities
 import theWeek from "../../utilities/theWeek";
 
-//Services
-import { pushNotifications } from "../../services/Index";
-
-/**
- * Add shouldcomponentupdate method in case theme does not change from light
- * */
 class HomeScreen extends Component<AppProps, AppState> {
   textInputRef: React.RefObject<TextInput>;
   focusSubscription: any;
@@ -62,12 +56,11 @@ class HomeScreen extends Component<AppProps, AppState> {
       sideBarToggle: false,
       dialogToggle: false,
       dialogListToggle: false,
-      dayInformation: {},
+      dayInformation: null,
       dayOfTheWeek: moment().format("dddd"),
       amountOfTasksForTheDay: 0,
       keyboardHeight: 0,
       keyboardOpen: false,
-      date: moment().format("YYYY-MM-DD"),
       reminder: true,
       reminderTime: "12:00 PM",
       theme: "light",
@@ -75,6 +68,7 @@ class HomeScreen extends Component<AppProps, AppState> {
 
     //Reference to the text input field in the dialog popup for creating a task
     this.textInputRef = React.createRef();
+
     this.focusSubscription = null;
     this.keyboardDidShowListener = null;
     this.keyboardDidHideListener = null;
@@ -82,37 +76,57 @@ class HomeScreen extends Component<AppProps, AppState> {
 
   componentDidMount = async () => {
     try {
-      await createInitialDays();
+      let expectVoid: void = await createInitialDays();
+      if (expectVoid !== undefined && expectVoid !== null) {
+        throw expectVoid;
+      }
     } catch (err) {
-      this.setSnackBarTextAndIfError(err, true);
+      this.setSnackBarTextAndIfError(
+        "Error setting up initial days and initial settings. Might need to reset app.",
+        true
+      );
       this.toggleSnackBarVisibility();
     }
 
     try {
-      const themeName = await getTheme();
+      const themeName: string = await getTheme();
+      if (typeof themeName !== "string") {
+        throw themeName;
+      }
       this.setState({
         theme: themeName,
       });
     } catch (err) {
-      this.setSnackBarTextAndIfError(err, true);
+      this.setSnackBarTextAndIfError(
+        "Error setting specific theme. Using default instead.",
+        true
+      );
       this.toggleSnackBarVisibility();
+      this.setState({
+        theme: "light",
+      });
     }
 
     try {
-      const userLoginMessage = await saveLoginDate();
-      if (userLoginMessage !== undefined) {
-        this.setSnackBarTextAndIfError(userLoginMessage, false);
-        this.toggleSnackBarVisibility();
+      const expectStringOrVoid: string | void = await saveLoginDate();
+      if (expectStringOrVoid && typeof expectStringOrVoid !== "string") {
+        throw expectStringOrVoid;
       }
     } catch (err) {
-      this.setSnackBarTextAndIfError(err, true);
+      this.setSnackBarTextAndIfError(
+        "Issue saving the login date. Could affect notification functionality.",
+        true
+      );
       this.toggleSnackBarVisibility();
     }
 
     try {
-      await this.getDataForAllDays();
+      const expectVoid: void = await this.getDataForAllDays();
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
     } catch (err) {
-      this.setSnackBarTextAndIfError(err, true);
+      this.setSnackBarTextAndIfError("Issue getting each day's data.", true);
       this.toggleSnackBarVisibility();
     }
 
@@ -121,9 +135,15 @@ class HomeScreen extends Component<AppProps, AppState> {
       "focus",
       async () => {
         try {
-          await this.getDataForAllDays();
+          let expectVoid = await this.getDataForAllDays();
+          if (expectVoid !== null && expectVoid !== undefined) {
+            throw expectVoid;
+          }
         } catch (err) {
-          this.setSnackBarTextAndIfError(err, true);
+          this.setSnackBarTextAndIfError(
+            "Issue getting each day's data on focus.",
+            true
+          );
           this.toggleSnackBarVisibility();
         }
       }
@@ -140,68 +160,77 @@ class HomeScreen extends Component<AppProps, AppState> {
     );
   };
 
-  componentWillUnmount() {
+  componentWillUnmount = (): void => {
     //Removing Event Listeners
     this.focusSubscription();
     this.keyboardDidShowListener?.remove();
     this.keyboardDidHideListener?.remove();
-  }
+  };
 
-  getDataForAllDays = async () => {
+  getDataForAllDays = async (): Promise<void> => {
     try {
-      let dataForAllDays = await getAllDaysData();
+      let dataForAllDays: any = await getAllDaysData();
       this.setState({
         dayInformation: dataForAllDays,
         sideBarToggle: false,
       });
     } catch (err) {
-      this.setSnackBarTextAndIfError(err, true);
+      this.setSnackBarTextAndIfError("Issue setting data for each day.", true);
       this.toggleSnackBarVisibility();
     }
   };
 
   _keyboardDidShow = (event: any) => {
-    if (Platform.OS === "ios") {
-      this.setState({
-        keyboardHeight: event.endCoordinates.height,
-        keyboardOpen: true,
-      });
-    } else {
-      this.setState({
-        keyboardHeight: event.endCoordinates.height,
-      });
+    try {
+      if (Platform.OS === "ios") {
+        this.setState({
+          keyboardHeight: event.endCoordinates.height,
+          keyboardOpen: true,
+        });
+      } else {
+        this.setState({
+          keyboardHeight: event.endCoordinates.height,
+        });
+      }
+    } catch (err) {
+      this.setSnackBarTextAndIfError("Issue showing keyboard properly.", true);
+      this.toggleSnackBarVisibility();
     }
   };
 
   _keyboardDidHide = () => {
-    if (Platform.OS === "ios") {
-      this.setState({
-        keyboardHeight: 0,
-        keyboardOpen: false,
-      });
-    } else {
-      this.setState({
-        keyboardHeight: 0,
-      });
+    try {
+      if (Platform.OS === "ios") {
+        this.setState({
+          keyboardHeight: 0,
+          keyboardOpen: false,
+        });
+      } else {
+        this.setState({
+          keyboardHeight: 0,
+        });
+      }
+    } catch (err) {
+      this.setSnackBarTextAndIfError("Issue hiding keyboard properly.", true);
+      this.toggleSnackBarVisibility();
     }
   };
 
-  taskInputChange = (text: string) => {
+  taskInputChange = (text: string): void => {
     this.setState({ taskInput: text });
   };
 
-  setRemindersForTheDay = () => {
-    pushNotifications.sendLocalNotification();
-  };
-
-  creatingTask = async () => {
+  creatingTask = async (): Promise<void> => {
     try {
-      await addTask(
+      let expectVoid = await addTask(
         this.state.taskInput,
         this.state.dayOfTheWeek,
         this.state.reminder,
         this.state.reminderTime
       );
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
     } catch (err) {
       this.setState({
         taskInputError: true,
@@ -220,27 +249,37 @@ class HomeScreen extends Component<AppProps, AppState> {
       this.setSnackBarTextAndIfError("Task Created!", false);
       this.toggleSnackBarVisibility();
     } catch (err) {
-      this.setSnackBarTextAndIfError(err, true);
+      this.setSnackBarTextAndIfError("Issue setting all days data.", true);
       this.toggleSnackBarVisibility();
     }
   };
 
   //Toggles sidebar to appear or disappear
-  sideBarIconClicked = () => {
-    this.setState({
-      sideBarToggle: !this.state.sideBarToggle,
-    });
+  sideBarIconClicked = (): void => {
+    try {
+      this.setState({
+        sideBarToggle: !this.state.sideBarToggle,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError("Issue showing or hiding sidebar.", true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
   //Opens dialog popup
-  toggleDialogToggle = () => {
-    this.setState({
-      dialogToggle: true,
-    });
+  toggleDialogToggle = (): void => {
+    try {
+      this.setState({
+        dialogToggle: true,
+      });
+    } catch (err) {
+      this.setSnackBarTextAndIfError("Issue showing dialog box.", true);
+      this.toggleSnackBarVisibility();
+    }
   };
 
   //Dismisses dialog popup
-  dismissDialogToggle = () => {
+  dismissDialogToggle = (): void => {
     this.setState({
       dialogToggle: false,
       taskInput: "",
@@ -252,42 +291,42 @@ class HomeScreen extends Component<AppProps, AppState> {
   };
 
   //Toggles list of days dropdown in dialog popup
-  toggleDialogList = () => {
+  toggleDialogList = (): void => {
     this.setState({
       dialogListToggle: !this.state.dialogListToggle,
     });
   };
 
   //Dismisses list of days dropdown in dialog popup
-  dismissDialogList = () => {
+  dismissDialogList = (): void => {
     this.setState({
       dialogListToggle: false,
     });
   };
 
   //Sets the current day; primarily used for deciding what day a task should be created for
-  setDayOfTheWeek = (day: string) => {
+  setDayOfTheWeek = (day: string): void => {
     this.setState({
       dayOfTheWeek: day,
     });
   };
 
   //Toggles snackbar appearance
-  toggleSnackBarVisibility = () => {
+  toggleSnackBarVisibility = (): void => {
     this.setState({
       snackBarVisibility: !this.state.snackBarVisibility,
     });
   };
 
   //Sets the text to show on the snackbar and if the snackbar is an error message or not
-  setSnackBarTextAndIfError = (text: string, isError: boolean) => {
+  setSnackBarTextAndIfError = (text: string, isError: boolean): void => {
     this.setState({
       snackBarText: text,
       snackBarIsError: isError,
     });
   };
 
-  changeReminderTime = (reminderTime: string) => {
+  changeReminderTime = (reminderTime: string): void => {
     this.setState({
       reminder: reminderTime === "N/A" ? false : true,
       reminderTime,
@@ -304,13 +343,12 @@ class HomeScreen extends Component<AppProps, AppState> {
         <StatusBar theme={this.state.theme} />
         <Header
           title="Weekly Task Planner"
-          date={this.state.date}
           sideBarIconClicked={this.sideBarIconClicked}
           navigation={this.props.navigation}
           back={false}
         />
         <View style={styles.mainContainer}>
-          {this.state.sideBarToggle !== false ? (
+          {this.state.sideBarToggle === true ? (
             <ScrollView
               style={styles.leftPaneContainer}
               showsVerticalScrollIndicator={false}

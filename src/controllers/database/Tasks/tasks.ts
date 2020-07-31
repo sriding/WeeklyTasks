@@ -1,41 +1,83 @@
+//Realm modules
 const Realm = require("realm");
+
+//Models
 import { DayModel } from "../../../models/database/DayModels";
 import { TaskModel } from "../../../models/database/TaskModels";
 import { NoteModel } from "../../../models/database/NoteModels";
 import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
 
+//Services
 import { pushNotifications } from "../../../services/Index";
+
+//Utilities
 import { reminderTimes } from "../../../utilities/reminderTimes";
+
+//Error Handling
+import {
+  addEH,
+  updateEH,
+  checkEH,
+  deleteEH,
+  checkAllDeleteAllGetDayTaskIdsEH,
+  getTaskEH,
+} from "../../../error-handling/tasksEH";
+
+export const getTask = async (taskId: number): Promise<any> => {
+  const errorObject = getTaskEH(taskId);
+  if (errorObject.errorsExist) {
+    throw errorObject.errors;
+  }
+
+  const realmContainer = await Realm.open({
+    schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+    schemaVersion: 5,
+  });
+
+  const realmTaskArray = realmContainer
+    .objects("Task")
+    .filtered(`id == "${taskId}"`);
+
+  return {
+    id: realmTaskArray[0].id,
+    day: realmTaskArray[0].day,
+    text: realmTaskArray[0].text,
+    isChecked: realmTaskArray[0].isChecked,
+    reminder: realmTaskArray[0].reminder,
+    reminderTime: realmTaskArray[0].reminderTime,
+    reminderTimeValue: realmTaskArray[0].reminderTimeValue,
+  };
+};
 
 export const addTask = async (
   text: string,
   dayID: string,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-) => {
+): Promise<void> => {
   try {
-    let trimmedText = text.trim();
-    if (trimmedText.length === 0) {
-      return "No text!";
-    } else if (trimmedText.length > 350) {
-      return "Cannot exceed 350 characters.";
+    const errorObject = addEH(text, dayID, reminder, reminderTime);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
     }
+
+    const trimmedText = text.trim();
 
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
-    if (realmContainer.objects("Day").filtered(`id = "${dayID}"`).length > 15) {
-      return null;
-    }
-    const arrayOfIds: number[] = [];
+
+    let arrayOfTaskIds: number[] = [];
     realmContainer.objects("Task").forEach((task: any) => {
-      arrayOfIds.push(task.id);
+      arrayOfTaskIds.push(task.id);
     });
+    let newTaskId = Math.max(...arrayOfTaskIds) + 1;
+
     realmContainer.write(() => {
-      let newTask = realmContainer.create("Task", {
-        id: Math.max(...arrayOfIds) + 1,
+      const newTask = realmContainer.create("Task", {
+        id: newTaskId,
         day: dayID,
         text: trimmedText,
         isChecked: false,
@@ -43,44 +85,48 @@ export const addTask = async (
         reminderTime,
         reminderTimeValue: reminderTimes[reminderTime],
       });
-      let dayToUpdate = realmContainer.create(
+
+      let weekdayToUpdate = realmContainer.create(
         "Day",
         {
           id: dayID,
         },
         true
       );
-      return dayToUpdate.tasks.push(newTask);
+
+      weekdayToUpdate.tasks.push(newTask);
     });
-    pushNotifications.sendLocalNotification();
-    return null;
+
+    await pushNotifications.addARepeatingLocalNotification(newTaskId);
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
 export const updateTask = async (
   text: string,
-  taskID: number,
+  taskId: number,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-) => {
+): Promise<void> => {
   try {
-    let trimmedText = text.trim();
-    if (trimmedText.length === 0) {
-      return "No text!";
-    } else if (trimmedText.length > 350) {
-      return "Cannot exceed 350 characters.";
+    const errorObject = updateEH(text, taskId, reminder, reminderTime);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
     }
+
+    const trimmedText = text.trim();
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.create(
         "Task",
         {
-          id: taskID,
+          id: taskId,
           text: trimmedText,
           reminder,
           reminderTime,
@@ -89,19 +135,29 @@ export const updateTask = async (
         true
       );
     });
-    pushNotifications.sendLocalNotification();
-    return null;
+
+    await pushNotifications.removeALocalScheduledNotification(taskId);
+    await pushNotifications.addARepeatingLocalNotification(taskId);
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const checkTask = async (taskID: number, isChecked: boolean) => {
+export const checkTask = async (
+  taskID: number,
+  isChecked: boolean
+): Promise<void> => {
   try {
+    const errorObject = checkEH(taskID, isChecked);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.create(
         "Task",
@@ -109,40 +165,57 @@ export const checkTask = async (taskID: number, isChecked: boolean) => {
         true
       );
     });
-    pushNotifications.sendLocalNotification();
-    return null;
+
+    if (isChecked === true) {
+      await pushNotifications.unCheckingATaskNotification(taskID);
+    } else if (isChecked === false) {
+      await pushNotifications.checkingATaskNotification(taskID, 1);
+    }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const deleteTask = async (taskID: number) => {
+export const deleteTask = async (taskID: number): Promise<void> => {
   try {
+    const errorObject = deleteEH(taskID);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       let taskToDelete = realmContainer.create("Task", { id: taskID }, true);
       realmContainer.delete(taskToDelete);
     });
-    pushNotifications.sendLocalNotification();
-    return null;
+
+    pushNotifications.removeALocalScheduledNotification(taskID);
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const checkAllTasks = async (day: string) => {
+export const checkAllTasks = async (day: string): Promise<void> => {
   try {
+    const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       let tasksToCheck = realmContainer
         .objects("Task")
         .filtered(`day == "${day}" AND isChecked == ${false}`);
+
       if (tasksToCheck.length !== 0) {
         for (let task of tasksToCheck) {
           task.isChecked = true;
@@ -155,65 +228,154 @@ export const checkAllTasks = async (day: string) => {
           task.isChecked = false;
         }
       }
-      return;
     });
+
+    const taskIdsArray = await getAllUncheckedTaskIdsForASingleDay(day);
+
+    //Adjust to read in parallel later
+    for (let taskIds of taskIdsArray) {
+      await pushNotifications.removeALocalScheduledNotification(taskIds);
+    }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const deleteAllTasks = async (day: string) => {
+export const deleteAllTasks = async (day: string): Promise<void> => {
   try {
+    const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       realmContainer.delete(
         realmContainer.objects("Task").filtered(`day == "${day}"`)
       );
     });
-    pushNotifications.sendLocalNotification();
-    return null;
+
+    const taskIdsArray = await getAllTaskIdsForASingleDay(day);
+
+    //Adjust to read in parallel later
+    for (let taskIds of taskIdsArray) {
+      await pushNotifications.removeALocalScheduledNotification(taskIds);
+    }
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const unCheckEveryTaskInTheDatabase = async () => {
+export const unCheckEveryTaskInTheDatabase = async (): Promise<void> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
+
     realmContainer.write(() => {
       let amountOfTasks = realmContainer.objects("Task");
-      for (task of amountOfTasks) {
+      for (let task of amountOfTasks) {
         task.isChecked = false;
       }
-      return;
     });
-    pushNotifications.sendLocalNotification();
-    return null;
   } catch (err) {
-    return err.toString();
+    return err;
   }
 };
 
-export const getAmountOfTasksForTheDay = async (day: string = "Monday") => {
+export const getAllUncheckedTaskIdsForASingleDay = async (
+  day: string
+): Promise<number[]> => {
   try {
+    const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
     });
-    let taskObjects = realmContainer
+
+    const taskObjectsArray = realmContainer
       .objects("Task")
       .filtered(`day == "${day}" AND isChecked == ${false}`);
-    return {
-      amount: taskObjects.length,
-      taskObjects,
-    };
+
+    console.log(taskObjectsArray);
+
+    let taskIdsArray: number[] = [];
+
+    taskObjectsArray.forEach((task: any) => {
+      taskIdsArray.push(task.id);
+    });
+
+    return taskIdsArray;
   } catch (err) {
-    return err.toString();
+    return err;
+  }
+};
+
+export const getAllCheckedTaskIdsForASingleDay = async (
+  day: string
+): Promise<number[]> => {
+  try {
+    const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
+    const realmContainer = await Realm.open({
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+      schemaVersion: 5,
+    });
+
+    const taskObjectsArray = realmContainer
+      .objects("Task")
+      .filtered(`day == "${day}" AND isChecked == ${true}`);
+
+    let taskIdsArray: number[] = [];
+
+    taskObjectsArray.forEach((task: any) => {
+      taskIdsArray.push(task.id);
+    });
+
+    return taskIdsArray;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getAllTaskIdsForASingleDay = async (
+  day: string
+): Promise<number[]> => {
+  try {
+    const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
+    const realmContainer = await Realm.open({
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+      schemaVersion: 5,
+    });
+
+    const taskObjectsArray = realmContainer
+      .objects("Task")
+      .filtered(`day == "${day}"`);
+
+    let taskIdsArray: number[] = [];
+
+    taskObjectsArray.forEach((task: any) => {
+      taskIdsArray.push(task.id);
+    });
+
+    return taskIdsArray;
+  } catch (err) {
+    return err;
   }
 };
