@@ -6,7 +6,7 @@ import { LoginModel } from "../../../../models/database/LoginModels";
 import { SettingsModel } from "../../../../models/database/SettingsModels";
 
 import { getSortTasksBy } from "../../Settings/settings";
-import { getASingleDaysDataEH } from "../../../../error-handling/getASingleDaysDataEH";
+import { getASingleDaysDataEH } from "../../../../validation/getASingleDaysDataEH";
 
 export const getASingleDaysData = async (dayID: string): Promise<any> => {
   try {

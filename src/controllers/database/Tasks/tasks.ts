@@ -22,7 +22,7 @@ import {
   deleteEH,
   checkAllDeleteAllGetDayTaskIdsEH,
   getTaskEH,
-} from "../../../error-handling/tasksEH";
+} from "../../../validation/tasksEH";
 
 export const getTask = async (taskId: number): Promise<any> => {
   const errorObject = getTaskEH(taskId);
@@ -305,8 +305,6 @@ export const getAllUncheckedTaskIdsForASingleDay = async (
     const taskObjectsArray = realmContainer
       .objects("Task")
       .filtered(`day == "${day}" AND isChecked == ${false}`);
-
-    console.log(taskObjectsArray);
 
     let taskIdsArray: number[] = [];
 

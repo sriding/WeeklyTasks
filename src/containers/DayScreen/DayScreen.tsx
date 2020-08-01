@@ -143,7 +143,12 @@ export default class DayScreen extends Component<AppProps, AppState> {
   };
 
   componentDidUpdate = (prevProps: AppProps, prevState: AppState) => {
+    if (prevProps.route.params?.id !== this.props.route.params?.id) {
+      this.getDataForASingleDay();
+    }
+
     if (prevState.id !== this.state.id) {
+      console.log("is this running?");
       setTimeout(() => {
         this.firstScrollView.current!.scrollTo({ x: 0, y: 0 });
       }, 300);
@@ -153,14 +158,14 @@ export default class DayScreen extends Component<AppProps, AppState> {
   getDataForASingleDay = async (): Promise<void> => {
     try {
       let singleDayData: any = await getASingleDaysData(
-        this.props.route.params.id
+        this.props.route.params?.id
       );
       this.setState({
-        id: this.props.route.params.id,
+        id: this.props.route.params?.id,
         Day: singleDayData,
         date: moment()
           .startOf("isoWeek")
-          .add(theWeek.indexOf(this.props.route.params.id), "days")
+          .add(theWeek.indexOf(this.props.route.params?.id), "days")
           .format("YYYY-MM-DD"),
       });
     } catch (err) {

@@ -7,10 +7,7 @@ import { TaskModel } from "../../../models/database/TaskModels";
 import { NoteModel } from "../../../models/database/NoteModels";
 import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
-import {
-  addNoteUpdateNoteEH,
-  deleteNoteEH,
-} from "../../../error-handling/notesEH";
+import { addNoteUpdateNoteEH, deleteNoteEH } from "../../../validation/notesEH";
 
 export const addNote = async (
   text: string,

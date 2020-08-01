@@ -3,6 +3,7 @@ import {
   NavigationScreenProp,
   NavigationState,
 } from "react-navigation";
+import { RouteProp } from "@react-navigation/native";
 
 export interface DayObject {
   id: string;
@@ -11,6 +12,7 @@ export interface DayObject {
 }
 export interface AppProps {
   navigation: NavigationScreenProp<NavigationState, NavigationParams>;
+  route: RouteProp<any, "profile">;
 }
 
 export interface AppState {

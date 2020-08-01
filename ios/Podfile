@@ -36,10 +36,11 @@ target 'WeeklyTasks' do
 
 
 
+
+
+
+
   pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
-
-
-
 
   target 'WeeklyTasksTests' do
     inherit! :search_paths

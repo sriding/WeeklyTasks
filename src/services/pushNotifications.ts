@@ -70,7 +70,6 @@ const addARepeatingLocalNotification = async (
 ): Promise<void> => {
   try {
     let task = await getTask(taskId);
-    console.log(task);
     let currentDayComparator = moment().isoWeekday();
     let taskDayComparator: number = theWeekNumericalValues[task.day];
 
@@ -350,8 +349,8 @@ const createDailyRepeatingNotification = async (
 
       if (i === currentIndexBasedOfDay) {
         let currentTime: string = moment().format("H:mm A");
-        let momentCurrentTime = moment(currentTime, "H:mm A");
-        let momentSavedTime = moment(reminderTime, "H:mm A");
+        let momentCurrentTime: moment.Moment = moment(currentTime, "H:mm A");
+        let momentSavedTime: moment.Moment = moment(reminderTime, "H:mm A");
         if (momentCurrentTime.isBefore(momentSavedTime) === false) {
           PushNotification.localNotificationSchedule({
             /* Android Only Properties */
