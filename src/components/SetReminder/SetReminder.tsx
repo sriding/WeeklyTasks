@@ -56,9 +56,7 @@ class SetReminder extends Component<AppProps, AppState> {
                 <Fragment key={index}>
                   <Menu.Item
                     onPress={() => {
-                      console.log("On press before function.");
                       this.props.changeReminderTime(key);
-                      console.log("On press after function.");
                       this.setState({
                         menuVisibility: false,
                       });

@@ -17,7 +17,7 @@ import {
   changeTaskRemindersEH,
   changeSortTasksByEH,
   changeThemeEH,
-} from "../../../error-handling/settingsEH";
+} from "../../../validation/settingsEH";
 
 export const getDailyUpdate = async (): Promise<boolean> => {
   try {
