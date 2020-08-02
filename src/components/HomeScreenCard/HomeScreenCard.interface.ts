@@ -11,6 +11,9 @@ export interface DayInformationObject {
     day: string;
     text: string;
     isChecked: boolean;
+    reminder: boolean;
+    reminderTime: string;
+    reminderTimeValue: string;
   }[];
   note: {
     id: number;

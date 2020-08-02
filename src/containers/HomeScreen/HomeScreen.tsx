@@ -346,6 +346,7 @@ class HomeScreen extends Component<AppProps, AppState> {
           sideBarIconClicked={this.sideBarIconClicked}
           navigation={this.props.navigation}
           back={false}
+          screen="Home"
         />
         <View style={styles.mainContainer}>
           {this.state.sideBarToggle === true ? (

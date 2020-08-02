@@ -377,3 +377,59 @@ export const getAllTaskIdsForASingleDay = async (
     return err;
   }
 };
+
+export const tasksForADayOrdered = async (
+  day: string,
+  reminder: string = "Reminder Time"
+) => {
+  const realmContainer = await Realm.open({
+    schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+    schemaVersion: 5,
+  });
+
+  let sortedTasksArray: any[] = [];
+
+  switch (reminder) {
+    case "Recently Added":
+      const realmObjTasksUnchecked1 = realmContainer
+        .objects("Task")
+        .filtered(`day == "${day}" AND isChecked == ${false}`)
+        .sorted("id", true);
+
+      const realmObjTasksChecked1 = realmContainer
+        .objects("Task")
+        .filtered(`day == "${day}" AND isChecked == ${true}`)
+        .sorted("id", true);
+
+      realmObjTasksUnchecked1.forEach((task: any) => {
+        sortedTasksArray.push(task);
+      });
+
+      realmObjTasksChecked1.forEach((task: any) => {
+        sortedTasksArray.push(task);
+      });
+
+      return sortedTasksArray;
+    case "Reminder Time":
+    default:
+      const realmObjTasksUnchecked2 = realmContainer
+        .objects("Task")
+        .filtered(`day == "${day}" AND isChecked == ${false}`)
+        .sorted("reminderTimeValue", false);
+
+      const realmObjTasksChecked2 = realmContainer
+        .objects("Task")
+        .filtered(`day == "${day}" AND isChecked == ${true}`)
+        .sorted("reminderTimeValue", false);
+
+      realmObjTasksUnchecked2.forEach((task: any) => {
+        sortedTasksArray.push(task);
+      });
+
+      realmObjTasksChecked2.forEach((task: any) => {
+        sortedTasksArray.push(task);
+      });
+
+      return sortedTasksArray;
+  }
+};
