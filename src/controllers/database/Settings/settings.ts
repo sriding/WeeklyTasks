@@ -140,7 +140,7 @@ export const changeDailyUpdate = async (
     if (bool === true) {
       await pushNotifications.createDailyRepeatingNotification(updateTime);
     } else if (bool === false) {
-      await pushNotifications.removeDailyRepeatingNotification();
+      await pushNotifications.removeDailyRepeatingNotifications();
     }
   } catch (err) {
     return err;

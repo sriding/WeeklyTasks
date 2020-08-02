@@ -23,6 +23,7 @@ import {
   checkAllDeleteAllGetDayTaskIdsEH,
   getTaskEH,
 } from "../../../validation/tasksEH";
+import { getDailyUpdateTime } from "../Settings/settings";
 
 export const getTask = async (taskId: number): Promise<any> => {
   const errorObject = getTaskEH(taskId);
@@ -98,6 +99,7 @@ export const addTask = async (
     });
 
     await pushNotifications.addARepeatingLocalNotification(newTaskId);
+    await pushNotifications.updateADailyRepeatingNotification(dayID);
   } catch (err) {
     return err;
   }
@@ -138,6 +140,8 @@ export const updateTask = async (
 
     await pushNotifications.removeALocalScheduledNotification(taskId);
     await pushNotifications.addARepeatingLocalNotification(taskId);
+    const task = await getTask(taskId);
+    await pushNotifications.updateADailyRepeatingNotification(task.day);
   } catch (err) {
     return err;
   }
@@ -171,6 +175,9 @@ export const checkTask = async (
     } else if (isChecked === false) {
       await pushNotifications.checkingATaskNotification(taskID, 1);
     }
+
+    const task = await getTask(taskID);
+    await pushNotifications.updateADailyRepeatingNotification(task.day);
   } catch (err) {
     return err;
   }
@@ -188,13 +195,18 @@ export const deleteTask = async (taskID: number): Promise<void> => {
       schemaVersion: 5,
     });
 
+    //Before deleting the task
+    const task = await getTask(taskID);
+
     realmContainer.write(() => {
       let taskToDelete = realmContainer.create("Task", { id: taskID }, true);
       realmContainer.delete(taskToDelete);
     });
 
     pushNotifications.removeALocalScheduledNotification(taskID);
+    await pushNotifications.updateADailyRepeatingNotification(task.day);
   } catch (err) {
+    console.log("errored out somewhere in deleteTask.");
     return err;
   }
 };
@@ -236,6 +248,8 @@ export const checkAllTasks = async (day: string): Promise<void> => {
     for (let taskIds of taskIdsArray) {
       await pushNotifications.removeALocalScheduledNotification(taskIds);
     }
+
+    await pushNotifications.updateADailyRepeatingNotification(day);
   } catch (err) {
     return err;
   }
@@ -265,6 +279,7 @@ export const deleteAllTasks = async (day: string): Promise<void> => {
     for (let taskIds of taskIdsArray) {
       await pushNotifications.removeALocalScheduledNotification(taskIds);
     }
+    await pushNotifications.updateADailyRepeatingNotification(day);
   } catch (err) {
     return err;
   }
@@ -283,6 +298,9 @@ export const unCheckEveryTaskInTheDatabase = async (): Promise<void> => {
         task.isChecked = false;
       }
     });
+
+    const reminderTime = await getDailyUpdateTime();
+    await pushNotifications.createDailyRepeatingNotification(reminderTime);
   } catch (err) {
     return err;
   }
@@ -381,7 +399,7 @@ export const getAllTaskIdsForASingleDay = async (
 export const tasksForADayOrdered = async (
   day: string,
   reminder: string = "Reminder Time"
-) => {
+): Promise<any[]> => {
   const realmContainer = await Realm.open({
     schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
     schemaVersion: 5,

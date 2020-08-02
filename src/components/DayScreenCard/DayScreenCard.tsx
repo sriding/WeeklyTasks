@@ -19,6 +19,7 @@ import {
   Paragraph,
   Checkbox,
   Caption,
+  IconButton,
 } from "react-native-paper";
 
 //Interfaces
@@ -306,7 +307,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 error={this.state.newTaskTextError}
                 multiline={true}
                 value={this.state.newTaskText}
-                returnKeyType="done"
                 selectionColor={
                   this.props.theme === "light" ? "black" : "white"
                 }
@@ -318,14 +318,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     newTaskText: text,
                   });
                 }}
-                onKeyPress={(e) => {
-                  if (e.nativeEvent.key == "Enter" && Platform.OS != "ios") {
-                    this.clearTaskText();
-                  } else if (e.nativeEvent.key == "Enter") {
-                    this.props.newTaskTextRef.current!.blur();
-                  }
-                }}
-                onSubmitEditing={this.clearTaskText}
                 theme={
                   Platform.OS == "ios"
                     ? this.props.theme === "light"
@@ -339,6 +331,36 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     : { colors: { text: "white", primary: "white" } }
                 }
               />
+              {this.state.newTaskText.length > 0 ? (
+                <View style={{ width: "17%" }}>
+                  <IconButton
+                    icon="check-circle-outline"
+                    color="blue"
+                    size={30}
+                    style={{
+                      marginBottom: 0,
+                      marginTop: 0,
+                    }}
+                    onPress={() => {
+                      this.clearTaskText();
+                    }}
+                  />
+                  <IconButton
+                    icon="checkbox-blank-circle-outline"
+                    color="red"
+                    size={30}
+                    style={{
+                      marginBottom: 0,
+                      marginTop: 0,
+                    }}
+                    onPress={() => {
+                      this.setState({
+                        newTaskText: "",
+                      });
+                    }}
+                  />
+                </View>
+              ) : null}
             </View>
             {this.props.Day &&
               this.props.Day.tasks.map((task, index) => {
@@ -668,7 +690,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     alignItems: "center",
     textAlign: "center",
-    maxWidth: "97%",
+    maxWidth: "90%",
     minHeight: "90%",
     marginTop: 20,
     elevation: 3,
@@ -688,8 +710,7 @@ const styles = StyleSheet.create({
     width: "3%",
   },
   newTaskInput: {
-    width: "90%",
-    maxHeight: 125,
+    width: "80%",
   },
   buttonCombiner: {
     flexDirection: "row",
