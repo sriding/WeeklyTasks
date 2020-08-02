@@ -270,7 +270,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
           }}
         >
           <Card.Content>
-            <Button mode="contained" style={styles.subHeadingText}>
+            <Button
+              mode="contained"
+              style={styles.subHeadingText}
+              labelStyle={{ fontSize: 20 }}
+            >
               Tasks
             </Button>
             <SetReminder
@@ -339,7 +343,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             {this.props.Day &&
               this.props.Day.tasks.map((task, index) => {
                 return task.isChecked ? (
-                  <View key={index}>
+                  <View key={index} style={styles.mapTaskContainer}>
                     <Paragraph
                       style={{
                         ...styles.paragraphTextStrikethrough,
@@ -496,7 +500,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               })}
           </Card.Content>
           <Card.Content>
-            <Button mode="contained" style={styles.subHeadingText}>
+            <Button
+              mode="contained"
+              style={styles.subHeadingText}
+              labelStyle={{ fontSize: 20 }}
+            >
               Note
             </Button>
             {this.props.Day && this.props.Day.note.text !== "" ? (
@@ -660,7 +668,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     alignItems: "center",
     textAlign: "center",
-    maxWidth: "90%",
+    maxWidth: "97%",
     minHeight: "90%",
     marginTop: 20,
     elevation: 3,
@@ -702,8 +710,9 @@ const styles = StyleSheet.create({
   },
   subHeadingText: {
     maxWidth: 130,
-    marginTop: 15,
+    marginTop: 25,
     marginBottom: 25,
+    borderRadius: 40,
   },
   paragraphText: {
     marginBottom: 15,
@@ -718,5 +727,9 @@ const styles = StyleSheet.create({
   },
   captionText: {
     fontSize: 15,
+  },
+  mapTaskContainer: {
+    marginBottom: 15,
+    marginTop: 15,
   },
 });

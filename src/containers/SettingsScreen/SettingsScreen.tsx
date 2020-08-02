@@ -9,6 +9,7 @@ import {
   Subheading,
   Menu,
   Caption,
+  Text,
 } from "react-native-paper";
 
 //3rd Party modules
@@ -191,15 +192,15 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
     return (
       <SafeAreaView
         style={{
+          ...styles.topContainer,
           backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617",
-          minHeight: "100%",
-          flex: 1,
         }}
       >
         <Header
           title="Settings"
           navigation={this.props.navigation}
           back={true}
+          screen="Settings"
         />
         <ScrollView
           contentContainerStyle={{
@@ -207,124 +208,130 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             backgroundColor: this.state.theme === "light" ? "white" : "#121212",
           }}
         >
-          <View style={{}}>
-            <Headline style={{ marginBottom: 12 }}>Notifications</Headline>
-            <View style={styles.switchContainer}>
-              <Switch
-                style={styles.switchButton}
-                value={this.state.dailyUpdateStatus}
-                onValueChange={() => {
-                  changeDailyUpdate(!this.state.dailyUpdateStatus).then(() => {
-                    this.setState({
-                      dailyUpdateStatus: !this.state.dailyUpdateStatus,
-                    });
-                  });
-                }}
+          <View style={styles.cardChunkContainer}>
+            <View style={styles.cardChunkContainer}>
+              <Headline style={styles.cardTitleStyle}>Notifications</Headline>
+              <View style={styles.switchContainer}>
+                <Switch
+                  style={styles.switchButton}
+                  value={this.state.dailyUpdateStatus}
+                  onValueChange={() => {
+                    changeDailyUpdate(!this.state.dailyUpdateStatus).then(
+                      () => {
+                        this.setState({
+                          dailyUpdateStatus: !this.state.dailyUpdateStatus,
+                        });
+                      }
+                    );
+                  }}
+                />
+                <Subheading style={{ fontSize: 22 }}>Daily Update</Subheading>
+              </View>
+              <SetReminder
+                reminder={this.state.dailyUpdateStatus}
+                reminderTime={this.state.dailyUpdateTimeStatus}
+                changeReminderTime={this.changeReminderTime}
+                text="Daily update reminder at: "
               />
-              <Subheading style={{ fontSize: 19 }}>Daily Update</Subheading>
-            </View>
-            <SetReminder
-              reminder={this.state.dailyUpdateStatus}
-              reminderTime={this.state.dailyUpdateTimeStatus}
-              changeReminderTime={this.changeReminderTime}
-              text="Daily update reminder at: "
-            />
-            <View style={styles.switchContainer}>
-              <Switch
-                style={styles.switchButton}
-                value={this.state.taskReminderStatus}
-                onValueChange={() => {
-                  changeTaskReminders(!this.state.taskReminderStatus).then(
-                    () => {
-                      this.setState({
-                        taskReminderStatus: !this.state.taskReminderStatus,
-                      });
-                    }
-                  );
-                }}
-              />
-              <Subheading style={{ fontSize: 19 }}>Task Reminders</Subheading>
+              <View style={styles.switchContainer}>
+                <Switch
+                  style={styles.switchButton}
+                  value={this.state.taskReminderStatus}
+                  onValueChange={() => {
+                    changeTaskReminders(!this.state.taskReminderStatus).then(
+                      () => {
+                        this.setState({
+                          taskReminderStatus: !this.state.taskReminderStatus,
+                        });
+                      }
+                    );
+                  }}
+                />
+                <Subheading style={{ fontSize: 22 }}>Task Reminders</Subheading>
+              </View>
             </View>
             <Divider style={{ marginTop: 20, marginBottom: 20 }} />
-            <Headline style={{ marginBottom: 12 }}>Tasks</Headline>
-            <View
-              style={{
-                ...styles.switchContainer,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Subheading>Sort tasks by: </Subheading>
-              <Menu
-                visible={this.state.sortTasksMenu}
-                onDismiss={() => {
-                  this.setState({
-                    sortTasksMenu: false,
-                  });
-                }}
-                anchor={
-                  <Paragraph
-                    style={{
-                      fontSize: 16,
-                      padding: 4,
-                      margin: 4,
-                      borderWidth: 1,
-                    }}
-                    onPress={() => {
-                      this.setState({
-                        sortTasksMenu: true,
-                      });
-                    }}
-                  >
-                    {this.state.sortTasksByStatus}
-                  </Paragraph>
-                }
+            <View style={styles.cardChunkContainer}>
+              <Headline style={styles.cardTitleStyle}>Tasks</Headline>
+              <View
+                style={{ ...styles.switchContainer, justifyContent: "center" }}
               >
-                <Menu.Item
-                  onPress={() => {
-                    changeSortTasksBy("Reminder Time").then(() => {
-                      this.setState({
-                        sortTasksMenu: false,
-                        sortTasksByStatus: "Reminder Time",
-                      });
+                <Subheading style={{ fontSize: 22 }}>
+                  Sort tasks by:{" "}
+                </Subheading>
+                <Menu
+                  visible={this.state.sortTasksMenu}
+                  onDismiss={() => {
+                    this.setState({
+                      sortTasksMenu: false,
                     });
                   }}
-                  title="Reminder Time"
-                />
-                <Menu.Item
-                  onPress={() => {
-                    changeSortTasksBy("Recently Added").then(() => {
-                      this.setState({
-                        sortTasksMenu: false,
-                        sortTasksByStatus: "Recently Added",
+                  anchor={
+                    <Paragraph
+                      style={{
+                        fontSize: 18,
+                        padding: 4,
+                        margin: 4,
+                        borderWidth: 1,
+                      }}
+                      onPress={() => {
+                        this.setState({
+                          sortTasksMenu: true,
+                        });
+                      }}
+                    >
+                      {this.state.sortTasksByStatus}
+                    </Paragraph>
+                  }
+                >
+                  <Menu.Item
+                    onPress={() => {
+                      changeSortTasksBy("Reminder Time").then(() => {
+                        this.setState({
+                          sortTasksMenu: false,
+                          sortTasksByStatus: "Reminder Time",
+                        });
                       });
-                    });
-                  }}
-                  title="Recently Added"
-                />
-              </Menu>
+                    }}
+                    title="Reminder Time"
+                  />
+                  <Menu.Item
+                    onPress={() => {
+                      changeSortTasksBy("Recently Added").then(() => {
+                        this.setState({
+                          sortTasksMenu: false,
+                          sortTasksByStatus: "Recently Added",
+                        });
+                      });
+                    }}
+                    title="Recently Added"
+                  />
+                </Menu>
+              </View>
             </View>
             <Divider style={{ marginTop: 20, marginBottom: 20 }} />
-            <Headline style={{ marginBottom: 12 }}>Theme</Headline>
-            <View style={styles.switchContainer}>
-              <Switch
-                style={styles.switchButton}
-                value={this.state.themeStatus === "light" ? false : true}
-                onValueChange={() => {
-                  changeTheme(
-                    this.state.themeStatus === "light" ? "dark" : "light"
-                  ).then(() => {
-                    this.setState({
-                      themeStatus:
-                        this.state.themeStatus === "light" ? "dark" : "light",
-                      themeText: "Restart the app to see changes.",
+            <View style={styles.cardChunkContainer}>
+              <Headline style={styles.cardTitleStyle}>Theme</Headline>
+              <View style={styles.switchContainer}>
+                <Switch
+                  style={styles.switchButton}
+                  value={this.state.themeStatus === "light" ? false : true}
+                  onValueChange={() => {
+                    changeTheme(
+                      this.state.themeStatus === "light" ? "dark" : "light"
+                    ).then(() => {
+                      this.setState({
+                        themeStatus:
+                          this.state.themeStatus === "light" ? "dark" : "light",
+                        themeText: "Restart the app to see changes.",
+                      });
                     });
-                  });
-                }}
-              />
-              <Subheading style={{ fontSize: 19 }}>Dark Theme</Subheading>
+                  }}
+                />
+                <Subheading style={{ fontSize: 22 }}>Dark Theme</Subheading>
+              </View>
+              <Caption>{this.state.themeText}</Caption>
             </View>
-            <Caption>{this.state.themeText}</Caption>
           </View>
           <SnackBarPopup
             visibility={this.state.snackBarVisibility}
@@ -339,30 +346,52 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  topContainer: {
+    minHeight: "100%",
     flexGrow: 1,
-    width: "86%",
-    margin: "7%",
-    padding: "4%",
+  },
+  mainContainer: {
+    alignSelf: "center",
+    marginTop: 20,
+    flexGrow: 1,
+    width: "92%",
+    padding: 20,
     overflow: "visible",
     shadowOffset: {
       width: 0,
       height: 0,
     },
-    shadowOpacity: 0.7,
+    shadowOpacity: 0.4,
     shadowRadius: 1,
     shadowColor: "black",
     elevation: 3,
     paddingBottom: 100,
   },
   switchContainer: {
-    display: "flex",
     flexDirection: "row",
+    alignItems: "center",
   },
   switchButton: {
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   tasksContainer: {
     marginLeft: 8,
+  },
+  cardTitleStyle: {
+    elevation: 10,
+    marginTop: 20,
+    marginBottom: 25,
+    paddingTop: 12,
+    paddingBottom: 12,
+    maxWidth: "70%",
+    backgroundColor: "#6200ee",
+    borderRadius: 30,
+    fontSize: 28,
+    color: "white",
+    overflow: "hidden",
+    textAlign: "center",
+  },
+  cardChunkContainer: {
+    marginBottom: 30,
   },
 });

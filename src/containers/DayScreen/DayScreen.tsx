@@ -148,7 +148,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
 
     if (prevState.id !== this.state.id) {
-      console.log("is this running?");
       setTimeout(() => {
         this.firstScrollView.current!.scrollTo({ x: 0, y: 0 });
       }, 300);
@@ -333,6 +332,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
             title={this.state.id}
             navigation={this.props.navigation}
             back={true}
+            screen="Day"
           />
           <ScrollView
             ref={this.firstScrollView}

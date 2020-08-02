@@ -9,4 +9,5 @@ export interface AppProps {
   sideBarIconClicked?: () => void;
   title: string;
   back: boolean;
+  screen: string;
 }
