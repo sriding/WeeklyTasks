@@ -3,7 +3,7 @@ import { TextInput } from "react-native";
 export interface AppProps {
   updateTaskDialogVisible: boolean;
   dismissTaskDialog: () => void;
-  updateTaskText: () => void;
+  updateTaskText: () => Promise<void>;
   updateTaskTextState: {
     text: string;
     taskID: number;

@@ -68,8 +68,7 @@ export const createInitialDays = async (
         }
       });
     }
-    return;
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };

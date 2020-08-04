@@ -3,7 +3,7 @@ import { TextInput } from "react-native";
 export interface AppProps {
   updateNoteDialogVisible: boolean;
   dismissNoteDialog: () => void;
-  updateNoteText: () => void;
+  updateNoteText: () => Promise<void>;
   updateNoteTextState: {
     text: string;
     noteID: number;

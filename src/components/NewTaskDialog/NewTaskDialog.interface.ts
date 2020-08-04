@@ -9,7 +9,7 @@ export interface AppProps {
   taskInput: string;
   textInputRef: React.RefObject<TextInput>;
   toggleDialogList: () => void;
-  creatingTask: () => void;
+  creatingTask: () => Promise<void>;
   setDayOfTheWeek: (day: string) => void;
   dayOfTheWeek: string;
   taskInputError: boolean;

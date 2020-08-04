@@ -8,10 +8,13 @@ export interface DayObject {
 
 export interface AppProps {
   Day: DayObject | null;
-  checkTask: (taskID: number, isChecked: boolean) => void;
-  deleteTask: (taskID: number) => void;
-  deleteNote: (noteID: number) => void;
-  submitTaskText: (useSnackBar: boolean, snackBarText?: string) => void;
+  checkTask: (taskID: number, isChecked: boolean) => Promise<void>;
+  deleteTask: (taskID: number) => Promise<void>;
+  deleteNote: (noteID: number) => Promise<void>;
+  submitTaskText: (
+    useSnackBar: boolean,
+    snackBarText?: string
+  ) => Promise<void>;
   id: string;
   newTaskTextRef: React.RefObject<NativeTextInput>;
   newNoteTextRef: React.RefObject<NativeTextInput>;
@@ -26,8 +29,10 @@ export interface AppState {
   newNoteText: string;
   newTaskTextError: boolean;
   newNoteTextError: boolean;
-  newTaskTextErrorText: string;
-  newNoteTextErrorText: string;
+  newTaskTextErrorText: string[];
+  newNoteTextErrorText: string[];
+  showTaskButtons: boolean;
+  showNoteButtons: boolean;
   updateTaskTextError: boolean;
   updateNoteTextError: boolean;
   updateTaskTextErrorText: string;

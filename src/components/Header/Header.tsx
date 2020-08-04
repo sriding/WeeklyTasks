@@ -1,6 +1,6 @@
 //Core React and React Native modules
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Keyboard } from "react-native";
 
 //React Native Paper modules
 import { Appbar } from "react-native-paper";
@@ -14,7 +14,10 @@ export default function Header(props: AppProps) {
       <View style={styles.NavigationIconsContainer}>
         {props.screen !== "Home" ? (
           <Appbar.BackAction
-            onPress={() => props.navigation.goBack()}
+            onPress={() => {
+              Keyboard.dismiss();
+              props.navigation.goBack();
+            }}
             color="white"
           />
         ) : null}
@@ -22,7 +25,10 @@ export default function Header(props: AppProps) {
           icon="view-headline"
           size={27}
           color="white"
-          onPress={() => props.navigation.openDrawer()}
+          onPress={() => {
+            Keyboard.dismiss();
+            props.navigation.openDrawer();
+          }}
         />
       </View>
       {props.date ? (

@@ -132,7 +132,7 @@ export default function NewTaskDialog(props: AppProps) {
               Cancel
             </Button>
             <Button
-              onPress={props.creatingTask}
+              onPress={async () => await props.creatingTask()}
               color={props.theme === "light" ? "#6200ee" : "white"}
             >
               Create

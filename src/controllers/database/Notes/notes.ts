@@ -9,10 +9,7 @@ import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
 import { addNoteUpdateNoteEH, deleteNoteEH } from "../../../validation/notesEH";
 
-export const addNote = async (
-  text: string,
-  noteID: number
-): Promise<void | string> => {
+export const addNote = async (text: string, noteID: number): Promise<void> => {
   try {
     const errorsObject = addNoteUpdateNoteEH(text, noteID);
     if (errorsObject.errorsExist) {

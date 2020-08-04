@@ -172,3 +172,32 @@ export const checkAllDeleteAllGetDayTaskIdsEH = (
 
   return errorObject;
 };
+
+export const tasksForADayEH = (
+  day: string,
+  reminder: string
+): { errorsExist: boolean; errors: any } => {
+  const errorObject: { errorsExist: boolean; errors: any } = {
+    errorsExist: false,
+    errors: {},
+  };
+
+  //Required
+  if (typeof day !== "string") {
+    errorObject.errors.day = "The day is not in the proper format.";
+    errorObject.errorsExist = true;
+  } else if (theWeek.includes(day) === false) {
+    errorObject.errors.day = "The day must be a day of the week.";
+    errorObject.errorsExist = true;
+  }
+
+  if (typeof reminder !== "string") {
+    errorObject.errors.day = "The reminder is not in the proper format.";
+    errorObject.errorsExist = true;
+  } else if (reminder !== "Recently Added" && reminder !== "Reminder Time") {
+    errorObject.errors.day = "The reminder string is not valid.";
+    errorObject.errorsExist = true;
+  }
+
+  return errorObject;
+};

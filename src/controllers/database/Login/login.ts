@@ -38,7 +38,7 @@ export const createLoginDate = async (): Promise<string> => {
 
     return loginDateExists ? loginDateExists.date : currentDate;
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -84,6 +84,6 @@ export const saveLoginDate = async (): Promise<string | void> => {
       }
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };

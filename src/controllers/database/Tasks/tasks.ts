@@ -22,32 +22,45 @@ import {
   deleteEH,
   checkAllDeleteAllGetDayTaskIdsEH,
   getTaskEH,
+  tasksForADayEH,
 } from "../../../validation/tasksEH";
+import { getDailyUpdateTime } from "../Settings/settings";
 
-export const getTask = async (taskId: number): Promise<any> => {
-  const errorObject = getTaskEH(taskId);
-  if (errorObject.errorsExist) {
-    throw errorObject.errors;
+//Interfaces
+import { getTaskReturnType } from "./tasks.interface";
+
+export const getTask = async (
+  taskId: number
+): Promise<getTaskReturnType | string> => {
+  try {
+    const errorObject = getTaskEH(taskId);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
+
+    const realmContainer = await Realm.open({
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+      schemaVersion: 5,
+    });
+
+    const realmTaskArray = realmContainer
+      .objects("Task")
+      .filtered(`id == "${taskId}"`);
+
+    const task: getTaskReturnType = {
+      id: realmTaskArray[0].id,
+      day: realmTaskArray[0].day,
+      text: realmTaskArray[0].text,
+      isChecked: realmTaskArray[0].isChecked,
+      reminder: realmTaskArray[0].reminder,
+      reminderTime: realmTaskArray[0].reminderTime,
+      reminderTimeValue: realmTaskArray[0].reminderTimeValue,
+    };
+
+    return task;
+  } catch (err) {
+    return err;
   }
-
-  const realmContainer = await Realm.open({
-    schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-    schemaVersion: 5,
-  });
-
-  const realmTaskArray = realmContainer
-    .objects("Task")
-    .filtered(`id == "${taskId}"`);
-
-  return {
-    id: realmTaskArray[0].id,
-    day: realmTaskArray[0].day,
-    text: realmTaskArray[0].text,
-    isChecked: realmTaskArray[0].isChecked,
-    reminder: realmTaskArray[0].reminder,
-    reminderTime: realmTaskArray[0].reminderTime,
-    reminderTimeValue: realmTaskArray[0].reminderTimeValue,
-  };
 };
 
 export const addTask = async (
@@ -55,7 +68,7 @@ export const addTask = async (
   dayID: string,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-): Promise<void> => {
+): Promise<void | string> => {
   try {
     const errorObject = addEH(text, dayID, reminder, reminderTime);
     if (errorObject.errorsExist) {
@@ -98,6 +111,7 @@ export const addTask = async (
     });
 
     await pushNotifications.addARepeatingLocalNotification(newTaskId);
+    await pushNotifications.updateADailyRepeatingNotification(dayID);
   } catch (err) {
     return err;
   }
@@ -108,7 +122,7 @@ export const updateTask = async (
   taskId: number,
   reminder: boolean = false,
   reminderTime: string = "12:00 PM"
-): Promise<void> => {
+): Promise<void | string> => {
   try {
     const errorObject = updateEH(text, taskId, reminder, reminderTime);
     if (errorObject.errorsExist) {
@@ -141,12 +155,21 @@ export const updateTask = async (
   } catch (err) {
     return err;
   }
+  try {
+    const task = await getTask(taskId);
+    if (task.day === undefined) {
+      throw task;
+    }
+    await pushNotifications.updateADailyRepeatingNotification(task.day);
+  } catch (err) {
+    return err;
+  }
 };
 
 export const checkTask = async (
   taskID: number,
   isChecked: boolean
-): Promise<void> => {
+): Promise<void | string> => {
   try {
     const errorObject = checkEH(taskID, isChecked);
     if (errorObject.errorsExist) {
@@ -174,9 +197,19 @@ export const checkTask = async (
   } catch (err) {
     return err;
   }
+
+  try {
+    const task = await getTask(taskID);
+    if (task.day === undefined) {
+      throw task;
+    }
+    await pushNotifications.updateADailyRepeatingNotification(task.day);
+  } catch (err) {
+    return err;
+  }
 };
 
-export const deleteTask = async (taskID: number): Promise<void> => {
+export const deleteTask = async (taskID: number): Promise<void | string> => {
   try {
     const errorObject = deleteEH(taskID);
     if (errorObject.errorsExist) {
@@ -188,18 +221,21 @@ export const deleteTask = async (taskID: number): Promise<void> => {
       schemaVersion: 5,
     });
 
+    //Before deleting the task
+    const task = await getTask(taskID);
+    await pushNotifications.removeALocalScheduledNotification(taskID);
+    await pushNotifications.updateADailyRepeatingNotification(task.day);
+
     realmContainer.write(() => {
       let taskToDelete = realmContainer.create("Task", { id: taskID }, true);
       realmContainer.delete(taskToDelete);
     });
-
-    pushNotifications.removeALocalScheduledNotification(taskID);
   } catch (err) {
     return err;
   }
 };
 
-export const checkAllTasks = async (day: string): Promise<void> => {
+export const checkAllTasks = async (day: string): Promise<void | string> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -236,12 +272,14 @@ export const checkAllTasks = async (day: string): Promise<void> => {
     for (let taskIds of taskIdsArray) {
       await pushNotifications.removeALocalScheduledNotification(taskIds);
     }
+
+    await pushNotifications.updateADailyRepeatingNotification(day);
   } catch (err) {
     return err;
   }
 };
 
-export const deleteAllTasks = async (day: string): Promise<void> => {
+export const deleteAllTasks = async (day: string): Promise<void | string> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -265,12 +303,15 @@ export const deleteAllTasks = async (day: string): Promise<void> => {
     for (let taskIds of taskIdsArray) {
       await pushNotifications.removeALocalScheduledNotification(taskIds);
     }
+    await pushNotifications.updateADailyRepeatingNotification(day);
   } catch (err) {
     return err;
   }
 };
 
-export const unCheckEveryTaskInTheDatabase = async (): Promise<void> => {
+export const unCheckEveryTaskInTheDatabase = async (): Promise<
+  void | string
+> => {
   try {
     const realmContainer = await Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
@@ -283,6 +324,9 @@ export const unCheckEveryTaskInTheDatabase = async (): Promise<void> => {
         task.isChecked = false;
       }
     });
+
+    const reminderTime = await getDailyUpdateTime();
+    await pushNotifications.createDailyRepeatingNotification(reminderTime);
   } catch (err) {
     return err;
   }
@@ -290,7 +334,7 @@ export const unCheckEveryTaskInTheDatabase = async (): Promise<void> => {
 
 export const getAllUncheckedTaskIdsForASingleDay = async (
   day: string
-): Promise<number[]> => {
+): Promise<number[] | string> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -320,7 +364,7 @@ export const getAllUncheckedTaskIdsForASingleDay = async (
 
 export const getAllCheckedTaskIdsForASingleDay = async (
   day: string
-): Promise<number[]> => {
+): Promise<number[] | string> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -350,7 +394,7 @@ export const getAllCheckedTaskIdsForASingleDay = async (
 
 export const getAllTaskIdsForASingleDay = async (
   day: string
-): Promise<number[]> => {
+): Promise<number[] | string> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -381,55 +425,64 @@ export const getAllTaskIdsForASingleDay = async (
 export const tasksForADayOrdered = async (
   day: string,
   reminder: string = "Reminder Time"
-) => {
-  const realmContainer = await Realm.open({
-    schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-    schemaVersion: 5,
-  });
+): Promise<any[] | string> => {
+  try {
+    const errorObject = tasksForADayEH(day, reminder);
+    if (errorObject.errorsExist) {
+      throw errorObject.errors;
+    }
 
-  let sortedTasksArray: any[] = [];
+    const realmContainer = await Realm.open({
+      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+      schemaVersion: 5,
+    });
 
-  switch (reminder) {
-    case "Recently Added":
-      const realmObjTasksUnchecked1 = realmContainer
-        .objects("Task")
-        .filtered(`day == "${day}" AND isChecked == ${false}`)
-        .sorted("id", true);
+    let sortedTasksArray: any[] = [];
 
-      const realmObjTasksChecked1 = realmContainer
-        .objects("Task")
-        .filtered(`day == "${day}" AND isChecked == ${true}`)
-        .sorted("id", true);
+    switch (reminder) {
+      case "Recently Added":
+        const realmObjTasksUnchecked1 = realmContainer
+          .objects("Task")
+          .filtered(`day == "${day}" AND isChecked == ${false}`)
+          .sorted("id", true);
 
-      realmObjTasksUnchecked1.forEach((task: any) => {
-        sortedTasksArray.push(task);
-      });
+        const realmObjTasksChecked1 = realmContainer
+          .objects("Task")
+          .filtered(`day == "${day}" AND isChecked == ${true}`)
+          .sorted("id", true);
 
-      realmObjTasksChecked1.forEach((task: any) => {
-        sortedTasksArray.push(task);
-      });
+        realmObjTasksUnchecked1.forEach((task: any) => {
+          sortedTasksArray.push(task);
+        });
 
-      return sortedTasksArray;
-    case "Reminder Time":
-    default:
-      const realmObjTasksUnchecked2 = realmContainer
-        .objects("Task")
-        .filtered(`day == "${day}" AND isChecked == ${false}`)
-        .sorted("reminderTimeValue", false);
+        realmObjTasksChecked1.forEach((task: any) => {
+          sortedTasksArray.push(task);
+        });
 
-      const realmObjTasksChecked2 = realmContainer
-        .objects("Task")
-        .filtered(`day == "${day}" AND isChecked == ${true}`)
-        .sorted("reminderTimeValue", false);
+        return sortedTasksArray;
+      case "Reminder Time":
+      default:
+        const realmObjTasksUnchecked2 = realmContainer
+          .objects("Task")
+          .filtered(`day == "${day}" AND isChecked == ${false}`)
+          .sorted("reminderTimeValue", false);
 
-      realmObjTasksUnchecked2.forEach((task: any) => {
-        sortedTasksArray.push(task);
-      });
+        const realmObjTasksChecked2 = realmContainer
+          .objects("Task")
+          .filtered(`day == "${day}" AND isChecked == ${true}`)
+          .sorted("reminderTimeValue", false);
 
-      realmObjTasksChecked2.forEach((task: any) => {
-        sortedTasksArray.push(task);
-      });
+        realmObjTasksUnchecked2.forEach((task: any) => {
+          sortedTasksArray.push(task);
+        });
 
-      return sortedTasksArray;
+        realmObjTasksChecked2.forEach((task: any) => {
+          sortedTasksArray.push(task);
+        });
+
+        return sortedTasksArray;
+    }
+  } catch (err) {
+    return err;
   }
 };

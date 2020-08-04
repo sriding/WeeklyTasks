@@ -352,9 +352,10 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 25,
     flexGrow: 1,
     width: "92%",
+    maxWidth: "95%",
     padding: 20,
     overflow: "visible",
     shadowOffset: {

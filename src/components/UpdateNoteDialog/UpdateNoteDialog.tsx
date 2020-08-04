@@ -82,8 +82,8 @@ export default function UpdateNoteDialog(props: AppProps) {
               Cancel
             </Button>
             <Button
-              onPress={() => {
-                props.updateNoteText();
+              onPress={async () => {
+                await props.updateNoteText();
               }}
               color={props.theme === "light" ? "#6200ee" : "white"}
             >

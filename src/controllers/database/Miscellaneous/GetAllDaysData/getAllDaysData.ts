@@ -37,6 +37,6 @@ export const getAllDaysData = async (): Promise<any> => {
 
     return customObjectToReturn;
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };

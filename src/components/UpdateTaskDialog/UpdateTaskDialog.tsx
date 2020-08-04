@@ -89,8 +89,8 @@ export default function UpdateTaskDialog(props: AppProps) {
               Cancel
             </Button>
             <Button
-              onPress={() => {
-                props.updateTaskText();
+              onPress={async () => {
+                await props.updateTaskText();
               }}
               color={props.theme === "light" ? "#6200ee" : "white"}
             >
