@@ -2,11 +2,7 @@
 import React from "react";
 
 //React Native Paper modules
-import {
-  Provider as PaperProvider,
-  DefaultTheme,
-  DarkTheme,
-} from "react-native-paper";
+import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
 //Functions
 import { getTheme } from "./src/controllers/database/Settings/settings";
@@ -17,6 +13,8 @@ import { pastMigrations } from "./src/migrations/pastMigrations/pastMigrations";
 import { NavigationContainer } from "@react-navigation/native";
 import MyDrawer from "./src/navigation/drawer/Drawer";
 import { AppProps, AppState } from "./App.interface";
+
+import DarkTheme from "./src/utilities/darkTheme";
 
 class App extends React.PureComponent<AppProps, AppState> {
   constructor(props: AppProps) {

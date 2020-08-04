@@ -13,17 +13,25 @@ export default function HomeScreenCard(props: AppProps) {
       }}
       style={{
         ...styles.cardContainer,
-        shadowColor: props.theme === "light" ? "#6200ee" : "#383838",
+        shadowColor: props.theme === "light" ? "#6200ee" : "#F5F5F5",
       }}
     >
       <Card.Content style={styles.tasksTitleAndTasksContainer}>
         <Card.Title
           title={props.dayInformation && props.dayInformation.id}
-          titleStyle={styles.cardTitle}
-          style={styles.cardTitleStyle}
+          titleStyle={{ ...styles.cardTitle, color: "black" }}
+          style={{
+            ...styles.cardTitleStyle,
+            backgroundColor: props.theme === "light" ? "#6200ee" : "#c2c2f0",
+          }}
         />
         <Title style={styles.cardTasksTitle}>Tasks</Title>
-        <Divider style={{ marginBottom: 10 }} />
+        <Divider
+          style={{
+            marginBottom: 10,
+            backgroundColor: props.theme === "light" ? null : "white",
+          }}
+        />
         <View style={styles.tasksContainer}>
           {props.dayInformation && props.dayInformation.tasks.length !== 0 ? (
             props.dayInformation.tasks.map((task, index, array) => {
@@ -32,7 +40,14 @@ export default function HomeScreenCard(props: AppProps) {
                   <Paragraph style={styles.tasksTextLineThrough}>
                     {task.text}
                   </Paragraph>
-                  {array.length !== 1 ? <Divider /> : null}
+                  {array.length !== 1 ? (
+                    <Divider
+                      style={{
+                        backgroundColor:
+                          props.theme === "light" ? "silver" : "white",
+                      }}
+                    />
+                  ) : null}
                 </View>
               ) : (
                 <View key={task.id} style={styles.taskContainer}>
@@ -42,7 +57,14 @@ export default function HomeScreenCard(props: AppProps) {
                       {task.reminderTime}
                     </Paragraph>
                   </View>
-                  {array.length !== 1 ? <Divider /> : null}
+                  {array.length !== 1 ? (
+                    <Divider
+                      style={{
+                        backgroundColor:
+                          props.theme === "light" ? "silver" : "white",
+                      }}
+                    />
+                  ) : null}
                 </View>
               );
             })
@@ -53,7 +75,12 @@ export default function HomeScreenCard(props: AppProps) {
       </Card.Content>
       <Card.Content style={styles.noteContainer}>
         <Title style={styles.noteTitle}>Note</Title>
-        <Divider style={{ marginBottom: 15 }} />
+        <Divider
+          style={{
+            marginBottom: 15,
+            backgroundColor: props.theme === "light" ? "silver" : "white",
+          }}
+        />
         {props.dayInformation ? (
           <Paragraph style={styles.noteText}>
             {props.dayInformation.note.text.length === 0
@@ -70,24 +97,25 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginTop: 25,
     marginBottom: 8,
-    shadowRadius: 4,
+    shadowRadius: 1,
     elevation: 3,
     width: "97%",
     maxWidth: "97%",
     alignSelf: "center",
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: "#F5F5F5",
   },
   tasksTitleAndTasksContainer: {},
   cardTitleStyle: {
     elevation: 10,
     margin: 27,
     padding: 13,
-    backgroundColor: "#6200ee",
     borderRadius: 40,
   },
   cardTitle: {
     fontSize: 30,
     textAlign: "center",
-    color: "white",
   },
   cardTasksTitle: {
     fontSize: 26,

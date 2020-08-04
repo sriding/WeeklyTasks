@@ -210,7 +210,16 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
         >
           <View style={styles.cardChunkContainer}>
             <View style={styles.cardChunkContainer}>
-              <Headline style={styles.cardTitleStyle}>Notifications</Headline>
+              <Headline
+                style={{
+                  ...styles.cardTitleStyle,
+                  color: this.props.theme === "light" ? "white" : "black",
+                  backgroundColor:
+                    this.props.theme === "light" ? "#6200ee" : "#c2c2f0",
+                }}
+              >
+                Notifications
+              </Headline>
               <View style={styles.switchContainer}>
                 <Switch
                   style={styles.switchButton}
@@ -250,9 +259,25 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 <Subheading style={{ fontSize: 22 }}>Task Reminders</Subheading>
               </View>
             </View>
-            <Divider style={{ marginTop: 20, marginBottom: 20 }} />
+            <Divider
+              style={{
+                marginTop: 20,
+                marginBottom: 20,
+                backgroundColor:
+                  this.props.theme === "light" ? "silver" : "white",
+              }}
+            />
             <View style={styles.cardChunkContainer}>
-              <Headline style={styles.cardTitleStyle}>Tasks</Headline>
+              <Headline
+                style={{
+                  ...styles.cardTitleStyle,
+                  color: this.props.theme === "light" ? "white" : "black",
+                  backgroundColor:
+                    this.props.theme === "light" ? "#6200ee" : "#c2c2f0",
+                }}
+              >
+                Tasks
+              </Headline>
               <View
                 style={{ ...styles.switchContainer, justifyContent: "center" }}
               >
@@ -309,9 +334,25 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 </Menu>
               </View>
             </View>
-            <Divider style={{ marginTop: 20, marginBottom: 20 }} />
+            <Divider
+              style={{
+                marginTop: 20,
+                marginBottom: 20,
+                backgroundColor:
+                  this.props.theme === "light" ? "silver" : "white",
+              }}
+            />
             <View style={styles.cardChunkContainer}>
-              <Headline style={styles.cardTitleStyle}>Theme</Headline>
+              <Headline
+                style={{
+                  ...styles.cardTitleStyle,
+                  color: this.props.theme === "light" ? "white" : "black",
+                  backgroundColor:
+                    this.props.theme === "light" ? "#6200ee" : "#c2c2f0",
+                }}
+              >
+                Theme
+              </Headline>
               <View style={styles.switchContainer}>
                 <Switch
                   style={styles.switchButton}
@@ -362,11 +403,13 @@ const styles = StyleSheet.create({
       width: 0,
       height: 0,
     },
-    shadowOpacity: 0.4,
     shadowRadius: 1,
     shadowColor: "black",
     elevation: 3,
     paddingBottom: 100,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: "#F5F5F5",
   },
   switchContainer: {
     flexDirection: "row",
@@ -385,7 +428,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 12,
     maxWidth: "70%",
-    backgroundColor: "#6200ee",
     borderRadius: 30,
     fontSize: 28,
     color: "white",

@@ -40,7 +40,12 @@ export default class SideBar extends Component<AppProps, AppState> {
         <List.Section style={{ flex: 0.75 }}>
           <View style={{ marginBottom: 0 }}>
             <List.Subheader style={{ fontSize: 22 }}>Days</List.Subheader>
-            <Divider />
+            <Divider
+              style={{
+                backgroundColor:
+                  this.props.theme === "light" ? "silver" : "white",
+              }}
+            />
           </View>
           <ScrollView style={{ marginTop: 0 }}>
             {theWeek.map((day, index) => {

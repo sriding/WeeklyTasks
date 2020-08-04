@@ -63,7 +63,12 @@ class SetReminder extends Component<AppProps, AppState> {
                     }}
                     title={key}
                   />
-                  <Divider />
+                  <Divider
+                    style={{
+                      backgroundColor:
+                        this.props.theme === "light" ? "silver" : "white",
+                    }}
+                  />
                 </Fragment>
               );
             })}

@@ -273,6 +273,26 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     }
   };
 
+  renderComponent = (theme: string) => {
+    switch (theme) {
+      case "dark":
+        return (
+          <Text
+            style={{
+              ...styles.plusSign,
+              color: "white",
+              backgroundColor: "white",
+            }}
+          >
+            {"\u002B"}
+          </Text>
+        );
+      case "light":
+      default:
+        return <Text style={styles.plusSign}>{"\u002B"}</Text>;
+    }
+  };
+
   render() {
     return (
       <Fragment>
@@ -280,6 +300,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
           style={{
             ...styles.cardContainer,
             paddingBottom: this.state.paddingBottom,
+            shadowColor: this.props.theme === "light" ? "#000000" : "#c2c2f0",
+            borderColor: this.props.theme === "light" ? "#FFFFFF" : "#D3D3D3",
           }}
         >
           <Card.Content>
@@ -297,16 +319,12 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               text="New Task Reminder Time: "
             />
             <View style={styles.addTaskEntry}>
-              {this.props.theme === "light" ? (
-                <Text style={styles.plusSign}>{"\u002B"}</Text>
-              ) : (
-                <Text style={styles.plusSign} />
-              )}
+              {this.renderComponent("light")}
               <TextInput
                 style={{
                   ...styles.newTaskInput,
                   backgroundColor:
-                    this.props.theme === "light" ? "white" : "#171617",
+                    this.props.theme === "light" ? "white" : "#101010",
                 }}
                 ref={this.props.newTaskTextRef}
                 label="New Task"
@@ -758,12 +776,9 @@ const styles = StyleSheet.create({
     minHeight: "90%",
     marginTop: 25,
     elevation: 3,
-    shadowColor: "#000000",
-    shadowRadius: 4,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
+    borderWidth: 1,
+    borderRadius: 20,
+    shadowRadius: 3,
   },
   addTaskEntry: {
     flexDirection: "row",
