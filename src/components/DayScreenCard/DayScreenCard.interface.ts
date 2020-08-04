@@ -29,8 +29,10 @@ export interface AppState {
   newNoteText: string;
   newTaskTextError: boolean;
   newNoteTextError: boolean;
-  newTaskTextErrorText: string;
-  newNoteTextErrorText: string;
+  newTaskTextErrorText: string[];
+  newNoteTextErrorText: string[];
+  showTaskButtons: boolean;
+  showNoteButtons: boolean;
   updateTaskTextError: boolean;
   updateNoteTextError: boolean;
   updateTaskTextErrorText: string;

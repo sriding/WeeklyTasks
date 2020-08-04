@@ -9,10 +9,7 @@ import { LoginModel } from "../../../models/database/LoginModels";
 import { SettingsModel } from "../../../models/database/SettingsModels";
 import { addNoteUpdateNoteEH, deleteNoteEH } from "../../../validation/notesEH";
 
-export const addNote = async (
-  text: string,
-  noteID: number
-): Promise<void | string> => {
+export const addNote = async (text: string, noteID: number): Promise<void> => {
   try {
     const errorsObject = addNoteUpdateNoteEH(text, noteID);
     if (errorsObject.errorsExist) {
@@ -36,7 +33,7 @@ export const addNote = async (
       );
     });
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -67,7 +64,7 @@ export const updateNote = async (
       );
     });
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -93,6 +90,6 @@ export const deleteNote = async (noteID: number): Promise<void> => {
       );
     });
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };

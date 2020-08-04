@@ -59,7 +59,7 @@ export const getTask = async (
 
     return task;
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -113,7 +113,7 @@ export const addTask = async (
     await pushNotifications.addARepeatingLocalNotification(newTaskId);
     await pushNotifications.updateADailyRepeatingNotification(dayID);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -153,7 +153,7 @@ export const updateTask = async (
     await pushNotifications.removeALocalScheduledNotification(taskId);
     await pushNotifications.addARepeatingLocalNotification(taskId);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
   try {
     const task = await getTask(taskId);
@@ -162,7 +162,7 @@ export const updateTask = async (
     }
     await pushNotifications.updateADailyRepeatingNotification(task.day);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -195,7 +195,7 @@ export const checkTask = async (
       await pushNotifications.checkingATaskNotification(taskID, 1);
     }
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 
   try {
@@ -205,7 +205,7 @@ export const checkTask = async (
     }
     await pushNotifications.updateADailyRepeatingNotification(task.day);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -231,7 +231,7 @@ export const deleteTask = async (taskID: number): Promise<void | string> => {
       realmContainer.delete(taskToDelete);
     });
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -275,7 +275,7 @@ export const checkAllTasks = async (day: string): Promise<void | string> => {
 
     await pushNotifications.updateADailyRepeatingNotification(day);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -305,7 +305,7 @@ export const deleteAllTasks = async (day: string): Promise<void | string> => {
     }
     await pushNotifications.updateADailyRepeatingNotification(day);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -328,7 +328,7 @@ export const unCheckEveryTaskInTheDatabase = async (): Promise<
     const reminderTime = await getDailyUpdateTime();
     await pushNotifications.createDailyRepeatingNotification(reminderTime);
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -358,7 +358,7 @@ export const getAllUncheckedTaskIdsForASingleDay = async (
 
     return taskIdsArray;
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -388,7 +388,7 @@ export const getAllCheckedTaskIdsForASingleDay = async (
 
     return taskIdsArray;
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -418,7 +418,7 @@ export const getAllTaskIdsForASingleDay = async (
 
     return taskIdsArray;
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };
 
@@ -483,6 +483,6 @@ export const tasksForADayOrdered = async (
         return sortedTasksArray;
     }
   } catch (err) {
-    return JSON.stringify(err);
+    return err;
   }
 };

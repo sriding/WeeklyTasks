@@ -49,8 +49,10 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       newNoteText: "",
       newTaskTextError: false,
       newNoteTextError: false,
-      newTaskTextErrorText: "",
-      newNoteTextErrorText: "",
+      newTaskTextErrorText: [],
+      newNoteTextErrorText: [],
+      showTaskButtons: false,
+      showNoteButtons: false,
       updateTaskTextError: false,
       updateNoteTextError: false,
       updateTaskTextErrorText: "",
@@ -92,58 +94,46 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       await this.props.submitTaskText(true, "Task Created!");
       this.props.newTaskTextRef.current!.blur();
 
-      //Why is there a timeout here again?
-      setTimeout(() => {
-        this.setState({
-          newTaskText: "",
-          newTaskTextError: false,
-          newTaskTextErrorText: "",
-        });
-      }, 800);
+      this.setState({
+        newTaskText: "",
+        newTaskTextError: false,
+        newTaskTextErrorText: [],
+      });
     } catch (err) {
       this.setState({
+        newTaskText: "",
         newTaskTextError: true,
-        newTaskTextErrorText: err.replace(/[^:]*/, "").replace(/[}:"]/g, ""),
+        newTaskTextErrorText: Object.values(err),
       });
-      setTimeout(() => {
-        this.setState({
-          newTaskText: "",
-        });
-      }, 800);
     }
   };
 
   clearNoteText = async () => {
     try {
-      Keyboard.dismiss();
-      let expectVoidOrString: void | string = await addNote(
+      let expectVoid: void | string = await addNote(
         this.state.newNoteText,
         this.state.updateNoteTextState.noteID
       );
-      if (expectVoidOrString && typeof expectVoidOrString !== "string") {
-        throw expectVoidOrString;
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
       }
 
       await this.props.submitTaskText(true, "Note Created!");
 
-      //Timeout?
-      setTimeout(() => {
-        this.setState({
-          newNoteText: "",
-          newNoteTextError: false,
-          newNoteTextErrorText: "",
-        });
-      }, 800);
+      this.setState({
+        newNoteText: "",
+        newNoteTextError: false,
+        newNoteTextErrorText: [],
+        showNoteButtons: false,
+      });
+
+      Keyboard.dismiss();
     } catch (err) {
       this.setState({
+        newNoteText: "",
         newNoteTextError: true,
-        newNoteTextErrorText: err,
+        newNoteTextErrorText: Object.values(err),
       });
-      setTimeout(() => {
-        this.setState({
-          newNoteText: "",
-        });
-      }, 800);
     }
   };
 
@@ -227,6 +217,25 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
         updateNoteTextErrorText: err,
       });
     }
+  };
+
+  toggleTaskButtons = () => {
+    this.setState({
+      showTaskButtons: !this.state.showTaskButtons,
+    });
+  };
+
+  toggleNoteButtons = () => {
+    this.setState({
+      showNoteButtons: !this.state.showNoteButtons,
+    });
+  };
+
+  removeTaskErrors = () => {
+    this.setState({
+      newTaskTextError: false,
+      newTaskTextErrorText: [],
+    });
   };
 
   dismissTaskDialog = (): void => {
@@ -316,6 +325,13 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     newTaskText: text,
                   });
                 }}
+                onFocus={() => {
+                  this.toggleTaskButtons();
+                }}
+                onBlur={() => {
+                  this.toggleTaskButtons();
+                  this.removeTaskErrors();
+                }}
                 theme={
                   Platform.OS == "ios"
                     ? this.props.theme === "light"
@@ -329,7 +345,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     : { colors: { text: "white", primary: "white" } }
                 }
               />
-              {this.props.newTaskTextRef.current?.isFocused() ? (
+              {this.state.showTaskButtons ? (
                 <View style={{ width: "17%" }}>
                   <IconButton
                     icon="check-circle-outline"
@@ -349,7 +365,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       this.setState({
                         newTaskText: "",
                         newTaskTextError: false,
-                        newTaskTextErrorText: "",
+                        newTaskTextErrorText: [],
                       });
                       Keyboard.dismiss();
                     }}
@@ -357,11 +373,18 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 </View>
               ) : null}
             </View>
-            {this.state.newTaskTextError ? (
-              <Paragraph style={{ color: "#C00000", marginTop: 0 }}>
-                {this.state.newTaskTextErrorText}
-              </Paragraph>
-            ) : null}
+            {this.state.newTaskTextError
+              ? this.state.newTaskTextErrorText.map((err, index) => {
+                  return (
+                    <Paragraph
+                      key={index}
+                      style={{ color: "#C00000", marginTop: 0 }}
+                    >
+                      {err}
+                    </Paragraph>
+                  );
+                })
+              : null}
             <View style={{ marginTop: 15 }}>
               {this.props.Day &&
                 this.props.Day.tasks.map((task, index) => {
@@ -577,11 +600,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               </Fragment>
             ) : (
               <Fragment>
-                {this.state.newNoteTextError ? (
-                  <Paragraph style={{ color: "#C00000" }}>
-                    {this.state.newNoteTextErrorText}
-                  </Paragraph>
-                ) : null}
                 <View style={styles.addTaskEntry}>
                   {this.props.theme === "light" ? (
                     <Text style={styles.plusSign}>{"\u002B"}</Text>
@@ -612,25 +630,35 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       });
                     }}
                     onFocus={() => {
-                      this.setState({
-                        updateTaskTextError: false,
-                        updateTaskTextErrorText: "",
-                        updateNoteTextState: {
-                          text: this.props.Day.note.text,
-                          noteID: this.props.Day.note.id,
+                      this.setState(
+                        {
+                          updateTaskTextError: false,
+                          updateTaskTextErrorText: "",
+                          updateNoteTextState: {
+                            text: this.props.Day.note.text,
+                            noteID: this.props.Day.note.id,
+                          },
+                          paddingBottom: 300,
+                          showNoteButtons: true,
                         },
-                        paddingBottom: 250,
-                      });
-                      setTimeout(() => {
-                        this.props.firstScrollView.current!.scrollTo({
-                          x: 0,
-                          y: Dimensions.get("window").height - 20,
-                        });
-                      }, 300);
+                        () => {
+                          setTimeout(() => {
+                            this.props.firstScrollView.current!.scrollTo({
+                              x: 0,
+                              y:
+                                Dimensions.get("window").height +
+                                this.state.paddingBottom,
+                            });
+                          }, 300);
+                        }
+                      );
                     }}
                     onBlur={() => {
                       this.setState({
                         paddingBottom: 175,
+                        newNoteTextError: false,
+                        newNoteTextErrorText: [],
+                        showNoteButtons: false,
                       });
                     }}
                     theme={
@@ -646,7 +674,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         : { colors: { text: "white", primary: "white" } }
                     }
                   />
-                  {this.props.newNoteTextRef.current?.isFocused() ? (
+                  {this.state.showNoteButtons ? (
                     <View style={{ width: "17%" }}>
                       <IconButton
                         icon="check-circle-outline"
@@ -665,6 +693,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         onPress={() => {
                           this.setState({
                             newNoteText: "",
+                            newNoteTextError: false,
+                            newNoteTextErrorText: [],
+                            showNoteButtons: false,
                           });
                           Keyboard.dismiss();
                         }}
@@ -672,6 +703,15 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     </View>
                   ) : null}
                 </View>
+                {this.state.newNoteTextError
+                  ? this.state.newNoteTextErrorText.map((err, index) => {
+                      return (
+                        <Paragraph key={index} style={{ color: "#C00000" }}>
+                          {err}
+                        </Paragraph>
+                      );
+                    })
+                  : null}
               </Fragment>
             )}
           </Card.Content>
