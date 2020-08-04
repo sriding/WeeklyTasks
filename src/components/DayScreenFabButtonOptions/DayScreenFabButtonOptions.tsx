@@ -31,8 +31,8 @@ const DayScreenFabButtonOptions = (props: AppProps) => {
         }}
         icon="check"
         mode="outlined"
-        onPress={() => {
-          props.checkAllTasks();
+        onPress={async () => {
+          await props.checkAllTasks();
           props.toggleFabButtonOptions();
         }}
       >
@@ -46,8 +46,8 @@ const DayScreenFabButtonOptions = (props: AppProps) => {
         }}
         icon="delete"
         mode="outlined"
-        onPress={() => {
-          props.deleteAllTasks();
+        onPress={async () => {
+          await props.deleteAllTasks();
           props.toggleFabButtonOptions();
         }}
       >

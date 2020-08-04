@@ -27,7 +27,7 @@ export const deleteEverythingInDB = async (
 
     await pushNotifications.removeAllLocalNotifications();
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 

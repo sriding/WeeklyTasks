@@ -114,6 +114,6 @@ export const getASingleDaysData = async (dayID: string): Promise<any> => {
         };
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };

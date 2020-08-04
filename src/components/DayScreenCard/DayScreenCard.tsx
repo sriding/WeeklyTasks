@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
   TouchableHighlight,
+  Keyboard,
   TextInput as NativeTextInput,
 } from "react-native";
 
@@ -39,6 +40,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
   newNoteScrollViewRef: React.RefObject<ScrollView>;
   updateTaskTextRef: React.RefObject<NativeTextInput>;
   updateNoteTextRef: React.RefObject<NativeTextInput>;
+  onBlurSubscription: any;
 
   constructor(props: AppProps) {
     super(props);
@@ -73,6 +75,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     this.newNoteScrollViewRef = React.createRef();
     this.updateTaskTextRef = React.createRef();
     this.updateNoteTextRef = React.createRef();
+    this.onBlurSubscription = null;
   }
 
   clearTaskText = async (): Promise<void> => {
@@ -86,8 +89,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       if (expectVoid !== undefined && expectVoid !== null) {
         throw expectVoid;
       }
-
-      this.props.submitTaskText(true, "Task Created!");
+      await this.props.submitTaskText(true, "Task Created!");
       this.props.newTaskTextRef.current!.blur();
 
       //Why is there a timeout here again?
@@ -101,7 +103,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     } catch (err) {
       this.setState({
         newTaskTextError: true,
-        newTaskTextErrorText: err,
+        newTaskTextErrorText: err.replace(/[^:]*/, "").replace(/[}:"]/g, ""),
       });
       setTimeout(() => {
         this.setState({
@@ -113,6 +115,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
 
   clearNoteText = async () => {
     try {
+      Keyboard.dismiss();
       let expectVoidOrString: void | string = await addNote(
         this.state.newNoteText,
         this.state.updateNoteTextState.noteID
@@ -121,7 +124,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
         throw expectVoidOrString;
       }
 
-      this.props.submitTaskText(true, "Note Created!");
+      await this.props.submitTaskText(true, "Note Created!");
 
       //Timeout?
       setTimeout(() => {
@@ -156,7 +159,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
         throw expectVoid;
       }
 
-      this.props.submitTaskText(true, "Task Updated!");
+      await this.props.submitTaskText(true, "Task Updated!");
       this.setState({
         updateTaskTextError: false,
         updateTaskTextErrorText: "",
@@ -180,7 +183,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
         throw expectVoidOrString;
       }
 
-      this.props.submitTaskText(true, "Note Updated!");
+      await this.props.submitTaskText(true, "Note Updated!");
       this.setState({
         updateNoteTextError: false,
         updateNoteTextErrorText: "",
@@ -284,11 +287,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               changeReminderTime={this.changeReminderTime}
               text="New Task Reminder Time: "
             />
-            {this.state.newTaskTextError ? (
-              <Paragraph style={{ color: "#C00000" }}>
-                {this.state.newTaskTextErrorText}
-              </Paragraph>
-            ) : null}
             <View style={styles.addTaskEntry}>
               {this.props.theme === "light" ? (
                 <Text style={styles.plusSign}>{"\u002B"}</Text>
@@ -331,16 +329,13 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     : { colors: { text: "white", primary: "white" } }
                 }
               />
-              {this.state.newTaskText.length > 0 ? (
+              {this.props.newTaskTextRef.current?.isFocused() ? (
                 <View style={{ width: "17%" }}>
                   <IconButton
                     icon="check-circle-outline"
                     color="blue"
                     size={30}
-                    style={{
-                      marginBottom: 0,
-                      marginTop: 0,
-                    }}
+                    style={styles.submitAndClearIcons}
                     onPress={() => {
                       this.clearTaskText();
                     }}
@@ -349,83 +344,35 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     icon="checkbox-blank-circle-outline"
                     color="red"
                     size={30}
-                    style={{
-                      marginBottom: 0,
-                      marginTop: 0,
-                    }}
+                    style={styles.submitAndClearIcons}
                     onPress={() => {
                       this.setState({
                         newTaskText: "",
+                        newTaskTextError: false,
+                        newTaskTextErrorText: "",
                       });
+                      Keyboard.dismiss();
                     }}
                   />
                 </View>
               ) : null}
             </View>
-            {this.props.Day &&
-              this.props.Day.tasks.map((task, index) => {
-                return task.isChecked ? (
-                  <View key={index} style={styles.mapTaskContainer}>
-                    <Paragraph
-                      style={{
-                        ...styles.paragraphTextStrikethrough,
-                        backgroundColor:
-                          this.props.theme === "light" ? "white" : "#121212",
-                      }}
-                      onPress={() => {
-                        this.setState({
-                          updateTaskTextState: {
-                            text: task.text,
-                            taskID: task.id,
-                          },
-                          updateTaskDialogVisible: true,
-                          reminder: task.reminder,
-                          reminderTime:
-                            task.reminder === false ? "N/A" : task.reminderTime,
-                        });
-                      }}
-                    >
-                      {task.text}
-                    </Paragraph>
-                    <View style={styles.buttonCombiner}>
-                      <Button
-                        mode="outlined"
-                        style={styles.buttonStyle}
-                        icon="check-circle"
-                        color={
-                          this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
-                        }
-                        onPress={() => {
-                          this.props.checkTask(task.id, task.isChecked);
+            {this.state.newTaskTextError ? (
+              <Paragraph style={{ color: "#C00000", marginTop: 0 }}>
+                {this.state.newTaskTextErrorText}
+              </Paragraph>
+            ) : null}
+            <View style={{ marginTop: 15 }}>
+              {this.props.Day &&
+                this.props.Day.tasks.map((task, index) => {
+                  return task.isChecked ? (
+                    <View key={index} style={styles.mapTaskContainer}>
+                      <Paragraph
+                        style={{
+                          ...styles.paragraphTextStrikethrough,
+                          backgroundColor:
+                            this.props.theme === "light" ? "white" : "#121212",
                         }}
-                      >
-                        Check
-                      </Button>
-                      <Button
-                        mode="outlined"
-                        style={styles.buttonStyle}
-                        color={
-                          this.props.theme === "light" ? "#C00000" : "#ff8080"
-                        }
-                        icon="close-box"
-                        onPress={() => {
-                          this.props.deleteTask(task.id);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </View>
-                  </View>
-                ) : (
-                  <View key={index}>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableHighlight
                         onPress={() => {
                           this.setState({
                             updateTaskTextState: {
@@ -441,12 +388,98 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                           });
                         }}
                       >
-                        <Checkbox
-                          status={task.reminder ? "checked" : "unchecked"}
-                        />
-                      </TouchableHighlight>
-                      <TouchableHighlight
-                        onPress={() => {
+                        {task.text}
+                      </Paragraph>
+                      <View style={styles.buttonCombiner}>
+                        <Button
+                          mode="outlined"
+                          style={styles.buttonStyle}
+                          icon="check-circle"
+                          color={
+                            this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
+                          }
+                          onPress={async () => {
+                            Keyboard.dismiss();
+                            await this.props.checkTask(task.id, task.isChecked);
+                          }}
+                        >
+                          Check
+                        </Button>
+                        <Button
+                          mode="outlined"
+                          style={styles.buttonStyle}
+                          color={
+                            this.props.theme === "light" ? "#C00000" : "#ff8080"
+                          }
+                          icon="close-box"
+                          onPress={async () => {
+                            Keyboard.dismiss();
+                            await this.props.deleteTask(task.id);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </View>
+                    </View>
+                  ) : (
+                    <View key={index}>
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <TouchableHighlight
+                          onPress={() => {
+                            this.setState({
+                              updateTaskTextState: {
+                                text: task.text,
+                                taskID: task.id,
+                              },
+                              updateTaskDialogVisible: true,
+                              reminder: task.reminder,
+                              reminderTime:
+                                task.reminder === false
+                                  ? "N/A"
+                                  : task.reminderTime,
+                            });
+                          }}
+                        >
+                          <Checkbox
+                            status={task.reminder ? "checked" : "unchecked"}
+                          />
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                          onPress={() => {
+                            this.setState({
+                              updateTaskTextState: {
+                                text: task.text,
+                                taskID: task.id,
+                              },
+                              updateTaskDialogVisible: true,
+                              reminder: task.reminder,
+                              reminderTime:
+                                task.reminder === false
+                                  ? "N/A"
+                                  : task.reminderTime,
+                            });
+                          }}
+                        >
+                          <Caption style={styles.captionText}>
+                            {task.reminder
+                              ? `Reminder set for: ${task.reminderTime}`
+                              : "No Reminder set"}
+                          </Caption>
+                        </TouchableHighlight>
+                      </View>
+                      <Paragraph
+                        style={{
+                          ...styles.paragraphText,
+                          backgroundColor:
+                            this.props.theme === "light" ? "white" : "#121212",
+                        }}
+                        onPress={(target) => {
                           this.setState({
                             updateTaskTextState: {
                               text: task.text,
@@ -461,65 +494,42 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                           });
                         }}
                       >
-                        <Caption style={styles.captionText}>
-                          {task.reminder
-                            ? `Reminder set for: ${task.reminderTime}`
-                            : "No Reminder set"}
-                        </Caption>
-                      </TouchableHighlight>
+                        {task.text}
+                      </Paragraph>
+                      <View style={styles.buttonCombiner}>
+                        <Button
+                          mode="outlined"
+                          style={styles.buttonStyle}
+                          icon="check-circle"
+                          color={
+                            this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
+                          }
+                          onPress={async () => {
+                            Keyboard.dismiss();
+                            await this.props.checkTask(task.id, task.isChecked);
+                          }}
+                        >
+                          Check
+                        </Button>
+                        <Button
+                          mode="outlined"
+                          style={styles.buttonStyle}
+                          color={
+                            this.props.theme === "light" ? "#C00000" : "#ff8080"
+                          }
+                          icon="close-box"
+                          onPress={async () => {
+                            Keyboard.dismiss();
+                            await this.props.deleteTask(task.id);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </View>
                     </View>
-                    <Paragraph
-                      style={{
-                        ...styles.paragraphText,
-                        backgroundColor:
-                          this.props.theme === "light" ? "white" : "#121212",
-                      }}
-                      onPress={(target) => {
-                        this.setState({
-                          updateTaskTextState: {
-                            text: task.text,
-                            taskID: task.id,
-                          },
-                          updateTaskDialogVisible: true,
-                          reminder: task.reminder,
-                          reminderTime:
-                            task.reminder === false ? "N/A" : task.reminderTime,
-                        });
-                      }}
-                    >
-                      {task.text}
-                    </Paragraph>
-                    <View style={styles.buttonCombiner}>
-                      <Button
-                        mode="outlined"
-                        style={styles.buttonStyle}
-                        icon="check-circle"
-                        color={
-                          this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
-                        }
-                        onPress={() => {
-                          this.props.checkTask(task.id, task.isChecked);
-                        }}
-                      >
-                        Check
-                      </Button>
-                      <Button
-                        mode="outlined"
-                        style={styles.buttonStyle}
-                        color={
-                          this.props.theme === "light" ? "#C00000" : "#ff8080"
-                        }
-                        icon="close-box"
-                        onPress={() => {
-                          this.props.deleteTask(task.id);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </View>
-                  </View>
-                );
-              })}
+                  );
+                })}
+            </View>
           </Card.Content>
           <Card.Content>
             <Button
@@ -554,8 +564,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                   color={this.props.theme === "light" ? "#C00000" : "#ff8080"}
                   style={styles.buttonStyleNote}
                   icon="close-box"
-                  onPress={() => {
-                    this.props.deleteNote(this.props.Day.note.id);
+                  onPress={async () => {
+                    Keyboard.dismiss();
+                    await this.props.deleteNote(this.props.Day?.note.id);
                     this.setState({
                       newNoteText: "",
                     });
@@ -595,7 +606,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     placeholderTextColor={
                       this.props.theme === "light" ? "gray" : "white"
                     }
-                    returnKeyType="done"
                     onChangeText={(text) => {
                       this.setState({
                         newNoteText: text,
@@ -618,16 +628,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         });
                       }, 300);
                     }}
-                    onKeyPress={(e) => {
-                      if (
-                        e.nativeEvent.key == "Enter" &&
-                        Platform.OS != "ios"
-                      ) {
-                        this.clearNoteText();
-                      } else if (e.nativeEvent.key == "Enter") {
-                        this.props.newNoteTextRef.current!.blur();
-                      }
-                    }}
                     onBlur={() => {
                       this.setState({
                         paddingBottom: 175,
@@ -645,8 +645,32 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         ? { colors: { text: "gray", primary: "white" } }
                         : { colors: { text: "white", primary: "white" } }
                     }
-                    onSubmitEditing={this.clearNoteText}
                   />
+                  {this.props.newNoteTextRef.current?.isFocused() ? (
+                    <View style={{ width: "17%" }}>
+                      <IconButton
+                        icon="check-circle-outline"
+                        color="blue"
+                        size={30}
+                        style={styles.submitAndClearIcons}
+                        onPress={() => {
+                          this.clearNoteText();
+                        }}
+                      />
+                      <IconButton
+                        icon="checkbox-blank-circle-outline"
+                        color="red"
+                        size={30}
+                        style={styles.submitAndClearIcons}
+                        onPress={() => {
+                          this.setState({
+                            newNoteText: "",
+                          });
+                          Keyboard.dismiss();
+                        }}
+                      />
+                    </View>
+                  ) : null}
                 </View>
               </Fragment>
             )}
@@ -690,9 +714,9 @@ const styles = StyleSheet.create({
   cardContainer: {
     alignItems: "center",
     textAlign: "center",
-    maxWidth: "90%",
+    width: "89%",
     minHeight: "90%",
-    marginTop: 20,
+    marginTop: 25,
     elevation: 3,
     shadowColor: "#000000",
     shadowRadius: 4,
@@ -704,7 +728,7 @@ const styles = StyleSheet.create({
   addTaskEntry: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   plusSign: {
     width: "3%",
@@ -752,5 +776,9 @@ const styles = StyleSheet.create({
   mapTaskContainer: {
     marginBottom: 15,
     marginTop: 15,
+  },
+  submitAndClearIcons: {
+    marginBottom: 0,
+    marginTop: 0,
   },
 });

@@ -23,6 +23,7 @@ export default function HomeScreenCard(props: AppProps) {
           style={styles.cardTitleStyle}
         />
         <Title style={styles.cardTasksTitle}>Tasks</Title>
+        <Divider style={{ marginBottom: 10 }} />
         <View style={styles.tasksContainer}>
           {props.dayInformation && props.dayInformation.tasks.length !== 0 ? (
             props.dayInformation.tasks.map((task, index, array) => {
@@ -31,7 +32,7 @@ export default function HomeScreenCard(props: AppProps) {
                   <Paragraph style={styles.tasksTextLineThrough}>
                     {task.text}
                   </Paragraph>
-                  {index + 1 !== array.length ? <Divider /> : null}
+                  {array.length !== 1 ? <Divider /> : null}
                 </View>
               ) : (
                 <View key={task.id} style={styles.taskContainer}>
@@ -41,7 +42,7 @@ export default function HomeScreenCard(props: AppProps) {
                       {task.reminderTime}
                     </Paragraph>
                   </View>
-                  {index + 1 !== array.length ? <Divider /> : null}
+                  {array.length !== 1 ? <Divider /> : null}
                 </View>
               );
             })
@@ -52,6 +53,7 @@ export default function HomeScreenCard(props: AppProps) {
       </Card.Content>
       <Card.Content style={styles.noteContainer}>
         <Title style={styles.noteTitle}>Note</Title>
+        <Divider style={{ marginBottom: 15 }} />
         {props.dayInformation ? (
           <Paragraph style={styles.noteText}>
             {props.dayInformation.note.text.length === 0
@@ -70,6 +72,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     shadowRadius: 4,
     elevation: 3,
+    width: "97%",
+    maxWidth: "97%",
+    alignSelf: "center",
   },
   tasksTitleAndTasksContainer: {},
   cardTitleStyle: {
@@ -87,8 +92,6 @@ const styles = StyleSheet.create({
   cardTasksTitle: {
     fontSize: 26,
     marginBottom: 10,
-    textDecorationStyle: "solid",
-    textDecorationLine: "underline",
   },
   tasksContainer: {
     marginBottom: 20,
@@ -96,6 +99,7 @@ const styles = StyleSheet.create({
   taskContainer: {
     marginTop: 12,
     marginBottom: 12,
+    marginLeft: 12,
     justifyContent: "center",
   },
   taskAndTimeContainer: {
@@ -127,12 +131,11 @@ const styles = StyleSheet.create({
   noteTitle: {
     fontSize: 26,
     marginTop: 8,
-    marginBottom: 10,
-    textDecorationStyle: "solid",
-    textDecorationLine: "underline",
+    marginBottom: 12,
   },
   noteText: {
     fontSize: 19,
     lineHeight: 30,
+    marginLeft: 12,
   },
 });

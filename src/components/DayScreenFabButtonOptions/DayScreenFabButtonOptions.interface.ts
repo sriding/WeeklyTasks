@@ -4,8 +4,8 @@ export interface AppProps {
   firstScrollView: React.RefObject<ScrollView>;
   newTaskTextRef: React.RefObject<TextInput>;
   toggleFabButtonOptions: () => void;
-  checkAllTasks: () => void;
-  deleteAllTasks: () => void;
+  checkAllTasks: () => Promise<void>;
+  deleteAllTasks: () => Promise<void>;
   topOffset: number;
   theme: string;
 }

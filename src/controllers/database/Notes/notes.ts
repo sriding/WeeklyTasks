@@ -36,7 +36,7 @@ export const addNote = async (
       );
     });
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -67,7 +67,7 @@ export const updateNote = async (
       );
     });
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -93,6 +93,6 @@ export const deleteNote = async (noteID: number): Promise<void> => {
       );
     });
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };

@@ -5,7 +5,7 @@ import { List, Divider } from "react-native-paper";
 import theWeek from "../../utilities/theWeek";
 
 import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView, View } from "react-native";
+import { SafeAreaView, View, Keyboard } from "react-native";
 
 import { getTheme } from "../../controllers/database/Settings/settings";
 import { AppProps, AppState } from "./SideBar.interface";

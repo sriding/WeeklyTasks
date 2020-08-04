@@ -33,7 +33,7 @@ export const currentMigration = async (
       },
     });
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 
   // <---

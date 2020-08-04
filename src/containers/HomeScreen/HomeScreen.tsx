@@ -41,6 +41,7 @@ import theWeek from "../../utilities/theWeek";
 class HomeScreen extends Component<AppProps, AppState> {
   textInputRef: React.RefObject<TextInput>;
   focusSubscription: any;
+  beforeRemoveSubscription: any;
   keyboardDidShowListener: EmitterSubscription | null;
   keyboardDidHideListener: EmitterSubscription | null;
 
@@ -70,6 +71,7 @@ class HomeScreen extends Component<AppProps, AppState> {
     this.textInputRef = React.createRef();
 
     this.focusSubscription = null;
+    this.beforeRemoveSubscription = null;
     this.keyboardDidShowListener = null;
     this.keyboardDidHideListener = null;
   }
@@ -135,6 +137,14 @@ class HomeScreen extends Component<AppProps, AppState> {
       "focus",
       async () => {
         try {
+          this.keyboardDidShowListener = Keyboard.addListener(
+            "keyboardDidShow",
+            this._keyboardDidShow
+          );
+          this.keyboardDidHideListener = Keyboard.addListener(
+            "keyboardDidHide",
+            this._keyboardDidHide
+          );
           let expectVoid = await this.getDataForAllDays();
           if (expectVoid !== null && expectVoid !== undefined) {
             throw expectVoid;
@@ -146,6 +156,15 @@ class HomeScreen extends Component<AppProps, AppState> {
           );
           this.toggleSnackBarVisibility();
         }
+      }
+    );
+
+    this.beforeRemoveSubscription = this.props.navigation.addListener(
+      "blur",
+      () => {
+        //Removing event listeners
+        this.keyboardDidShowListener?.remove();
+        this.keyboardDidHideListener?.remove();
       }
     );
 
@@ -161,10 +180,8 @@ class HomeScreen extends Component<AppProps, AppState> {
   };
 
   componentWillUnmount = (): void => {
-    //Removing Event Listeners
+    //Removing Event Listener
     this.focusSubscription();
-    this.keyboardDidShowListener?.remove();
-    this.keyboardDidHideListener?.remove();
   };
 
   getDataForAllDays = async (): Promise<void> => {

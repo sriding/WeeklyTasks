@@ -273,7 +273,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
       if (expectVoid !== undefined && expectVoid !== null) {
         throw expectVoid;
       }
-      this.submitTaskText(true, "Task Deleted!");
+      await this.submitTaskText(true, "Task Deleted!");
     } catch (err) {
       this.setSnackBarTextAndIfError("Error deleting the task.", true);
       this.toggleSnackBarVisibility();
@@ -338,6 +338,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
             ref={this.firstScrollView}
             contentContainerStyle={styles.cardContainerViewContainer}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             onScrollBeginDrag={() => {
               if (this.state.fabButtonClicked) {
                 this.setState({

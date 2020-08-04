@@ -31,7 +31,7 @@ export const getDailyUpdate = async (): Promise<boolean> => {
       return realmContainer.objects("Settings")[0].dailyUpdate;
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -44,7 +44,7 @@ export const getDailyUpdatePersistance = async (): Promise<boolean> => {
     });
     return realmContainer.objects("Settings")[0].dailyUpdatePersistance;
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -60,7 +60,7 @@ export const getDailyUpdateTime = async (): Promise<string> => {
       return realmContainer.objects("Settings")[0].dailyUpdateTime;
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -73,7 +73,7 @@ export const getTaskReminders = async (): Promise<boolean> => {
 
     return realmContainer.objects("Settings")[0].taskReminders;
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -86,7 +86,7 @@ export const getSortTasksBy = async (): Promise<string> => {
 
     return realmContainer.objects("Settings")[0].sortTasksBy;
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -103,7 +103,7 @@ export const getTheme = async (): Promise<string> => {
       return realmContainer.objects("Settings")[0].theme;
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -143,7 +143,7 @@ export const changeDailyUpdate = async (
       await pushNotifications.removeDailyRepeatingNotifications();
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -173,7 +173,7 @@ export const changeDailyUpdatePersistance = async (
     });
     //pushNotifications.sendLocalNotification();
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -204,7 +204,7 @@ export const changeDailyUpdateTime = async (
 
     await pushNotifications.createDailyRepeatingNotification(string);
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -239,7 +239,7 @@ export const changeTaskReminders = async (
       await pushNotifications.removingAllTasksNotifications();
     }
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -267,7 +267,7 @@ export const changeSortTasksBy = async (
       );
     });
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };
 
@@ -294,6 +294,6 @@ export const changeTheme = async (string: string = "light"): Promise<void> => {
       );
     });
   } catch (err) {
-    return err;
+    return JSON.stringify(err);
   }
 };

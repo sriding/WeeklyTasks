@@ -537,6 +537,8 @@ const updateADailyRepeatingNotification = async (
 ): Promise<void> => {
   try {
     const dayIndex = theWeekNumericalValues[day] - 1;
+
+    //Id depends on what IDs are specified when creating the daily notifications.
     PushNotification.cancelLocalNotifications({ id: 1000000 + dayIndex });
 
     const taskIdsForADay = await getAllUncheckedTaskIdsForASingleDay(day);
