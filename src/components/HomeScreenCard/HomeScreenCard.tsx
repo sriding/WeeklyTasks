@@ -19,7 +19,10 @@ export default function HomeScreenCard(props: AppProps) {
       <Card.Content style={styles.tasksTitleAndTasksContainer}>
         <Card.Title
           title={props.dayInformation && props.dayInformation.id}
-          titleStyle={{ ...styles.cardTitle, color: "black" }}
+          titleStyle={{
+            ...styles.cardTitle,
+            color: props.theme === "light" ? "white" : "black",
+          }}
           style={{
             ...styles.cardTitleStyle,
             backgroundColor: props.theme === "light" ? "#6200ee" : "#c2c2f0",
@@ -29,7 +32,7 @@ export default function HomeScreenCard(props: AppProps) {
         <Divider
           style={{
             marginBottom: 10,
-            backgroundColor: props.theme === "light" ? null : "white",
+            backgroundColor: props.theme === "light" ? "silver" : "white",
           }}
         />
         <View style={styles.tasksContainer}>

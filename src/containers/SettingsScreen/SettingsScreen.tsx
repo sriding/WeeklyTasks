@@ -213,9 +213,9 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
               <Headline
                 style={{
                   ...styles.cardTitleStyle,
-                  color: this.props.theme === "light" ? "white" : "black",
+                  color: this.state.theme === "light" ? "white" : "black",
                   backgroundColor:
-                    this.props.theme === "light" ? "#6200ee" : "#c2c2f0",
+                    this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
                 }}
               >
                 Notifications
@@ -240,6 +240,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 reminder={this.state.dailyUpdateStatus}
                 reminderTime={this.state.dailyUpdateTimeStatus}
                 changeReminderTime={this.changeReminderTime}
+                theme={this.state.theme}
                 text="Daily update reminder at: "
               />
               <View style={styles.switchContainer}>
@@ -264,16 +265,16 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 marginTop: 20,
                 marginBottom: 20,
                 backgroundColor:
-                  this.props.theme === "light" ? "silver" : "white",
+                  this.state.theme === "light" ? "silver" : "white",
               }}
             />
             <View style={styles.cardChunkContainer}>
               <Headline
                 style={{
                   ...styles.cardTitleStyle,
-                  color: this.props.theme === "light" ? "white" : "black",
+                  color: this.state.theme === "light" ? "white" : "black",
                   backgroundColor:
-                    this.props.theme === "light" ? "#6200ee" : "#c2c2f0",
+                    this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
                 }}
               >
                 Tasks
@@ -294,10 +295,9 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                   anchor={
                     <Paragraph
                       style={{
-                        fontSize: 18,
-                        padding: 4,
-                        margin: 4,
-                        borderWidth: 1,
+                        ...styles.displayedSortTaskBySetting,
+                        borderColor:
+                          this.state.theme === "light" ? "black" : "white",
                       }}
                       onPress={() => {
                         this.setState({
@@ -339,16 +339,16 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 marginTop: 20,
                 marginBottom: 20,
                 backgroundColor:
-                  this.props.theme === "light" ? "silver" : "white",
+                  this.state.theme === "light" ? "silver" : "white",
               }}
             />
             <View style={styles.cardChunkContainer}>
               <Headline
                 style={{
                   ...styles.cardTitleStyle,
-                  color: this.props.theme === "light" ? "white" : "black",
+                  color: this.state.theme === "light" ? "white" : "black",
                   backgroundColor:
-                    this.props.theme === "light" ? "#6200ee" : "#c2c2f0",
+                    this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
                 }}
               >
                 Theme
@@ -430,11 +430,16 @@ const styles = StyleSheet.create({
     maxWidth: "70%",
     borderRadius: 30,
     fontSize: 28,
-    color: "white",
     overflow: "hidden",
     textAlign: "center",
   },
   cardChunkContainer: {
     marginBottom: 30,
+  },
+  displayedSortTaskBySetting: {
+    fontSize: 18,
+    padding: 4,
+    margin: 4,
+    borderWidth: 1,
   },
 });

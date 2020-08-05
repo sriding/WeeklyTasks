@@ -56,7 +56,7 @@ export const addEH = (
     errorsObject.errors.reminderTime !==
       "The reminder time is not in the proper format.";
     errorsObject.errorsExist = true;
-  } else if (!reminderTimes[reminderTime]) {
+  } else if (reminderTimes[reminderTime] === undefined) {
     errorsObject.errors.reminderTime =
       "Reminder time must be from displayed options.";
     errorsObject.errorsExist = true;
@@ -103,7 +103,7 @@ export const updateEH = (
     errorsObject.errors.reminderTime !==
       "The reminder time is not in the proper format.";
     errorsObject.errorsExist = true;
-  } else if (!reminderTimes[reminderTime]) {
+  } else if (reminderTimes[reminderTime] === undefined) {
     errorsObject.errors.reminderTime =
       "Reminder time must be from displayed options.";
     errorsObject.errorsExist = true;

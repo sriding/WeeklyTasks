@@ -373,8 +373,9 @@ export default class DayScreen extends Component<AppProps, AppState> {
               ...styles.fabButton,
               top: this.state.topOffset,
               backgroundColor:
-                this.state.theme === "light" ? "#6200ee" : "#171617",
+                this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
             }}
+            color={this.state.theme === "light" ? "white" : "black"}
             icon="view-list"
             onPress={() => {
               this.toggleFabButtonOptions();

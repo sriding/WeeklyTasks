@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet, Keyboard } from "react-native";
 import { Paragraph, Menu, Divider } from "react-native-paper";
 
 import reminderTimes from "../../utilities/reminderTimes";
@@ -16,20 +16,8 @@ class SetReminder extends Component<AppProps, AppState> {
 
   render() {
     return (
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          alignContent: "center",
-          margin: 3,
-        }}
-      >
-        <Paragraph style={{ marginBottom: 0, paddingBottom: 0, fontSize: 16 }}>
-          {this.props.text}
-        </Paragraph>
+      <View style={styles.mainContainer}>
+        <Paragraph style={styles.mainText}>{this.props.text}</Paragraph>
         <Menu
           visible={this.state.menuVisibility}
           onDismiss={() => {
@@ -39,8 +27,12 @@ class SetReminder extends Component<AppProps, AppState> {
           }}
           anchor={
             <Paragraph
-              style={{ fontSize: 16, padding: 4, margin: 4, borderWidth: 1 }}
+              style={{
+                ...styles.displayedReminderTime,
+                borderColor: this.props.theme === "light" ? "black" : "white",
+              }}
               onPress={() => {
+                Keyboard.dismiss();
                 this.setState({
                   menuVisibility: true,
                 });
@@ -78,5 +70,28 @@ class SetReminder extends Component<AppProps, AppState> {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    margin: 3,
+  },
+  mainText: {
+    marginBottom: 0,
+    paddingBottom: 0,
+    fontSize: 16,
+  },
+  displayedReminderTime: {
+    fontSize: 16,
+    padding: 4,
+    margin: 4,
+    borderWidth: 1,
+  },
+});
 
 export default SetReminder;

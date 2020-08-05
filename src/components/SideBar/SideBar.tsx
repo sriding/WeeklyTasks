@@ -43,7 +43,7 @@ export default class SideBar extends Component<AppProps, AppState> {
             <Divider
               style={{
                 backgroundColor:
-                  this.props.theme === "light" ? "silver" : "white",
+                  this.state.theme === "light" ? "silver" : "white",
               }}
             />
           </View>

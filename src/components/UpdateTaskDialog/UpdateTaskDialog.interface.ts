@@ -10,7 +10,7 @@ export interface AppProps {
   };
   updatingUpdateTaskTextState: (text: string, taskID: number) => void;
   updateTaskTextError: boolean;
-  updateTaskTextErrorText: string;
+  updateTaskTextErrorText: string[];
   keyboardHeight: number;
   keyboardOpen: boolean;
   updateTaskTextRef: React.RefObject<TextInput>;

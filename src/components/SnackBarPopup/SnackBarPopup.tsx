@@ -41,7 +41,9 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
               this.props.toggleSnackBarVisibility();
             }}
             duration={3000}
-            style={{ backgroundColor: "#C00000" }}
+            style={{
+              backgroundColor: "#C00000",
+            }}
             action={{
               label: "FAIL",
               onPress: () => {
@@ -49,7 +51,7 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
               },
             }}
           >
-            <Text>{this.props.snackBarText}</Text>
+            <Text style={{ color: "white" }}>{this.props.snackBarText}</Text>
           </Snackbar>
         ) : (
           <Snackbar
@@ -58,7 +60,9 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
               this.props.toggleSnackBarVisibility();
             }}
             duration={3000}
-            style={{ backgroundColor: "#6200ee" }}
+            style={{
+              backgroundColor: "#6200ee",
+            }}
             action={{
               label: "PASS",
               onPress: () => {
@@ -66,7 +70,7 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
               },
             }}
           >
-            <Text>{this.props.snackBarText}</Text>
+            <Text style={{ color: "white" }}>{this.props.snackBarText}</Text>
           </Snackbar>
         )}
       </View>

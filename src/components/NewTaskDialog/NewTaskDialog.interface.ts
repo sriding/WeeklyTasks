@@ -13,7 +13,7 @@ export interface AppProps {
   setDayOfTheWeek: (day: string) => void;
   dayOfTheWeek: string;
   taskInputError: boolean;
-  taskInputErrorText: string;
+  taskInputErrorText: string[];
   keyboardHeight: number;
   keyboardOpen: boolean;
   reminder: boolean;

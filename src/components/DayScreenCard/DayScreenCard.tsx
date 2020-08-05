@@ -55,8 +55,8 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       showNoteButtons: false,
       updateTaskTextError: false,
       updateNoteTextError: false,
-      updateTaskTextErrorText: "",
-      updateNoteTextErrorText: "",
+      updateTaskTextErrorText: [],
+      updateNoteTextErrorText: [],
       updateTaskTextState: {
         text: "",
         taskID: -1,
@@ -103,7 +103,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       this.setState({
         newTaskText: "",
         newTaskTextError: true,
-        newTaskTextErrorText: Object.values(err),
+        newTaskTextErrorText: Object.values(JSON.parse(err)),
       });
     }
   };
@@ -132,7 +132,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       this.setState({
         newNoteText: "",
         newNoteTextError: true,
-        newNoteTextErrorText: Object.values(err),
+        newNoteTextErrorText: Object.values(JSON.parse(err)),
       });
     }
   };
@@ -152,37 +152,37 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       await this.props.submitTaskText(true, "Task Updated!");
       this.setState({
         updateTaskTextError: false,
-        updateTaskTextErrorText: "",
+        updateTaskTextErrorText: [],
       });
       this.dismissTaskDialog();
     } catch (err) {
       this.setState({
         updateTaskTextError: true,
-        updateTaskTextErrorText: err,
+        updateTaskTextErrorText: Object.values(JSON.parse(err)),
       });
     }
   };
 
   updateNoteText = async (): Promise<void> => {
     try {
-      let expectVoidOrString: void | string = await updateNote(
+      let expectVoid: void | string = await updateNote(
         this.state.updateNoteTextState.text,
         this.state.updateNoteTextState.noteID
       );
-      if (expectVoidOrString && typeof expectVoidOrString !== "string") {
-        throw expectVoidOrString;
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
       }
 
       await this.props.submitTaskText(true, "Note Updated!");
       this.setState({
         updateNoteTextError: false,
-        updateNoteTextErrorText: "",
+        updateNoteTextErrorText: [],
       });
       this.dismissNoteDialog();
     } catch (err) {
       this.setState({
         updateNoteTextError: true,
-        updateNoteTextErrorText: err,
+        updateNoteTextErrorText: Object.values(JSON.parse(err)),
       });
     }
   };
@@ -198,7 +198,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     } catch (err) {
       this.setState({
         updateNoteTextError: true,
-        updateNoteTextErrorText: err,
+        updateNoteTextErrorText: Object.values(JSON.parse(err)),
       });
     }
   };
@@ -214,7 +214,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     } catch (err) {
       this.setState({
         updateNoteTextError: true,
-        updateNoteTextErrorText: err,
+        updateNoteTextErrorText: Object.values(JSON.parse(err)),
       });
     }
   };
@@ -243,7 +243,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       this.setState({
         updateTaskDialogVisible: false,
         updateTaskTextError: false,
-        updateTaskTextErrorText: "",
+        updateTaskTextErrorText: [],
       });
     } catch (err) {
       console.log(err);
@@ -255,7 +255,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       this.setState({
         updateNoteDialogVisible: false,
         updateNoteTextError: false,
-        updateNoteTextErrorText: "",
+        updateNoteTextErrorText: [],
       });
     } catch (err) {
       console.log(err);
@@ -281,7 +281,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             style={{
               ...styles.plusSign,
               color: "white",
-              backgroundColor: "white",
             }}
           >
             {"\u002B"}
@@ -316,10 +315,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               reminder={this.state.reminder}
               reminderTime={this.state.reminderTime}
               changeReminderTime={this.changeReminderTime}
+              theme={this.props.theme}
               text="New Task Reminder Time: "
             />
             <View style={styles.addTaskEntry}>
-              {this.renderComponent("light")}
+              {this.renderComponent(this.props.theme)}
               <TextInput
                 style={{
                   ...styles.newTaskInput,
@@ -367,7 +367,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 <View style={{ width: "17%" }}>
                   <IconButton
                     icon="check-circle-outline"
-                    color="blue"
+                    color={this.props.theme === "light" ? "#6200ee" : "#c2c2f0"}
                     size={30}
                     style={styles.submitAndClearIcons}
                     onPress={() => {
@@ -376,7 +376,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                   />
                   <IconButton
                     icon="checkbox-blank-circle-outline"
-                    color="red"
+                    color={this.props.theme === "light" ? "red" : "#ff8080"}
                     size={30}
                     style={styles.submitAndClearIcons}
                     onPress={() => {
@@ -396,7 +396,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                   return (
                     <Paragraph
                       key={index}
-                      style={{ color: "#C00000", marginTop: 0 }}
+                      style={{
+                        color:
+                          this.props.theme === "light" ? "#C00000" : "#ff8080",
+                        marginTop: 0,
+                      }}
                     >
                       {err}
                     </Paragraph>
@@ -619,11 +623,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             ) : (
               <Fragment>
                 <View style={styles.addTaskEntry}>
-                  {this.props.theme === "light" ? (
-                    <Text style={styles.plusSign}>{"\u002B"}</Text>
-                  ) : (
-                    <Text style={styles.plusSign} />
-                  )}
+                  {this.renderComponent(this.props.theme)}
                   <TextInput
                     style={{
                       ...styles.newTaskInput,
@@ -651,7 +651,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       this.setState(
                         {
                           updateTaskTextError: false,
-                          updateTaskTextErrorText: "",
+                          updateTaskTextErrorText: [],
                           updateNoteTextState: {
                             text: this.props.Day.note.text,
                             noteID: this.props.Day.note.id,
@@ -696,7 +696,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     <View style={{ width: "17%" }}>
                       <IconButton
                         icon="check-circle-outline"
-                        color="blue"
+                        color={
+                          this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
+                        }
                         size={30}
                         style={styles.submitAndClearIcons}
                         onPress={() => {
@@ -705,7 +707,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       />
                       <IconButton
                         icon="checkbox-blank-circle-outline"
-                        color="red"
+                        color={this.props.theme === "light" ? "red" : "#ff8080"}
                         size={30}
                         style={styles.submitAndClearIcons}
                         onPress={() => {
@@ -724,7 +726,15 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 {this.state.newNoteTextError
                   ? this.state.newNoteTextErrorText.map((err, index) => {
                       return (
-                        <Paragraph key={index} style={{ color: "#C00000" }}>
+                        <Paragraph
+                          key={index}
+                          style={{
+                            color:
+                              this.props.theme === "light"
+                                ? "#C00000"
+                                : "#ff8080",
+                          }}
+                        >
                           {err}
                         </Paragraph>
                       );

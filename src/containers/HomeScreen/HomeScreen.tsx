@@ -50,7 +50,7 @@ class HomeScreen extends Component<AppProps, AppState> {
     this.state = {
       taskInput: "",
       taskInputError: false,
-      taskInputErrorText: "",
+      taskInputErrorText: [],
       snackBarVisibility: false,
       snackBarIsError: false,
       snackBarText: "",
@@ -248,26 +248,21 @@ class HomeScreen extends Component<AppProps, AppState> {
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
-    } catch (err) {
-      this.setState({
-        taskInputError: true,
-        taskInputErrorText: err,
-      });
-    }
 
-    try {
       let allDaysData = await getAllDaysData();
       this.setState({
         dayInformation: allDaysData,
         taskInputError: false,
-        taskInputErrorText: "",
+        taskInputErrorText: [],
       });
       this.dismissDialogToggle();
       this.setSnackBarTextAndIfError("Task Created!", false);
       this.toggleSnackBarVisibility();
     } catch (err) {
-      this.setSnackBarTextAndIfError("Issue setting all days data.", true);
-      this.toggleSnackBarVisibility();
+      this.setState({
+        taskInputError: true,
+        taskInputErrorText: Object.values(JSON.parse(err)),
+      });
     }
   };
 
@@ -303,7 +298,7 @@ class HomeScreen extends Component<AppProps, AppState> {
       dialogListToggle: false,
       dayOfTheWeek: moment().format("dddd"),
       taskInputError: false,
-      taskInputErrorText: "",
+      taskInputErrorText: [],
     });
   };
 
@@ -401,8 +396,9 @@ class HomeScreen extends Component<AppProps, AppState> {
             style={{
               ...styles.fabButton,
               backgroundColor:
-                this.state.theme === "light" ? "#6200ee" : "#171617",
+                this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
             }}
+            color={this.state.theme === "light" ? "white" : "black"}
             icon="plus"
             onPress={() => {
               this.toggleDialogToggle();

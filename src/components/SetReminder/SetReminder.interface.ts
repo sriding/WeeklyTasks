@@ -3,6 +3,7 @@ export interface AppProps {
   reminderTime: string;
   changeReminderTime: (reminderTime: string) => void;
   text: string;
+  theme: string;
 }
 
 export interface AppState {

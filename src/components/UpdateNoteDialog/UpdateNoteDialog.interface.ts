@@ -10,7 +10,7 @@ export interface AppProps {
   };
   updatingUpdateNoteTextState: (text: string, nodeID: number) => void;
   updateNoteTextError: boolean;
-  updateNoteTextErrorText: string;
+  updateNoteTextErrorText: string[];
   keyboardHeight: number;
   keyboardOpen: boolean;
   updateNoteTextRef: React.RefObject<TextInput>;
