@@ -45,8 +45,6 @@ export const createInitialDays = async (
       });
     }
 
-    pushNotifications.createDailyRepeatingNotification("9:00 AM");
-
     if (!realmContainer.objects("Day")[0]) {
       realmContainer.write(() => {
         for (let i = 0; i < theWeek.length; i++) {
@@ -68,6 +66,8 @@ export const createInitialDays = async (
         }
       });
     }
+
+    await pushNotifications.createDailyRepeatingNotification("9:00 AM");
   } catch (err) {
     return JSON.stringify(err);
   }

@@ -154,24 +154,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
     }
   };
 
-  getDataForASingleDay = async (): Promise<void> => {
-    try {
-      let singleDayData: any = await getASingleDaysData(
-        this.props.route.params?.id
-      );
-      this.setState({
-        id: this.props.route.params?.id,
-        Day: singleDayData,
-        date: moment()
-          .startOf("isoWeek")
-          .add(theWeek.indexOf(this.props.route.params?.id), "days")
-          .format("YYYY-MM-DD"),
-      });
-    } catch (err) {
-      return err;
-    }
-  };
-
   _keyboardDidShow = (event: any) => {
     if (Platform.OS === "ios") {
       this.setState({
@@ -187,6 +169,24 @@ export default class DayScreen extends Component<AppProps, AppState> {
         keyboardHeight: 0,
         keyboardOpen: false,
       });
+    }
+  };
+
+  getDataForASingleDay = async (): Promise<void> => {
+    try {
+      let singleDayData: any = await getASingleDaysData(
+        this.props.route.params?.id
+      );
+      this.setState({
+        id: this.props.route.params?.id,
+        Day: singleDayData,
+        date: moment()
+          .startOf("isoWeek")
+          .add(theWeek.indexOf(this.props.route.params?.id), "days")
+          .format("YYYY-MM-DD"),
+      });
+    } catch (err) {
+      return err;
     }
   };
 

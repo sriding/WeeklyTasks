@@ -408,74 +408,18 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 })
               : null}
             <View style={{ marginTop: 15 }}>
-              {this.props.Day &&
-                this.props.Day.tasks.map((task, index) => {
-                  return task.isChecked ? (
-                    <View key={index} style={styles.mapTaskContainer}>
-                      <Paragraph
-                        style={{
-                          ...styles.paragraphTextStrikethrough,
-                          backgroundColor:
-                            this.props.theme === "light" ? "white" : "#121212",
-                        }}
-                        onPress={() => {
-                          this.setState({
-                            updateTaskTextState: {
-                              text: task.text,
-                              taskID: task.id,
-                            },
-                            updateTaskDialogVisible: true,
-                            reminder: task.reminder,
-                            reminderTime:
-                              task.reminder === false
-                                ? "N/A"
-                                : task.reminderTime,
-                          });
-                        }}
-                      >
-                        {task.text}
-                      </Paragraph>
-                      <View style={styles.buttonCombiner}>
-                        <Button
-                          mode="outlined"
-                          style={styles.buttonStyle}
-                          icon="check-circle"
-                          color={
-                            this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
-                          }
-                          onPress={async () => {
-                            Keyboard.dismiss();
-                            await this.props.checkTask(task.id, task.isChecked);
+              {this.props.Day !== null
+                ? this.props.Day.tasks.map((task, index) => {
+                    return task.isChecked ? (
+                      <View key={index} style={styles.mapTaskContainer}>
+                        <Paragraph
+                          style={{
+                            ...styles.paragraphTextStrikethrough,
+                            backgroundColor:
+                              this.props.theme === "light"
+                                ? "white"
+                                : "#121212",
                           }}
-                        >
-                          Check
-                        </Button>
-                        <Button
-                          mode="outlined"
-                          style={styles.buttonStyle}
-                          color={
-                            this.props.theme === "light" ? "#C00000" : "#ff8080"
-                          }
-                          icon="close-box"
-                          onPress={async () => {
-                            Keyboard.dismiss();
-                            await this.props.deleteTask(task.id);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </View>
-                    </View>
-                  ) : (
-                    <View key={index}>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        <TouchableHighlight
                           onPress={() => {
                             this.setState({
                               updateTaskTextState: {
@@ -491,12 +435,107 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             });
                           }}
                         >
-                          <Checkbox
-                            status={task.reminder ? "checked" : "unchecked"}
-                          />
-                        </TouchableHighlight>
-                        <TouchableHighlight
-                          onPress={() => {
+                          {task.text}
+                        </Paragraph>
+                        <View style={styles.buttonCombiner}>
+                          <Button
+                            mode="outlined"
+                            style={styles.buttonStyle}
+                            icon="check-circle"
+                            color={
+                              this.props.theme === "light"
+                                ? "#6200ee"
+                                : "#c2c2f0"
+                            }
+                            onPress={async () => {
+                              Keyboard.dismiss();
+                              await this.props.checkTask(
+                                task.id,
+                                task.isChecked
+                              );
+                            }}
+                          >
+                            Check
+                          </Button>
+                          <Button
+                            mode="outlined"
+                            style={styles.buttonStyle}
+                            color={
+                              this.props.theme === "light"
+                                ? "#C00000"
+                                : "#ff8080"
+                            }
+                            icon="close-box"
+                            onPress={async () => {
+                              Keyboard.dismiss();
+                              await this.props.deleteTask(task.id);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </View>
+                      </View>
+                    ) : (
+                      <View key={index}>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <TouchableHighlight
+                            onPress={() => {
+                              this.setState({
+                                updateTaskTextState: {
+                                  text: task.text,
+                                  taskID: task.id,
+                                },
+                                updateTaskDialogVisible: true,
+                                reminder: task.reminder,
+                                reminderTime:
+                                  task.reminder === false
+                                    ? "N/A"
+                                    : task.reminderTime,
+                              });
+                            }}
+                          >
+                            <Checkbox
+                              status={task.reminder ? "checked" : "unchecked"}
+                            />
+                          </TouchableHighlight>
+                          <TouchableHighlight
+                            onPress={() => {
+                              this.setState({
+                                updateTaskTextState: {
+                                  text: task.text,
+                                  taskID: task.id,
+                                },
+                                updateTaskDialogVisible: true,
+                                reminder: task.reminder,
+                                reminderTime:
+                                  task.reminder === false
+                                    ? "N/A"
+                                    : task.reminderTime,
+                              });
+                            }}
+                          >
+                            <Caption style={styles.captionText}>
+                              {task.reminder
+                                ? `Reminder set for: ${task.reminderTime}`
+                                : "No Reminder set"}
+                            </Caption>
+                          </TouchableHighlight>
+                        </View>
+                        <Paragraph
+                          style={{
+                            ...styles.paragraphText,
+                            backgroundColor:
+                              this.props.theme === "light"
+                                ? "white"
+                                : "#121212",
+                          }}
+                          onPress={(target) => {
                             this.setState({
                               updateTaskTextState: {
                                 text: task.text,
@@ -511,69 +550,49 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             });
                           }}
                         >
-                          <Caption style={styles.captionText}>
-                            {task.reminder
-                              ? `Reminder set for: ${task.reminderTime}`
-                              : "No Reminder set"}
-                          </Caption>
-                        </TouchableHighlight>
+                          {task.text}
+                        </Paragraph>
+                        <View style={styles.buttonCombiner}>
+                          <Button
+                            mode="outlined"
+                            style={styles.buttonStyle}
+                            icon="check-circle"
+                            color={
+                              this.props.theme === "light"
+                                ? "#6200ee"
+                                : "#c2c2f0"
+                            }
+                            onPress={async () => {
+                              Keyboard.dismiss();
+                              await this.props.checkTask(
+                                task.id,
+                                task.isChecked
+                              );
+                            }}
+                          >
+                            Check
+                          </Button>
+                          <Button
+                            mode="outlined"
+                            style={styles.buttonStyle}
+                            color={
+                              this.props.theme === "light"
+                                ? "#C00000"
+                                : "#ff8080"
+                            }
+                            icon="close-box"
+                            onPress={async () => {
+                              Keyboard.dismiss();
+                              await this.props.deleteTask(task.id);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </View>
                       </View>
-                      <Paragraph
-                        style={{
-                          ...styles.paragraphText,
-                          backgroundColor:
-                            this.props.theme === "light" ? "white" : "#121212",
-                        }}
-                        onPress={(target) => {
-                          this.setState({
-                            updateTaskTextState: {
-                              text: task.text,
-                              taskID: task.id,
-                            },
-                            updateTaskDialogVisible: true,
-                            reminder: task.reminder,
-                            reminderTime:
-                              task.reminder === false
-                                ? "N/A"
-                                : task.reminderTime,
-                          });
-                        }}
-                      >
-                        {task.text}
-                      </Paragraph>
-                      <View style={styles.buttonCombiner}>
-                        <Button
-                          mode="outlined"
-                          style={styles.buttonStyle}
-                          icon="check-circle"
-                          color={
-                            this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
-                          }
-                          onPress={async () => {
-                            Keyboard.dismiss();
-                            await this.props.checkTask(task.id, task.isChecked);
-                          }}
-                        >
-                          Check
-                        </Button>
-                        <Button
-                          mode="outlined"
-                          style={styles.buttonStyle}
-                          color={
-                            this.props.theme === "light" ? "#C00000" : "#ff8080"
-                          }
-                          icon="close-box"
-                          onPress={async () => {
-                            Keyboard.dismiss();
-                            await this.props.deleteTask(task.id);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </View>
-                    </View>
-                  );
-                })}
+                    );
+                  })
+                : null}
             </View>
           </Card.Content>
           <Card.Content>
@@ -584,164 +603,168 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             >
               Note
             </Button>
-            {this.props.Day && this.props.Day.note.text !== "" ? (
-              <Fragment>
-                <Paragraph
-                  style={{
-                    ...styles.paragraphText,
-                    backgroundColor:
-                      this.props.theme === "light" ? "white" : "#121212",
-                  }}
-                  onPress={() => {
-                    this.updatingUpdateNoteTextState(
-                      this.props.Day.note.text,
-                      this.props.Day.note.id
-                    );
-                    this.setState({
-                      updateNoteDialogVisible: true,
-                    });
-                  }}
-                >
-                  {this.props.Day && this.props.Day.note.text}
-                </Paragraph>
-                <Button
-                  mode="outlined"
-                  color={this.props.theme === "light" ? "#C00000" : "#ff8080"}
-                  style={styles.buttonStyleNote}
-                  icon="close-box"
-                  onPress={async () => {
-                    Keyboard.dismiss();
-                    await this.props.deleteNote(this.props.Day?.note.id);
-                    this.setState({
-                      newNoteText: "",
-                    });
-                  }}
-                >
-                  Delete
-                </Button>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <View style={styles.addTaskEntry}>
-                  {this.renderComponent(this.props.theme)}
-                  <TextInput
+            {this.props.Day !== null ? (
+              this.props.Day.note.text !== "" ? (
+                <Fragment>
+                  <Paragraph
                     style={{
-                      ...styles.newTaskInput,
+                      ...styles.paragraphText,
                       backgroundColor:
-                        this.props.theme === "light" ? "white" : "#171617",
+                        this.props.theme === "light" ? "white" : "#121212",
                     }}
-                    ref={this.props.newNoteTextRef}
-                    label="New Note"
-                    mode="flat"
-                    multiline={true}
-                    error={this.state.newNoteTextError}
-                    value={this.state.newNoteText}
-                    selectionColor={
-                      this.props.theme === "light" ? "black" : "white"
-                    }
-                    placeholderTextColor={
-                      this.props.theme === "light" ? "gray" : "white"
-                    }
-                    onChangeText={(text) => {
+                    onPress={() => {
+                      this.updatingUpdateNoteTextState(
+                        this.props.Day.note.text,
+                        this.props.Day.note.id
+                      );
                       this.setState({
-                        newNoteText: text,
+                        updateNoteDialogVisible: true,
                       });
                     }}
-                    onFocus={() => {
-                      this.setState(
-                        {
-                          updateTaskTextError: false,
-                          updateTaskTextErrorText: [],
-                          updateNoteTextState: {
-                            text: this.props.Day.note.text,
-                            noteID: this.props.Day.note.id,
+                  >
+                    {this.props.Day !== null ? this.props.Day.note.text : null}
+                  </Paragraph>
+                  <Button
+                    mode="outlined"
+                    color={this.props.theme === "light" ? "#C00000" : "#ff8080"}
+                    style={styles.buttonStyleNote}
+                    icon="close-box"
+                    onPress={async () => {
+                      Keyboard.dismiss();
+                      await this.props.deleteNote(this.props.Day?.note.id);
+                      this.setState({
+                        newNoteText: "",
+                      });
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <View style={styles.addTaskEntry}>
+                    {this.renderComponent(this.props.theme)}
+                    <TextInput
+                      style={{
+                        ...styles.newTaskInput,
+                        backgroundColor:
+                          this.props.theme === "light" ? "white" : "#171617",
+                      }}
+                      ref={this.props.newNoteTextRef}
+                      label="New Note"
+                      mode="flat"
+                      multiline={true}
+                      error={this.state.newNoteTextError}
+                      value={this.state.newNoteText}
+                      selectionColor={
+                        this.props.theme === "light" ? "black" : "white"
+                      }
+                      placeholderTextColor={
+                        this.props.theme === "light" ? "gray" : "white"
+                      }
+                      onChangeText={(text) => {
+                        this.setState({
+                          newNoteText: text,
+                        });
+                      }}
+                      onFocus={() => {
+                        this.setState(
+                          {
+                            updateTaskTextError: false,
+                            updateTaskTextErrorText: [],
+                            updateNoteTextState: {
+                              text: this.props.Day.note.text,
+                              noteID: this.props.Day.note.id,
+                            },
+                            paddingBottom: 300,
+                            showNoteButtons: true,
                           },
-                          paddingBottom: 300,
-                          showNoteButtons: true,
-                        },
-                        () => {
-                          setTimeout(() => {
-                            this.props.firstScrollView.current!.scrollTo({
-                              x: 0,
-                              y:
-                                Dimensions.get("window").height +
-                                this.state.paddingBottom,
-                            });
-                          }, 300);
-                        }
-                      );
-                    }}
-                    onBlur={() => {
-                      this.setState({
-                        paddingBottom: 175,
-                        newNoteTextError: false,
-                        newNoteTextErrorText: [],
-                        showNoteButtons: false,
-                      });
-                    }}
-                    theme={
-                      Platform.OS == "ios"
-                        ? this.props.theme === "light"
+                          () => {
+                            setTimeout(() => {
+                              this.props.firstScrollView.current!.scrollTo({
+                                x: 0,
+                                y:
+                                  Dimensions.get("window").height +
+                                  this.state.paddingBottom,
+                              });
+                            }, 300);
+                          }
+                        );
+                      }}
+                      onBlur={() => {
+                        this.setState({
+                          paddingBottom: 175,
+                          newNoteTextError: false,
+                          newNoteTextErrorText: [],
+                          showNoteButtons: false,
+                        });
+                      }}
+                      theme={
+                        Platform.OS == "ios"
+                          ? this.props.theme === "light"
+                            ? {}
+                            : { colors: { text: "white", primary: "white" } }
+                          : this.props.theme === "light"
                           ? {}
+                          : Dimensions.get("window").width >
+                            Dimensions.get("window").height
+                          ? { colors: { text: "gray", primary: "white" } }
                           : { colors: { text: "white", primary: "white" } }
-                        : this.props.theme === "light"
-                        ? {}
-                        : Dimensions.get("window").width >
-                          Dimensions.get("window").height
-                        ? { colors: { text: "gray", primary: "white" } }
-                        : { colors: { text: "white", primary: "white" } }
-                    }
-                  />
-                  {this.state.showNoteButtons ? (
-                    <View style={{ width: "17%" }}>
-                      <IconButton
-                        icon="check-circle-outline"
-                        color={
-                          this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
-                        }
-                        size={30}
-                        style={styles.submitAndClearIcons}
-                        onPress={() => {
-                          this.clearNoteText();
-                        }}
-                      />
-                      <IconButton
-                        icon="checkbox-blank-circle-outline"
-                        color={this.props.theme === "light" ? "red" : "#ff8080"}
-                        size={30}
-                        style={styles.submitAndClearIcons}
-                        onPress={() => {
-                          this.setState({
-                            newNoteText: "",
-                            newNoteTextError: false,
-                            newNoteTextErrorText: [],
-                            showNoteButtons: false,
-                          });
-                          Keyboard.dismiss();
-                        }}
-                      />
-                    </View>
-                  ) : null}
-                </View>
-                {this.state.newNoteTextError
-                  ? this.state.newNoteTextErrorText.map((err, index) => {
-                      return (
-                        <Paragraph
-                          key={index}
-                          style={{
-                            color:
-                              this.props.theme === "light"
-                                ? "#C00000"
-                                : "#ff8080",
+                      }
+                    />
+                    {this.state.showNoteButtons ? (
+                      <View style={{ width: "17%" }}>
+                        <IconButton
+                          icon="check-circle-outline"
+                          color={
+                            this.props.theme === "light" ? "#6200ee" : "#c2c2f0"
+                          }
+                          size={30}
+                          style={styles.submitAndClearIcons}
+                          onPress={() => {
+                            this.clearNoteText();
                           }}
-                        >
-                          {err}
-                        </Paragraph>
-                      );
-                    })
-                  : null}
-              </Fragment>
-            )}
+                        />
+                        <IconButton
+                          icon="checkbox-blank-circle-outline"
+                          color={
+                            this.props.theme === "light" ? "red" : "#ff8080"
+                          }
+                          size={30}
+                          style={styles.submitAndClearIcons}
+                          onPress={() => {
+                            this.setState({
+                              newNoteText: "",
+                              newNoteTextError: false,
+                              newNoteTextErrorText: [],
+                              showNoteButtons: false,
+                            });
+                            Keyboard.dismiss();
+                          }}
+                        />
+                      </View>
+                    ) : null}
+                  </View>
+                  {this.state.newNoteTextError
+                    ? this.state.newNoteTextErrorText.map((err, index) => {
+                        return (
+                          <Paragraph
+                            key={index}
+                            style={{
+                              color:
+                                this.props.theme === "light"
+                                  ? "#C00000"
+                                  : "#ff8080",
+                            }}
+                          >
+                            {err}
+                          </Paragraph>
+                        );
+                      })
+                    : null}
+                </Fragment>
+              )
+            ) : null}
           </Card.Content>
         </Card>
         <UpdateTaskDialog

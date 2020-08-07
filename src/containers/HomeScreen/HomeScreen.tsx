@@ -78,19 +78,6 @@ class HomeScreen extends Component<AppProps, AppState> {
 
   componentDidMount = async () => {
     try {
-      let expectVoid: void = await createInitialDays();
-      if (expectVoid !== undefined && expectVoid !== null) {
-        throw expectVoid;
-      }
-    } catch (err) {
-      this.setSnackBarTextAndIfError(
-        "Error setting up initial days and initial settings. Might need to reset app.",
-        true
-      );
-      this.toggleSnackBarVisibility();
-    }
-
-    try {
       const themeName: string = await getTheme();
       if (typeof themeName !== "string") {
         throw themeName;

@@ -37,6 +37,10 @@ import {
 import Header from "../../components/Header/Header";
 import SetReminder from "../../components/SetReminder/SetReminder";
 import SnackBarPopup from "../../components/SnackBarPopup/SnackBarPopup";
+import ResetApplicationButton from "../../components/ResetApplicationButton/ResetApplicationButton";
+import TextDialog from "../../components/TextDialog/TextDialog";
+import { deleteEverythingInDB } from "../../controllers/database/Miscellaneous/DeleteEverythingInDB/deleteEverythingInDB";
+import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -46,12 +50,13 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
       dailyUpdateStatus: true,
       dailyPersistanceStatus: false,
       dailyUpdateTimeStatus: "10:00AM",
-      taskReminderStatus: true,
+      showTextDialog: false,
       snackBarIsError: false,
       snackBarText: "",
       snackBarVisibility: false,
       sortTasksMenu: false,
       sortTasksByStatus: "Reminder Time",
+      taskReminderStatus: true,
       themeStatus: "light",
       theme: "light",
       themeText: "",
@@ -175,6 +180,12 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
     }
   };
 
+  toggleTextDialog = () => {
+    this.setState({
+      showTextDialog: !this.state.showTextDialog,
+    });
+  };
+
   toggleSnackBarVisibility = (): void => {
     this.setState({
       snackBarVisibility: !this.state.snackBarVisibility,
@@ -186,6 +197,14 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
       snackBarText: text,
       snackBarIsError: isError,
     });
+  };
+
+  //WILL COMPLETELY RESET APP
+  resetApplicationToDefault = async () => {
+    await deleteEverythingInDB();
+    this.toggleTextDialog();
+    await createInitialDays();
+    this.props.navigation.navigate("Home");
   };
 
   render() {
@@ -224,14 +243,11 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 <Switch
                   style={styles.switchButton}
                   value={this.state.dailyUpdateStatus}
-                  onValueChange={() => {
-                    changeDailyUpdate(!this.state.dailyUpdateStatus).then(
-                      () => {
-                        this.setState({
-                          dailyUpdateStatus: !this.state.dailyUpdateStatus,
-                        });
-                      }
-                    );
+                  onValueChange={async () => {
+                    await changeDailyUpdate(!this.state.dailyUpdateStatus);
+                    this.setState({
+                      dailyUpdateStatus: !this.state.dailyUpdateStatus,
+                    });
                   }}
                 />
                 <Subheading style={{ fontSize: 22 }}>Daily Update</Subheading>
@@ -262,8 +278,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             </View>
             <Divider
               style={{
-                marginTop: 20,
-                marginBottom: 20,
+                ...styles.dividerStyling,
                 backgroundColor:
                   this.state.theme === "light" ? "silver" : "white",
               }}
@@ -336,8 +351,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
             </View>
             <Divider
               style={{
-                marginTop: 20,
-                marginBottom: 20,
+                ...styles.dividerStyling,
                 backgroundColor:
                   this.state.theme === "light" ? "silver" : "white",
               }}
@@ -373,7 +387,25 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
               </View>
               <Caption>{this.state.themeText}</Caption>
             </View>
+            <Divider
+              style={{
+                ...styles.dividerStyling,
+                backgroundColor:
+                  this.state.theme === "light" ? "silver" : "white",
+              }}
+            />
+            <View style={{ marginTop: 50 }}>
+              <ResetApplicationButton
+                toggleTextDialog={this.toggleTextDialog}
+              />
+            </View>
           </View>
+          <TextDialog
+            showTextDialog={this.state.showTextDialog}
+            toggleTextDialog={this.toggleTextDialog}
+            functionToRun={this.resetApplicationToDefault}
+            text="This will reset the application to how it was when it was installed. A restart is recommended afterwards for the theme to properly change."
+          />
           <SnackBarPopup
             visibility={this.state.snackBarVisibility}
             toggleSnackBarVisibility={this.toggleSnackBarVisibility}
@@ -441,5 +473,9 @@ const styles = StyleSheet.create({
     padding: 4,
     margin: 4,
     borderWidth: 1,
+  },
+  dividerStyling: {
+    marginTop: 40,
+    marginBottom: 40,
   },
 });

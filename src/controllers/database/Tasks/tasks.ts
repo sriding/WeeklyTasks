@@ -111,7 +111,6 @@ export const addTask = async (
     });
 
     await pushNotifications.addARepeatingLocalNotification(newTaskId);
-    await pushNotifications.updateADailyRepeatingNotification(dayID);
   } catch (err) {
     return JSON.stringify(err);
   }
@@ -155,15 +154,6 @@ export const updateTask = async (
   } catch (err) {
     return JSON.stringify(err);
   }
-  try {
-    const task = await getTask(taskId);
-    if (task.day === undefined) {
-      throw task;
-    }
-    await pushNotifications.updateADailyRepeatingNotification(task.day);
-  } catch (err) {
-    return JSON.stringify(err);
-  }
 };
 
 export const checkTask = async (
@@ -190,20 +180,10 @@ export const checkTask = async (
     });
 
     if (isChecked === true) {
-      await pushNotifications.unCheckingATaskNotification(taskID);
+      await pushNotifications.checkingATaskNotification(taskID, false);
     } else if (isChecked === false) {
-      await pushNotifications.checkingATaskNotification(taskID, 1);
+      await pushNotifications.checkingATaskNotification(taskID, true);
     }
-  } catch (err) {
-    return JSON.stringify(err);
-  }
-
-  try {
-    const task = await getTask(taskID);
-    if (task.day === undefined) {
-      throw task;
-    }
-    await pushNotifications.updateADailyRepeatingNotification(task.day);
   } catch (err) {
     return JSON.stringify(err);
   }

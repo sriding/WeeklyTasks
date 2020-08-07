@@ -8,12 +8,14 @@ import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import { getTheme } from "./src/controllers/database/Settings/settings";
 import { currentMigration } from "./src/migrations/currentMigration/currentMigration";
 import { pastMigrations } from "./src/migrations/pastMigrations/pastMigrations";
+import { createInitialDays } from "./src/controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
 
 //React Native Navigation modules
 import { NavigationContainer } from "@react-navigation/native";
 import MyDrawer from "./src/navigation/drawer/Drawer";
 import { AppProps, AppState } from "./App.interface";
 
+//Utilities
 import DarkTheme from "./src/utilities/darkTheme";
 
 class App extends React.PureComponent<AppProps, AppState> {
@@ -26,16 +28,22 @@ class App extends React.PureComponent<AppProps, AppState> {
 
   componentDidMount = async () => {
     try {
+      let expectVoid: void = await createInitialDays();
+      if (expectVoid !== undefined && expectVoid !== null) {
+        throw expectVoid;
+      }
+    } catch (err) {
+      console.log("Creating initial days: ", err);
+    }
+
+    try {
       await pastMigrations();
       const expectVoid = await currentMigration();
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
-      //pushNotifications.testLocalNotifications();
-      //pushNotifications.removeAllLocalNotifications();
     } catch (err) {
-      //Serious error if this bugs.
-      console.log(err);
+      console.log("Migration:", err);
     }
 
     try {

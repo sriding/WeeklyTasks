@@ -13,6 +13,7 @@ export interface AppState {
   dailyUpdateStatus: boolean;
   taskReminderStatus: boolean;
   dailyPersistanceStatus: boolean;
+  showTextDialog: boolean;
   snackBarVisibility: boolean;
   snackBarIsError: boolean;
   snackBarText: string;
