@@ -17,6 +17,7 @@ import { AppProps, AppState } from "./App.interface";
 
 //Utilities
 import DarkTheme from "./src/utilities/darkTheme";
+import { testLocalNotifications } from "./src/services/pushNotifications";
 
 class App extends React.PureComponent<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -27,6 +28,7 @@ class App extends React.PureComponent<AppProps, AppState> {
   }
 
   componentDidMount = async () => {
+    testLocalNotifications();
     try {
       let expectVoid: void = await createInitialDays();
       if (expectVoid !== undefined && expectVoid !== null) {

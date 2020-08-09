@@ -18,8 +18,42 @@ import {
 import SetReminder from "./../SetReminder/SetReminder";
 
 import { AppProps } from "./UpdateTaskDialog.interface";
+import { updateTask } from "../../controllers/database/Tasks/tasks";
 
 export default function UpdateTaskDialog(props: AppProps) {
+  const [text, updateText] = React.useState<string>("");
+  const [taskId, updateTaskId] = React.useState<number>(-1);
+  const [textErrorExists, updateTextErrorExists] = React.useState<boolean>(
+    false
+  );
+  const [textErrorText, updateTextErrorText] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    updateText(props.updateTaskTextState.text);
+    updateTaskId(props.updateTaskTextState.taskID);
+  }, [props.updateTaskTextState.text, props.updateTaskTextState.taskID]);
+
+  const submitTask = async () => {
+    try {
+      let expectVoid: void = await updateTask(
+        text,
+        taskId,
+        props.reminder,
+        props.reminderTime
+      );
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
+
+      updateTextErrorExists(false);
+      updateTextErrorText([]);
+      await props.updateTaskText();
+    } catch (err) {
+      updateTextErrorExists(true);
+      updateTextErrorText(Object.values(JSON.parse(err)));
+    }
+  };
+
   return (
     <Portal>
       <Dialog
@@ -31,7 +65,6 @@ export default function UpdateTaskDialog(props: AppProps) {
             ? Dimensions.get("window").height
             : Dimensions.get("window").height - props.keyboardHeight,
           marginBottom: !props.keyboardOpen ? 0 : props.keyboardHeight,
-          borderColor: "white",
           backgroundColor: props.theme === "light" ? "white" : "#181818",
         }}
       >
@@ -47,8 +80,7 @@ export default function UpdateTaskDialog(props: AppProps) {
               </Dialog.Title>
               <Divider
                 style={{
-                  marginTop: 5,
-                  marginBottom: 20,
+                  ...styles.dividerStyling,
                   backgroundColor: props.theme === "light" ? "silver" : "white",
                 }}
               />
@@ -63,35 +95,29 @@ export default function UpdateTaskDialog(props: AppProps) {
           />
           <Dialog.Content style={{ marginTop: 5 }}>
             <TextInput
-              ref={props.updateTaskTextRef}
               mode="outlined"
-              value={props.updateTaskTextState.text}
+              value={text}
               multiline={true}
               numberOfLines={3}
-              style={{ minHeight: 80, maxHeight: 125 }}
-              error={props.updateTaskTextError}
+              style={styles.textInputStyling}
+              error={textErrorExists}
               selectionColor={props.theme === "light" ? "black" : "white"}
               onChangeText={(text) => {
-                props.updatingUpdateTaskTextState(
-                  text,
-                  props.updateTaskTextState.taskID
-                );
+                updateText(text);
               }}
             ></TextInput>
-            {props.updateTaskTextError
-              ? props.updateTaskTextErrorText.map((errors, index) => {
-                  return (
-                    <Paragraph
-                      key={index}
-                      style={{
-                        color: props.theme === "light" ? "#C00000" : "#ff8080",
-                      }}
-                    >
-                      {errors}
-                    </Paragraph>
-                  );
-                })
-              : null}
+            {textErrorText.map((errors, index) => {
+              return (
+                <Paragraph
+                  key={index}
+                  style={{
+                    color: props.theme === "light" ? "#C00000" : "#ff8080",
+                  }}
+                >
+                  {errors}
+                </Paragraph>
+              );
+            })}
           </Dialog.Content>
           {Platform.OS === "ios" &&
           Dimensions.get("window").width > Dimensions.get("window").height &&
@@ -105,7 +131,7 @@ export default function UpdateTaskDialog(props: AppProps) {
               </Button>
               <Button
                 onPress={async () => {
-                  await props.updateTaskText();
+                  await submitTask();
                 }}
                 color={props.theme === "light" ? "#6200ee" : "white"}
               >
@@ -123,5 +149,14 @@ const styles = StyleSheet.create({
   dialogContainer: {
     elevation: 10,
     borderWidth: 1,
+    borderColor: "white",
+  },
+  dividerStyling: {
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  textInputStyling: {
+    minHeight: 80,
+    maxHeight: 125,
   },
 });

@@ -43,7 +43,6 @@ import DayScreenFabButtonOptions from "../../components/DayScreenFabButtonOption
 
 export default class DayScreen extends Component<AppProps, AppState> {
   newTaskTextRef: React.RefObject<TextInput>;
-  newNoteTextRef: React.RefObject<TextInput>;
   firstScrollView: React.RefObject<ScrollView>;
   focusSubscription: any;
   keyboardDidShowListener: EmitterSubscription | null;
@@ -66,7 +65,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
     };
 
     this.newTaskTextRef = React.createRef();
-    this.newNoteTextRef = React.createRef();
     this.firstScrollView = React.createRef();
 
     this.focusSubscription = null;
@@ -355,7 +353,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
               submitTaskText={this.submitTaskText}
               id={this.state.id}
               newTaskTextRef={this.newTaskTextRef}
-              newNoteTextRef={this.newNoteTextRef}
               keyboardHeight={this.state.keyboardHeight}
               keyboardOpen={this.state.keyboardOpen}
               firstScrollView={this.firstScrollView}

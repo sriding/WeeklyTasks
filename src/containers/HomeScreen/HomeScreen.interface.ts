@@ -15,9 +15,6 @@ export interface AppProps {
 }
 
 export interface AppState {
-  taskInput: string;
-  taskInputError: boolean;
-  taskInputErrorText: string[];
   snackBarVisibility: boolean;
   snackBarIsError: boolean;
   snackBarText: string;

@@ -5,11 +5,8 @@ import {
   Text,
   View,
   Dimensions,
-  ScrollView,
-  Platform,
   TouchableHighlight,
   Keyboard,
-  TextInput as NativeTextInput,
 } from "react-native";
 
 //React Native Paper modules
@@ -34,12 +31,9 @@ import UpdateNoteDialog from "./../UpdateNoteDialog/UpdateNoteDialog";
 
 //Components
 import SetReminder from "./../SetReminder/SetReminder";
+import { getASingleDaysData } from "../../controllers/database/Miscellaneous/GetASingleDaysData/getASingleDaysData";
 
 export default class DayScreenCard extends Component<AppProps, AppState> {
-  taskTextRef: React.RefObject<HTMLInputElement>;
-  newNoteScrollViewRef: React.RefObject<ScrollView>;
-  updateTaskTextRef: React.RefObject<NativeTextInput>;
-  updateNoteTextRef: React.RefObject<NativeTextInput>;
   onBlurSubscription: any;
 
   constructor(props: AppProps) {
@@ -53,10 +47,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       newNoteTextErrorText: [],
       showTaskButtons: false,
       showNoteButtons: false,
-      updateTaskTextError: false,
-      updateNoteTextError: false,
-      updateTaskTextErrorText: [],
-      updateNoteTextErrorText: [],
       updateTaskTextState: {
         text: "",
         taskID: -1,
@@ -72,11 +62,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
       reminder: true,
       reminderTime: "12:00 PM",
     };
-
-    this.taskTextRef = React.createRef();
-    this.newNoteScrollViewRef = React.createRef();
-    this.updateTaskTextRef = React.createRef();
-    this.updateNoteTextRef = React.createRef();
     this.onBlurSubscription = null;
   }
 
@@ -92,7 +77,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
         throw expectVoid;
       }
       await this.props.submitTaskText(true, "Task Created!");
-      this.props.newTaskTextRef.current!.blur();
+      Keyboard.dismiss();
 
       this.setState({
         newTaskText: "",
@@ -108,29 +93,23 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     }
   };
 
-  clearNoteText = async () => {
+  submitNote = async (text: string, noteId: number) => {
     try {
-      let expectVoid: void | string = await addNote(
-        this.state.newNoteText,
-        this.state.updateNoteTextState.noteID
-      );
-      if (expectVoid !== null && expectVoid !== undefined) {
-        throw expectVoid;
+      const submittedNote = await addNote(text, noteId);
+      if (submittedNote !== undefined && submittedNote !== null) {
+        throw submittedNote;
       }
 
       await this.props.submitTaskText(true, "Note Created!");
+      Keyboard.dismiss();
 
       this.setState({
         newNoteText: "",
         newNoteTextError: false,
         newNoteTextErrorText: [],
-        showNoteButtons: false,
       });
-
-      Keyboard.dismiss();
     } catch (err) {
       this.setState({
-        newNoteText: "",
         newNoteTextError: true,
         newNoteTextErrorText: Object.values(JSON.parse(err)),
       });
@@ -139,40 +118,13 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
 
   updateTaskText = async (): Promise<void> => {
     try {
-      let expectVoid: void = await updateTask(
-        this.state.updateTaskTextState.text,
-        this.state.updateTaskTextState.taskID,
-        this.state.reminder,
-        this.state.reminderTime
-      );
-      if (expectVoid !== null && expectVoid !== undefined) {
-        throw expectVoid;
-      }
-
       await this.props.submitTaskText(true, "Task Updated!");
-      this.setState({
-        updateTaskTextError: false,
-        updateTaskTextErrorText: [],
-      });
       this.dismissTaskDialog();
-    } catch (err) {
-      this.setState({
-        updateTaskTextError: true,
-        updateTaskTextErrorText: Object.values(JSON.parse(err)),
-      });
-    }
+    } catch (err) {}
   };
 
   updateNoteText = async (): Promise<void> => {
     try {
-      let expectVoid: void | string = await updateNote(
-        this.state.updateNoteTextState.text,
-        this.state.updateNoteTextState.noteID
-      );
-      if (expectVoid !== null && expectVoid !== undefined) {
-        throw expectVoid;
-      }
-
       await this.props.submitTaskText(true, "Note Updated!");
       this.setState({
         updateNoteTextError: false,
@@ -203,20 +155,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
     }
   };
 
-  updatingUpdateNoteTextState = (text: string, noteID: number): void => {
-    try {
-      this.setState({
-        updateNoteTextState: {
-          text,
-          noteID,
-        },
-      });
-    } catch (err) {
-      this.setState({
-        updateNoteTextError: true,
-        updateNoteTextErrorText: Object.values(JSON.parse(err)),
-      });
-    }
+  updatingUpdateNoteTextState = async (): Promise<void> => {
+    await this.props.submitTaskText(true, "Note Updated!");
+    this.dismissNoteDialog();
   };
 
   toggleTaskButtons = () => {
@@ -350,18 +291,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                   this.toggleTaskButtons();
                   this.removeTaskErrors();
                 }}
-                theme={
-                  Platform.OS == "ios"
-                    ? this.props.theme === "light"
-                      ? {}
-                      : { colors: { text: "white", primary: "white" } }
-                    : this.props.theme === "light"
-                    ? {}
-                    : Dimensions.get("window").width >
-                      Dimensions.get("window").height
-                    ? { colors: { text: "gray", primary: "white" } }
-                    : { colors: { text: "white", primary: "white" } }
-                }
               />
               {this.state.showTaskButtons ? (
                 <View style={{ width: "17%" }}>
@@ -391,22 +320,19 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 </View>
               ) : null}
             </View>
-            {this.state.newTaskTextError
-              ? this.state.newTaskTextErrorText.map((err, index) => {
-                  return (
-                    <Paragraph
-                      key={index}
-                      style={{
-                        color:
-                          this.props.theme === "light" ? "#C00000" : "#ff8080",
-                        marginTop: 0,
-                      }}
-                    >
-                      {err}
-                    </Paragraph>
-                  );
-                })
-              : null}
+            {this.state.newTaskTextErrorText.map((err, index) => {
+              return (
+                <Paragraph
+                  key={index}
+                  style={{
+                    color: this.props.theme === "light" ? "#C00000" : "#ff8080",
+                    marginTop: 0,
+                  }}
+                >
+                  {err}
+                </Paragraph>
+              );
+            })}
             <View style={{ marginTop: 15 }}>
               {this.props.Day !== null
                 ? this.props.Day.tasks.map((task, index) => {
@@ -613,11 +539,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         this.props.theme === "light" ? "white" : "#121212",
                     }}
                     onPress={() => {
-                      this.updatingUpdateNoteTextState(
-                        this.props.Day.note.text,
-                        this.props.Day.note.id
-                      );
                       this.setState({
+                        updateNoteTextState: {
+                          text: this.props.Day.note.text,
+                          noteID: this.props.Day.note.id,
+                        },
                         updateNoteDialogVisible: true,
                       });
                     }}
@@ -650,7 +576,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         backgroundColor:
                           this.props.theme === "light" ? "white" : "#171617",
                       }}
-                      ref={this.props.newNoteTextRef}
                       label="New Note"
                       mode="flat"
                       multiline={true}
@@ -699,18 +624,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                           showNoteButtons: false,
                         });
                       }}
-                      theme={
-                        Platform.OS == "ios"
-                          ? this.props.theme === "light"
-                            ? {}
-                            : { colors: { text: "white", primary: "white" } }
-                          : this.props.theme === "light"
-                          ? {}
-                          : Dimensions.get("window").width >
-                            Dimensions.get("window").height
-                          ? { colors: { text: "gray", primary: "white" } }
-                          : { colors: { text: "white", primary: "white" } }
-                      }
                     />
                     {this.state.showNoteButtons ? (
                       <View style={{ width: "17%" }}>
@@ -721,8 +634,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                           }
                           size={30}
                           style={styles.submitAndClearIcons}
-                          onPress={() => {
-                            this.clearNoteText();
+                          onPress={async () => {
+                            await this.submitNote(
+                              this.state.newNoteText,
+                              this.state.updateNoteTextState.noteID
+                            );
                           }}
                         />
                         <IconButton
@@ -745,23 +661,21 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       </View>
                     ) : null}
                   </View>
-                  {this.state.newNoteTextError
-                    ? this.state.newNoteTextErrorText.map((err, index) => {
-                        return (
-                          <Paragraph
-                            key={index}
-                            style={{
-                              color:
-                                this.props.theme === "light"
-                                  ? "#C00000"
-                                  : "#ff8080",
-                            }}
-                          >
-                            {err}
-                          </Paragraph>
-                        );
-                      })
-                    : null}
+                  {this.state.newNoteTextErrorText.map((err, index) => {
+                    return (
+                      <Paragraph
+                        key={index}
+                        style={{
+                          color:
+                            this.props.theme === "light"
+                              ? "#C00000"
+                              : "#ff8080",
+                        }}
+                      >
+                        {err}
+                      </Paragraph>
+                    );
+                  })}
                 </Fragment>
               )
             ) : null}
@@ -777,7 +691,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
           updateTaskTextErrorText={this.state.updateTaskTextErrorText}
           keyboardHeight={this.props.keyboardHeight}
           keyboardOpen={this.props.keyboardOpen}
-          updateTaskTextRef={this.updateTaskTextRef}
           reminder={this.state.reminder}
           reminderTime={this.state.reminderTime}
           changeReminderTime={this.changeReminderTime}
@@ -793,7 +706,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
           updateNoteTextErrorText={this.state.updateNoteTextErrorText}
           keyboardHeight={this.props.keyboardHeight}
           keyboardOpen={this.props.keyboardOpen}
-          updateNoteTextRef={this.updateNoteTextRef}
           theme={this.props.theme}
         />
       </Fragment>

@@ -5,19 +5,14 @@ export interface AppProps {
   dialogListToggle: boolean;
   dismissDialogToggle: () => void;
   dismissDialogList: () => void;
-  taskInputChange: (text: string) => void;
-  taskInput: string;
-  textInputRef: React.RefObject<TextInput>;
   toggleDialogList: () => void;
-  creatingTask: () => Promise<void>;
   setDayOfTheWeek: (day: string) => void;
   dayOfTheWeek: string;
-  taskInputError: boolean;
-  taskInputErrorText: string[];
   keyboardHeight: number;
   keyboardOpen: boolean;
   reminder: boolean;
   reminderTime: string;
   changeReminderTime: (reminderTime: string) => void;
+  taskSubmitted: () => Promise<void>;
   theme: string;
 }

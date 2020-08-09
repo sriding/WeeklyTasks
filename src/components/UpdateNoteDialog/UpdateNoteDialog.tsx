@@ -17,8 +17,44 @@ import {
 } from "react-native-paper";
 
 import { AppProps } from "./UpdateNoteDialog.interface";
+import { updateNote } from "../../controllers/database/Notes/notes";
 
 export default function UpdateNoteDialog(props: AppProps) {
+  const [text, updateText] = React.useState<string>("");
+  const [noteId, updateNoteId] = React.useState<number>(-1);
+  const [textInputErrorExists, updateTextInputErrorExists] = React.useState<
+    boolean
+  >(false);
+  const [textInputErrorArray, updateTextInputErrorArray] = React.useState<
+    string[]
+  >([]);
+
+  React.useEffect(() => {
+    console.log(props.updateNoteTextState.noteID);
+    updateText(props.updateNoteTextState.text);
+    updateNoteId(props.updateNoteTextState.noteID);
+  }, [props.updateNoteTextState.text, props.updateNoteTextState.noteID]);
+
+  const submitUpdatedNote = async () => {
+    try {
+      let expectVoid: void | string = await updateNote(text, noteId);
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
+
+      clearDialogErrors();
+      props.updatingUpdateNoteTextState();
+    } catch (err) {
+      updateTextInputErrorExists(true);
+      updateTextInputErrorArray(Object.values(JSON.parse(err)));
+    }
+  };
+
+  const clearDialogErrors = () => {
+    updateTextInputErrorExists(false);
+    updateTextInputErrorArray([]);
+  };
+
   return (
     <Portal>
       <Dialog
@@ -30,7 +66,6 @@ export default function UpdateNoteDialog(props: AppProps) {
             ? Dimensions.get("window").height
             : Dimensions.get("window").height - props.keyboardHeight,
           marginBottom: !props.keyboardOpen ? 0 : props.keyboardHeight,
-          borderColor: "white",
           backgroundColor: props.theme === "light" ? "white" : "#181818",
         }}
       >
@@ -44,8 +79,7 @@ export default function UpdateNoteDialog(props: AppProps) {
               <Dialog.Title>Update Note</Dialog.Title>
               <Divider
                 style={{
-                  marginTop: 5,
-                  marginBottom: 20,
+                  ...styles.dividerStyling,
                   backgroundColor: props.theme === "light" ? "silver" : "white",
                 }}
               />
@@ -53,35 +87,29 @@ export default function UpdateNoteDialog(props: AppProps) {
           )}
           <Dialog.Content>
             <TextInput
-              ref={props.updateNoteTextRef}
               mode="outlined"
-              value={props.updateNoteTextState.text}
+              value={text}
               multiline={true}
               numberOfLines={3}
-              style={{ minHeight: 80, maxHeight: 125 }}
-              error={props.updateNoteTextError}
+              style={styles.textInputStyle}
+              error={textInputErrorExists}
               selectionColor={props.theme === "light" ? "black" : "white"}
               onChangeText={(text) => {
-                props.updatingUpdateNoteTextState(
-                  text,
-                  props.updateNoteTextState.noteID
-                );
+                updateText(text);
               }}
             ></TextInput>
-            {props.updateNoteTextError
-              ? props.updateNoteTextErrorText.map((errors, index) => {
-                  return (
-                    <Paragraph
-                      key={index}
-                      style={{
-                        color: props.theme === "light" ? "#C00000" : "#ff8080",
-                      }}
-                    >
-                      {errors}
-                    </Paragraph>
-                  );
-                })
-              : null}
+            {textInputErrorArray.map((errors, index) => {
+              return (
+                <Paragraph
+                  key={index}
+                  style={{
+                    color: props.theme === "light" ? "#C00000" : "#ff8080",
+                  }}
+                >
+                  {errors}
+                </Paragraph>
+              );
+            })}
           </Dialog.Content>
           {Platform.OS === "ios" &&
           Dimensions.get("window").width > Dimensions.get("window").height &&
@@ -95,7 +123,7 @@ export default function UpdateNoteDialog(props: AppProps) {
               </Button>
               <Button
                 onPress={async () => {
-                  await props.updateNoteText();
+                  await submitUpdatedNote();
                 }}
                 color={props.theme === "light" ? "#6200ee" : "white"}
               >
@@ -114,5 +142,14 @@ const styles = StyleSheet.create({
     maxHeight: Dimensions.get("window").height,
     elevation: 10,
     borderWidth: 1,
+    borderColor: "white",
+  },
+  dividerStyling: {
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  textInputStyle: {
+    minHeight: 80,
+    maxHeight: 125,
   },
 });

@@ -8,11 +8,10 @@ export interface AppProps {
     text: string;
     noteID: number;
   };
-  updatingUpdateNoteTextState: (text: string, nodeID: number) => void;
+  updatingUpdateNoteTextState: () => void;
   updateNoteTextError: boolean;
   updateNoteTextErrorText: string[];
   keyboardHeight: number;
   keyboardOpen: boolean;
-  updateNoteTextRef: React.RefObject<TextInput>;
   theme: string;
 }

@@ -39,7 +39,6 @@ import { getTheme } from "../../controllers/database/Settings/settings";
 import theWeek from "../../utilities/theWeek";
 
 class HomeScreen extends Component<AppProps, AppState> {
-  textInputRef: React.RefObject<TextInput>;
   focusSubscription: any;
   beforeRemoveSubscription: any;
   keyboardDidShowListener: EmitterSubscription | null;
@@ -48,9 +47,6 @@ class HomeScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      taskInput: "",
-      taskInputError: false,
-      taskInputErrorText: [],
       snackBarVisibility: false,
       snackBarIsError: false,
       snackBarText: "",
@@ -66,9 +62,6 @@ class HomeScreen extends Component<AppProps, AppState> {
       reminderTime: "12:00 PM",
       theme: "light",
     };
-
-    //Reference to the text input field in the dialog popup for creating a task
-    this.textInputRef = React.createRef();
 
     this.focusSubscription = null;
     this.beforeRemoveSubscription = null;
@@ -220,36 +213,21 @@ class HomeScreen extends Component<AppProps, AppState> {
     }
   };
 
-  taskInputChange = (text: string): void => {
-    this.setState({ taskInput: text });
-  };
-
-  creatingTask = async (): Promise<void> => {
+  taskSubmitted = async (): Promise<void> => {
     try {
-      let expectVoid = await addTask(
-        this.state.taskInput,
-        this.state.dayOfTheWeek,
-        this.state.reminder,
-        this.state.reminderTime
-      );
+      const expectVoid: void = await this.getDataForAllDays();
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
 
-      let allDaysData = await getAllDaysData();
-      this.setState({
-        dayInformation: allDaysData,
-        taskInputError: false,
-        taskInputErrorText: [],
-      });
-      this.dismissDialogToggle();
       this.setSnackBarTextAndIfError("Task Created!", false);
       this.toggleSnackBarVisibility();
     } catch (err) {
-      this.setState({
-        taskInputError: true,
-        taskInputErrorText: Object.values(JSON.parse(err)),
-      });
+      this.setSnackBarTextAndIfError(
+        "Issue getting each day's data on focus.",
+        true
+      );
+      this.toggleSnackBarVisibility();
     }
   };
 
@@ -281,11 +259,8 @@ class HomeScreen extends Component<AppProps, AppState> {
   dismissDialogToggle = (): void => {
     this.setState({
       dialogToggle: false,
-      taskInput: "",
       dialogListToggle: false,
       dayOfTheWeek: moment().format("dddd"),
-      taskInputError: false,
-      taskInputErrorText: [],
     });
   };
 
@@ -396,20 +371,15 @@ class HomeScreen extends Component<AppProps, AppState> {
             dialogListToggle={this.state.dialogListToggle}
             dismissDialogToggle={this.dismissDialogToggle}
             dismissDialogList={this.dismissDialogList}
-            taskInputChange={this.taskInputChange}
-            taskInput={this.state.taskInput}
-            textInputRef={this.textInputRef}
             toggleDialogList={this.toggleDialogList}
-            creatingTask={this.creatingTask}
             setDayOfTheWeek={this.setDayOfTheWeek}
             dayOfTheWeek={this.state.dayOfTheWeek}
-            taskInputError={this.state.taskInputError}
-            taskInputErrorText={this.state.taskInputErrorText}
             keyboardHeight={this.state.keyboardHeight}
             keyboardOpen={this.state.keyboardOpen}
             reminder={this.state.reminder}
             reminderTime={this.state.reminderTime}
             changeReminderTime={this.changeReminderTime}
+            taskSubmitted={this.taskSubmitted}
             theme={this.state.theme}
           />
           <SnackBarPopup

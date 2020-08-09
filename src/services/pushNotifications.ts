@@ -56,10 +56,12 @@ const configure = async (): Promise<void> => {
 
 const testLocalNotifications = (): void => {
   try {
-    PushNotification.localNotification({
-      title: "Title Test",
-      message: "Message Test",
-    });
+    const show = (data) => {
+      data.forEach((not) => {
+        console.log(moment.utc(not.fireDate).format("MM/DD/YYYY hh:mm A"));
+      });
+    };
+    console.log(PushNotificationIOS.getScheduledLocalNotifications(show));
   } catch (err) {
     console.log(err);
   }

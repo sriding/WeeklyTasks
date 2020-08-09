@@ -22,8 +22,50 @@ import theWeek from "../../utilities/theWeek";
 
 import SetReminder from "./../SetReminder/SetReminder";
 import { AppProps } from "./NewTaskDialog.interface";
+import { addTask } from "../../controllers/database/Tasks/tasks";
 
 export default function NewTaskDialog(props: AppProps) {
+  const [textInput, changeTextInput] = React.useState<string>("");
+  const [inputErrorExists, changeInputErrorExists] = React.useState<boolean>(
+    false
+  );
+  const [inputErrorTextArray, changeInputErrorTextArray] = React.useState<
+    string[]
+  >([]);
+
+  const submitTask = async () => {
+    try {
+      let expectVoid = await addTask(
+        textInput,
+        props.dayOfTheWeek,
+        props.reminder,
+        props.reminderTime
+      );
+
+      if (expectVoid !== null && expectVoid !== undefined) {
+        throw expectVoid;
+      }
+
+      clearTextInputAndErrors();
+      props.dismissDialogToggle();
+      await props.taskSubmitted();
+    } catch (err) {
+      changeInputErrorExists(true);
+      changeInputErrorTextArray(Object.values(JSON.stringify(err)));
+    }
+  };
+
+  const cancelTask = () => {
+    clearTextInputAndErrors();
+    props.dismissDialogToggle();
+  };
+
+  const clearTextInputAndErrors = () => {
+    changeTextInput("");
+    changeInputErrorExists(false);
+    changeInputErrorTextArray([]);
+  };
+
   return (
     <Portal>
       <Dialog
@@ -35,7 +77,6 @@ export default function NewTaskDialog(props: AppProps) {
             ? Dimensions.get("window").height
             : Dimensions.get("window").height - props.keyboardHeight - 50,
           marginBottom: !props.keyboardOpen ? 0 : props.keyboardHeight,
-          borderColor: "white",
           backgroundColor: props.theme === "light" ? "white" : "#181818",
         }}
       >
@@ -49,8 +90,7 @@ export default function NewTaskDialog(props: AppProps) {
               <Dialog.Title style={{ marginBottom: 0 }}>Task</Dialog.Title>
               <Divider
                 style={{
-                  marginTop: 5,
-                  marginBottom: 20,
+                  ...styles.dividerStyle,
                   backgroundColor: props.theme === "light" ? "silver" : "white",
                 }}
               />
@@ -70,32 +110,26 @@ export default function NewTaskDialog(props: AppProps) {
               numberOfLines={3}
               placeholder="Input"
               placeholderTextColor="gray"
-              error={props.taskInputError}
-              style={{
-                minHeight: 80,
-                maxHeight: 125,
-              }}
-              onChangeText={props.taskInputChange}
-              value={props.taskInput}
+              error={inputErrorExists}
+              style={styles.textInputStyle}
+              onChangeText={(text) => changeTextInput(text)}
+              value={textInput}
               selectionColor={props.theme === "light" ? "black" : "white"}
-              ref={props.textInputRef}
             />
-            {props.taskInputError
-              ? props.taskInputErrorText.map((errors, index) => {
-                  return (
-                    <Paragraph
-                      key={index}
-                      style={{
-                        color: props.theme === "light" ? "#C00000" : "#ff8080",
-                      }}
-                    >
-                      {errors}
-                    </Paragraph>
-                  );
-                })
-              : null}
+            {inputErrorTextArray.map((errors, index) => {
+              return (
+                <Paragraph
+                  key={index}
+                  style={{
+                    color: props.theme === "light" ? "#C00000" : "#ff8080",
+                  }}
+                >
+                  {errors}
+                </Paragraph>
+              );
+            })}
           </Dialog.Content>
-          {Platform.OS == "ios" &&
+          {Platform.OS === "ios" &&
           Dimensions.get("window").width > Dimensions.get("window").height &&
           props.keyboardHeight > 0 ? null : (
             <Dialog.Content>
@@ -104,29 +138,16 @@ export default function NewTaskDialog(props: AppProps) {
                 expanded={props.dialogListToggle}
                 onPress={() => {
                   props.toggleDialogList();
-                  props.textInputRef.current!.blur();
+                  Keyboard.dismiss();
                 }}
-                style={{
-                  width: "80%",
-                  alignSelf: "center",
-                }}
-                theme={
-                  props.theme === "light"
-                    ? {}
-                    : { colors: { text: "white", primary: "white" } }
-                }
+                style={styles.dropdownDayListContainer}
               >
                 <Dialog.ScrollArea
                   style={{
                     marginBottom: 0,
                   }}
                 >
-                  <ScrollView
-                    style={{
-                      maxHeight: Dimensions.get("window").height / 5,
-                      marginBottom: 0,
-                    }}
-                  >
+                  <ScrollView style={styles.dropdownScrollView}>
                     {theWeek.map((day, index) => {
                       return (
                         <List.Item
@@ -150,13 +171,13 @@ export default function NewTaskDialog(props: AppProps) {
           props.keyboardHeight > 0 ? null : (
             <Dialog.Actions style={{ marginTop: 0 }}>
               <Button
-                onPress={props.dismissDialogToggle}
+                onPress={cancelTask}
                 color={props.theme === "light" ? "#6200ee" : "white"}
               >
                 Cancel
               </Button>
               <Button
-                onPress={async () => await props.creatingTask()}
+                onPress={async () => await submitTask()}
                 color={props.theme === "light" ? "#6200ee" : "white"}
               >
                 Create
@@ -173,5 +194,22 @@ const styles = StyleSheet.create({
   mainDialogContainer: {
     elevation: 10,
     borderWidth: 1,
+    borderColor: "white",
+  },
+  dividerStyle: {
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  textInputStyle: {
+    minHeight: 80,
+    maxHeight: 125,
+  },
+  dropdownDayListContainer: {
+    width: "80%",
+    alignSelf: "center",
+  },
+  dropdownScrollView: {
+    maxHeight: Dimensions.get("window").height / 5,
+    marginBottom: 0,
   },
 });
