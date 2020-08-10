@@ -1,12 +1,3 @@
-//Realm modules
-const Realm = require("realm");
-
-//Models
-import { DayModel } from "../../../models/database/DayModels";
-import { TaskModel } from "../../../models/database/TaskModels";
-import { NoteModel } from "../../../models/database/NoteModels";
-import { LoginModel } from "../../../models/database/LoginModels";
-import { SettingsModel } from "../../../models/database/SettingsModels";
 import { addNoteUpdateNoteEH, deleteNoteEH } from "../../../validation/notesEH";
 
 export const addNote = async (text: string, noteID: number): Promise<void> => {
@@ -18,12 +9,8 @@ export const addNote = async (text: string, noteID: number): Promise<void> => {
 
     let trimmedText = text.trim();
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-    realmContainer.write(() => {
-      realmContainer.create(
+    global.realmContainer.write(() => {
+      global.realmContainer.create(
         "Note",
         {
           id: noteID,
@@ -49,12 +36,8 @@ export const updateNote = async (
 
     let trimmedText = text.trim();
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-    realmContainer.write(() => {
-      realmContainer.create(
+    global.realmContainer.write(() => {
+      global.realmContainer.create(
         "Note",
         {
           id: noteID,
@@ -75,12 +58,8 @@ export const deleteNote = async (noteID: number): Promise<void> => {
       throw errorsObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-    realmContainer.write(() => {
-      realmContainer.create(
+    global.realmContainer.write(() => {
+      global.realmContainer.create(
         "Note",
         {
           id: noteID,

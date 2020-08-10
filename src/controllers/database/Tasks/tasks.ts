@@ -1,13 +1,3 @@
-//Realm modules
-const Realm = require("realm");
-
-//Models
-import { DayModel } from "../../../models/database/DayModels";
-import { TaskModel } from "../../../models/database/TaskModels";
-import { NoteModel } from "../../../models/database/NoteModels";
-import { LoginModel } from "../../../models/database/LoginModels";
-import { SettingsModel } from "../../../models/database/SettingsModels";
-
 //Services
 import { pushNotifications } from "../../../services/Index";
 
@@ -38,12 +28,7 @@ export const getTask = async (
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    const realmTaskArray = realmContainer
+    const realmTaskArray = global.realmContainer
       .objects("Task")
       .filtered(`id == "${taskId}"`);
 
@@ -77,19 +62,14 @@ export const addTask = async (
 
     const trimmedText = text.trim();
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
     let arrayOfTaskIds: number[] = [];
-    realmContainer.objects("Task").forEach((task: any) => {
+    global.realmContainer.objects("Task").forEach((task: any) => {
       arrayOfTaskIds.push(task.id);
     });
     let newTaskId = Math.max(...arrayOfTaskIds) + 1;
 
-    realmContainer.write(() => {
-      const newTask = realmContainer.create("Task", {
+    global.realmContainer.write(() => {
+      const newTask = global.realmContainer.create("Task", {
         id: newTaskId,
         day: dayID,
         text: trimmedText,
@@ -99,7 +79,7 @@ export const addTask = async (
         reminderTimeValue: reminderTimes[reminderTime],
       });
 
-      let weekdayToUpdate = realmContainer.create(
+      let weekdayToUpdate = global.realmContainer.create(
         "Day",
         {
           id: dayID,
@@ -130,13 +110,8 @@ export const updateTask = async (
 
     const trimmedText = text.trim();
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    realmContainer.write(() => {
-      realmContainer.create(
+    global.realmContainer.write(() => {
+      global.realmContainer.create(
         "Task",
         {
           id: taskId,
@@ -166,13 +141,8 @@ export const checkTask = async (
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    realmContainer.write(() => {
-      realmContainer.create(
+    global.realmContainer.write(() => {
+      global.realmContainer.create(
         "Task",
         { id: taskID, isChecked: !isChecked },
         true
@@ -196,19 +166,18 @@ export const deleteTask = async (taskID: number): Promise<void | string> => {
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
     //Before deleting the task
     const task = await getTask(taskID);
     await pushNotifications.removeALocalScheduledNotification(taskID);
     await pushNotifications.updateADailyRepeatingNotification(task.day);
 
-    realmContainer.write(() => {
-      let taskToDelete = realmContainer.create("Task", { id: taskID }, true);
-      realmContainer.delete(taskToDelete);
+    global.realmContainer.write(() => {
+      let taskToDelete = global.realmContainer.create(
+        "Task",
+        { id: taskID },
+        true
+      );
+      global.realmContainer.delete(taskToDelete);
     });
   } catch (err) {
     return JSON.stringify(err);
@@ -222,13 +191,8 @@ export const checkAllTasks = async (day: string): Promise<void | string> => {
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    realmContainer.write(() => {
-      let tasksToCheck = realmContainer
+    global.realmContainer.write(() => {
+      let tasksToCheck = global.realmContainer
         .objects("Task")
         .filtered(`day == "${day}" AND isChecked == ${false}`);
 
@@ -237,7 +201,7 @@ export const checkAllTasks = async (day: string): Promise<void | string> => {
           task.isChecked = true;
         }
       } else {
-        let tasksToUncheck = realmContainer
+        let tasksToUncheck = global.realmContainer
           .objects("Task")
           .filtered(`day == "${day}"`);
         for (let task of tasksToUncheck) {
@@ -266,14 +230,9 @@ export const deleteAllTasks = async (day: string): Promise<void | string> => {
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    realmContainer.write(() => {
-      realmContainer.delete(
-        realmContainer.objects("Task").filtered(`day == "${day}"`)
+    global.realmContainer.write(() => {
+      global.realmContainer.delete(
+        global.realmContainer.objects("Task").filtered(`day == "${day}"`)
       );
     });
 
@@ -293,13 +252,8 @@ export const unCheckEveryTaskInTheDatabase = async (): Promise<
   void | string
 > => {
   try {
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    realmContainer.write(() => {
-      let amountOfTasks = realmContainer.objects("Task");
+    global.realmContainer.write(() => {
+      let amountOfTasks = global.realmContainer.objects("Task");
       for (let task of amountOfTasks) {
         task.isChecked = false;
       }
@@ -321,12 +275,7 @@ export const getAllUncheckedTaskIdsForASingleDay = async (
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    const taskObjectsArray = realmContainer
+    const taskObjectsArray = global.realmContainer
       .objects("Task")
       .filtered(`day == "${day}" AND isChecked == ${false}`);
 
@@ -351,12 +300,7 @@ export const getAllCheckedTaskIdsForASingleDay = async (
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    const taskObjectsArray = realmContainer
+    const taskObjectsArray = global.realmContainer
       .objects("Task")
       .filtered(`day == "${day}" AND isChecked == ${true}`);
 
@@ -381,12 +325,7 @@ export const getAllTaskIdsForASingleDay = async (
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    const taskObjectsArray = realmContainer
+    const taskObjectsArray = global.realmContainer
       .objects("Task")
       .filtered(`day == "${day}"`);
 
@@ -412,21 +351,16 @@ export const tasksForADayOrdered = async (
       throw errorObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
     let sortedTasksArray: any[] = [];
 
     switch (reminder) {
       case "Recently Added":
-        const realmObjTasksUnchecked1 = realmContainer
+        const realmObjTasksUnchecked1 = global.realmContainer
           .objects("Task")
           .filtered(`day == "${day}" AND isChecked == ${false}`)
           .sorted("id", true);
 
-        const realmObjTasksChecked1 = realmContainer
+        const realmObjTasksChecked1 = global.realmContainer
           .objects("Task")
           .filtered(`day == "${day}" AND isChecked == ${true}`)
           .sorted("id", true);
@@ -442,12 +376,12 @@ export const tasksForADayOrdered = async (
         return sortedTasksArray;
       case "Reminder Time":
       default:
-        const realmObjTasksUnchecked2 = realmContainer
+        const realmObjTasksUnchecked2 = global.realmContainer
           .objects("Task")
           .filtered(`day == "${day}" AND isChecked == ${false}`)
           .sorted("reminderTimeValue", false);
 
-        const realmObjTasksChecked2 = realmContainer
+        const realmObjTasksChecked2 = global.realmContainer
           .objects("Task")
           .filtered(`day == "${day}" AND isChecked == ${true}`)
           .sorted("reminderTimeValue", false);

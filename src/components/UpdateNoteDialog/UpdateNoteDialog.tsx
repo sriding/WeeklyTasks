@@ -30,7 +30,6 @@ export default function UpdateNoteDialog(props: AppProps) {
   >([]);
 
   React.useEffect(() => {
-    console.log(props.updateNoteTextState.noteID);
     updateText(props.updateNoteTextState.text);
     updateNoteId(props.updateNoteTextState.noteID);
   }, [props.updateNoteTextState.text, props.updateNoteTextState.noteID]);

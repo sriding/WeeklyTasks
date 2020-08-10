@@ -37,7 +37,7 @@ const configure = async (): Promise<void> => {
       data: Object;
       finish: any;
     }) {
-      console.log("NOTIFICATION:", notification);
+      //console.log("NOTIFICATION:", notification);
       // process the notification
       // required on iOS only
       notification.finish(PushNotificationIOS.FetchResult.NoData);

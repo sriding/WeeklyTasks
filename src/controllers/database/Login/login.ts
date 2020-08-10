@@ -1,34 +1,19 @@
-//Realm modules
-const Realm = require("realm");
-
 //3rd party modules
 import moment from "moment";
-
-//Models
-import { DayModel } from "../../../models/database/DayModels";
-import { TaskModel } from "../../../models/database/TaskModels";
-import { NoteModel } from "../../../models/database/NoteModels";
-import { LoginModel } from "../../../models/database/LoginModels";
-import { SettingsModel } from "../../../models/database/SettingsModels";
 
 //Functions
 import { unCheckEveryTaskInTheDatabase } from "../Tasks/tasks";
 
 export const createLoginDate = async (): Promise<string> => {
   try {
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
-    let loginDateExists: any = realmContainer.objects("Login")[0]
-      ? realmContainer.objects("Login")[0]
+    let loginDateExists: any = global.realmContainer.objects("Login")[0]
+      ? global.realmContainer.objects("Login")[0]
       : null;
     let currentDate: string = moment().format("YYYY-MM-DD");
 
     if (!loginDateExists) {
-      realmContainer.write(() => {
-        realmContainer.create("Login", {
+      global.realmContainer.write(() => {
+        global.realmContainer.create("Login", {
           id: 0,
           date: currentDate,
           alreadyLoggedInToday: true,
@@ -44,17 +29,12 @@ export const createLoginDate = async (): Promise<string> => {
 
 export const saveLoginDate = async (): Promise<string | void> => {
   try {
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
     let loginDateExists: string = await createLoginDate();
     let currentDate: string = moment().format("YYYY-MM-DD");
 
     if (loginDateExists !== currentDate) {
-      realmContainer.write(() => {
-        realmContainer.create(
+      global.realmContainer.write(() => {
+        global.realmContainer.create(
           "Login",
           {
             id: 0,

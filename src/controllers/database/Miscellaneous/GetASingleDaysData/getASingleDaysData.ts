@@ -1,43 +1,31 @@
-const Realm = require("realm");
-import { DayModel } from "../../../../models/database/DayModels";
-import { TaskModel } from "../../../../models/database/TaskModels";
-import { NoteModel } from "../../../../models/database/NoteModels";
-import { LoginModel } from "../../../../models/database/LoginModels";
-import { SettingsModel } from "../../../../models/database/SettingsModels";
-
 import { getSortTasksBy } from "../../Settings/settings";
 import { getASingleDaysDataEH } from "../../../../validation/getASingleDaysDataEH";
 
 export const getASingleDaysData = async (dayID: string): Promise<any> => {
   try {
-    const errorsObject = getASingleDaysDataEH(dayID);
+    let errorsObject = getASingleDaysDataEH(dayID);
     if (errorsObject.errorsExist) {
       throw errorsObject.errors;
     }
 
-    const realmContainer = await Realm.open({
-      schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 5,
-    });
-
     let sortedTaskData: any[] = [];
     let sortedTaskDataChecked: any[] = [];
 
-    let realmTaskDataSortedByReminderTime = realmContainer
+    let realmTaskDataSortedByReminderTime = global.realmContainer
       .objects("Task")
       .filtered(`day == "${dayID}"`)
       .sorted("reminderTimeValue");
 
-    let realmTaskDataSortedByDescendingId = realmContainer
+    let realmTaskDataSortedByDescendingId = global.realmContainer
       .objects("Task")
       .filtered(`day == "${dayID}"`)
       .sorted("id", true);
 
-    let realmDayData = realmContainer
+    let realmDayData = global.realmContainer
       .objects("Day")
       .filtered(`id == "${dayID}"`);
 
-    const mark = await getSortTasksBy();
+    let mark = await getSortTasksBy();
 
     switch (mark) {
       case "Recently Added":
@@ -103,6 +91,12 @@ export const getASingleDaysData = async (dayID: string): Promise<any> => {
         });
 
         sortedTaskData.push(...sortedTaskDataChecked);
+
+        errorsObject = null;
+        sortedTaskDataChecked: null;
+        realmTaskDataSortedByReminderTime = null;
+        realmTaskDataSortedByDescendingId = null;
+        mark = null;
 
         return {
           id: realmDayData[0].id,

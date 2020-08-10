@@ -15,7 +15,7 @@ export const currentMigration = async (
 ): Promise<void> => {
   //Version 5 --->
   try {
-    await Realm.open({
+    Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
       path: path || Realm.defaultPath,
@@ -31,6 +31,8 @@ export const currentMigration = async (
           }
         }
       },
+    }).then((realm) => {
+      global.realmContainer = realm;
     });
   } catch (err) {
     return JSON.stringify(err);

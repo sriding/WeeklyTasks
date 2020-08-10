@@ -28,7 +28,6 @@ class App extends React.PureComponent<AppProps, AppState> {
   }
 
   componentDidMount = async () => {
-    testLocalNotifications();
     try {
       let expectVoid: void = await createInitialDays();
       if (expectVoid !== undefined && expectVoid !== null) {
@@ -36,16 +35,6 @@ class App extends React.PureComponent<AppProps, AppState> {
       }
     } catch (err) {
       console.log("Creating initial days: ", err);
-    }
-
-    try {
-      await pastMigrations();
-      const expectVoid = await currentMigration();
-      if (expectVoid !== null && expectVoid !== undefined) {
-        throw expectVoid;
-      }
-    } catch (err) {
-      console.log("Migration:", err);
     }
 
     try {
