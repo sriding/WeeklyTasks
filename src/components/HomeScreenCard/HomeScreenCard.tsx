@@ -115,6 +115,8 @@ const styles = StyleSheet.create({
     margin: 27,
     padding: 13,
     borderRadius: 40,
+    maxWidth: 350,
+    alignSelf: "center",
   },
   cardTitle: {
     fontSize: 30,

@@ -32,6 +32,21 @@ export default function NewTaskDialog(props: AppProps) {
   const [inputErrorTextArray, changeInputErrorTextArray] = React.useState<
     string[]
   >([]);
+  const [screenWidth, changeScreenWidth] = React.useState<number>(
+    Dimensions.get("window").width
+  );
+
+  React.useEffect(() => {
+    Dimensions.addEventListener("change", () => {
+      changeScreenWidth(Dimensions.get("window").width);
+    });
+
+    return function cleanup() {
+      Dimensions.removeEventListener("change", () => {
+        changeScreenWidth(Dimensions.get("window").width);
+      });
+    };
+  }, [screenWidth]);
 
   const submitTask = async () => {
     try {
@@ -51,7 +66,7 @@ export default function NewTaskDialog(props: AppProps) {
       await props.taskSubmitted();
     } catch (err) {
       changeInputErrorExists(true);
-      changeInputErrorTextArray(Object.values(JSON.stringify(err)));
+      changeInputErrorTextArray(Object.values(JSON.parse(err)));
     }
   };
 
@@ -66,6 +81,35 @@ export default function NewTaskDialog(props: AppProps) {
     changeInputErrorTextArray([]);
   };
 
+  const iPadCentering = () => {
+    let leftAndRightDimensions = {
+      marginLeft: 0,
+      marginRight: 0,
+    };
+    if (screenWidth > 700) {
+      leftAndRightDimensions.marginLeft = (screenWidth - 700) / 2;
+      leftAndRightDimensions.marginRight = (screenWidth - 700) / 2;
+      return leftAndRightDimensions;
+    } else {
+      return leftAndRightDimensions;
+    }
+  };
+
+  const adjustingDialogBasedOffKeyboard = () => {
+    let properties = {
+      maxHeight: Dimensions.get("window").height,
+      marginBottom: 0,
+    };
+
+    if (props.keyboardOpen) {
+      properties.maxHeight =
+        Dimensions.get("window").height - props.keyboardHeight - 50;
+      properties.marginBottom = props.keyboardHeight;
+    }
+
+    return properties;
+  };
+
   return (
     <Portal>
       <Dialog
@@ -73,10 +117,10 @@ export default function NewTaskDialog(props: AppProps) {
         onDismiss={props.dismissDialogToggle}
         style={{
           ...styles.mainDialogContainer,
-          maxHeight: !props.keyboardOpen
-            ? Dimensions.get("window").height
-            : Dimensions.get("window").height - props.keyboardHeight - 50,
-          marginBottom: !props.keyboardOpen ? 0 : props.keyboardHeight,
+          marginLeft: iPadCentering().marginLeft,
+          marginRight: iPadCentering().marginRight,
+          maxHeight: adjustingDialogBasedOffKeyboard().maxHeight,
+          marginBottom: adjustingDialogBasedOffKeyboard().marginBottom,
           backgroundColor: props.theme === "light" ? "white" : "#181818",
         }}
       >
@@ -192,6 +236,7 @@ export default function NewTaskDialog(props: AppProps) {
 
 const styles = StyleSheet.create({
   mainDialogContainer: {
+    maxWidth: 700,
     elevation: 10,
     borderWidth: 1,
     borderColor: "white",

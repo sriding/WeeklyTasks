@@ -23,7 +23,7 @@ configure()
         throw expectVoid;
       }
     } catch (err) {
-      console.log("Migration:", err);
+      console.log("Migration: ", err);
     }
   })
   .then(() => AppRegistry.registerComponent(appName, () => App));

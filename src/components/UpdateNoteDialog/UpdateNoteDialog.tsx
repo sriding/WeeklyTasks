@@ -28,11 +28,28 @@ export default function UpdateNoteDialog(props: AppProps) {
   const [textInputErrorArray, updateTextInputErrorArray] = React.useState<
     string[]
   >([]);
+  const [screenWidth, changeScreenWidth] = React.useState<number>(
+    Dimensions.get("window").width
+  );
 
   React.useEffect(() => {
     updateText(props.updateNoteTextState.text);
     updateNoteId(props.updateNoteTextState.noteID);
-  }, [props.updateNoteTextState.text, props.updateNoteTextState.noteID]);
+
+    Dimensions.addEventListener("change", () => {
+      changeScreenWidth(Dimensions.get("window").width);
+    });
+
+    return function cleanup() {
+      Dimensions.removeEventListener("change", () => {
+        changeScreenWidth(Dimensions.get("window").width);
+      });
+    };
+  }, [
+    props.updateNoteTextState.text,
+    props.updateNoteTextState.noteID,
+    screenWidth,
+  ]);
 
   const submitUpdatedNote = async () => {
     try {
@@ -54,6 +71,20 @@ export default function UpdateNoteDialog(props: AppProps) {
     updateTextInputErrorArray([]);
   };
 
+  const iPadCentering = () => {
+    let leftAndRightDimensions = {
+      marginLeft: 0,
+      marginRight: 0,
+    };
+    if (screenWidth > 700) {
+      leftAndRightDimensions.marginLeft = (screenWidth - 700) / 2;
+      leftAndRightDimensions.marginRight = (screenWidth - 700) / 2;
+      return leftAndRightDimensions;
+    } else {
+      return leftAndRightDimensions;
+    }
+  };
+
   return (
     <Portal>
       <Dialog
@@ -61,6 +92,8 @@ export default function UpdateNoteDialog(props: AppProps) {
         onDismiss={props.dismissNoteDialog}
         style={{
           ...styles.dialogContainer,
+          marginLeft: iPadCentering().marginLeft,
+          marginRight: iPadCentering().marginRight,
           maxHeight: !props.keyboardOpen
             ? Dimensions.get("window").height
             : Dimensions.get("window").height - props.keyboardHeight,
@@ -142,6 +175,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     borderWidth: 1,
     borderColor: "white",
+    maxWidth: 700,
   },
   dividerStyling: {
     marginTop: 5,

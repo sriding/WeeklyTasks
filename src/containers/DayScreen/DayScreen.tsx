@@ -325,13 +325,16 @@ export default class DayScreen extends Component<AppProps, AppState> {
           backgroundColor: this.state.theme === "light" ? "#EDF0FF" : "#171617",
         }}
       >
-        <View onLayout={this.onLayout}>
-          <Header
-            title={this.state.id}
-            navigation={this.props.navigation}
-            back={true}
-            screen="Day"
-          />
+        <Header
+          title={this.state.id}
+          navigation={this.props.navigation}
+          back={true}
+          screen="Day"
+        />
+        <View
+          style={{ maxWidth: 800, alignSelf: "center" }}
+          onLayout={this.onLayout}
+        >
           <ScrollView
             ref={this.firstScrollView}
             contentContainerStyle={styles.cardContainerViewContainer}
@@ -368,7 +371,6 @@ export default class DayScreen extends Component<AppProps, AppState> {
           <FAB
             style={{
               ...styles.fabButton,
-              top: this.state.topOffset,
               backgroundColor:
                 this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
             }}
@@ -418,9 +420,9 @@ const styles = StyleSheet.create({
   },
   fabButton: {
     position: "absolute",
-    margin: 20,
+    margin: 10,
     right: 0,
-    width: 55,
+    bottom: 140,
     color: "white",
   },
 });

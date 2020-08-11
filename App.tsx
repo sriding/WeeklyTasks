@@ -6,8 +6,6 @@ import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
 //Functions
 import { getTheme } from "./src/controllers/database/Settings/settings";
-import { currentMigration } from "./src/migrations/currentMigration/currentMigration";
-import { pastMigrations } from "./src/migrations/pastMigrations/pastMigrations";
 import { createInitialDays } from "./src/controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
 
 //React Native Navigation modules
@@ -17,7 +15,6 @@ import { AppProps, AppState } from "./App.interface";
 
 //Utilities
 import DarkTheme from "./src/utilities/darkTheme";
-import { testLocalNotifications } from "./src/services/pushNotifications";
 
 class App extends React.PureComponent<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -55,6 +52,13 @@ class App extends React.PureComponent<AppProps, AppState> {
       this.setState({
         theme: DefaultTheme,
       });
+    }
+  };
+
+  componentWillUnmount = () => {
+    //close global realm
+    if (global.realmContainer !== null && !global.realmContainer.isClosed) {
+      global.realmContainer.close();
     }
   };
 

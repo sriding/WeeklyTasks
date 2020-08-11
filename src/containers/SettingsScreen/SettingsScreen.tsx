@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     flexGrow: 1,
     width: "92%",
-    maxWidth: "95%",
+    maxWidth: 630,
     padding: 20,
     overflow: "visible",
     shadowOffset: {
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     paddingTop: 12,
     paddingBottom: 12,
-    maxWidth: "70%",
+    maxWidth: 325,
     borderRadius: 30,
     fontSize: 28,
     overflow: "hidden",

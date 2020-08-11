@@ -293,7 +293,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 }}
               />
               {this.state.showTaskButtons ? (
-                <View style={{ width: "17%" }}>
+                <View>
                   <IconButton
                     icon="check-circle-outline"
                     color={this.props.theme === "light" ? "#6200ee" : "#c2c2f0"}
@@ -327,6 +327,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                   style={{
                     color: this.props.theme === "light" ? "#C00000" : "#ff8080",
                     marginTop: 0,
+                    alignSelf: "center",
                   }}
                 >
                   {err}
@@ -341,10 +342,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         <Paragraph
                           style={{
                             ...styles.paragraphTextStrikethrough,
-                            backgroundColor:
-                              this.props.theme === "light"
-                                ? "white"
-                                : "#121212",
                           }}
                           onPress={() => {
                             this.setState({
@@ -456,10 +453,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                         <Paragraph
                           style={{
                             ...styles.paragraphText,
-                            backgroundColor:
-                              this.props.theme === "light"
-                                ? "white"
-                                : "#121212",
                           }}
                           onPress={(target) => {
                             this.setState({
@@ -535,8 +528,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                   <Paragraph
                     style={{
                       ...styles.paragraphText,
-                      backgroundColor:
-                        this.props.theme === "light" ? "white" : "#121212",
                     }}
                     onPress={() => {
                       this.setState({
@@ -573,8 +564,6 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                     <TextInput
                       style={{
                         ...styles.newTaskInput,
-                        backgroundColor:
-                          this.props.theme === "light" ? "white" : "#171617",
                       }}
                       label="New Note"
                       mode="flat"
@@ -626,7 +615,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       }}
                     />
                     {this.state.showNoteButtons ? (
-                      <View style={{ width: "17%" }}>
+                      <View>
                         <IconButton
                           icon="check-circle-outline"
                           color={
@@ -670,6 +659,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                             this.props.theme === "light"
                               ? "#C00000"
                               : "#ff8080",
+                          alignSelf: "center",
                         }}
                       >
                         {err}
@@ -727,6 +717,7 @@ const styles = StyleSheet.create({
   },
   addTaskEntry: {
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
     marginBottom: 5,
   },
@@ -735,6 +726,7 @@ const styles = StyleSheet.create({
   },
   newTaskInput: {
     width: "80%",
+    maxWidth: 400,
   },
   buttonCombiner: {
     flexDirection: "row",

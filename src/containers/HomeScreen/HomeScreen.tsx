@@ -160,8 +160,11 @@ class HomeScreen extends Component<AppProps, AppState> {
   };
 
   componentWillUnmount = (): void => {
-    //Removing Event Listener
+    //Removing Event Listeners
     this.focusSubscription();
+    this.beforeRemoveSubscription();
+    this.keyboardDidShowListener?.remove();
+    this.keyboardDidHideListener?.remove();
   };
 
   getDataForAllDays = async (): Promise<void> => {
@@ -417,6 +420,7 @@ const styles = StyleSheet.create({
   },
   middlePaneContainer: {
     flexGrow: 1.4,
+    maxWidth: 600,
   },
   rightPaneContainer: {
     flexGrow: 0.3,
@@ -424,8 +428,8 @@ const styles = StyleSheet.create({
   },
   fabButton: {
     position: "absolute",
-    margin: 20,
-    right: 0,
+    margin: 10,
+    right: 43,
     bottom: 140,
   },
 });
