@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     margin: 10,
     right: 0,
-    bottom: 140,
+    bottom: 130,
     color: "white",
   },
 });

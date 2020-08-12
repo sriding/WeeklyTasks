@@ -1,11 +1,5 @@
 import React, { Fragment } from "react";
-import {
-  Dimensions,
-  StyleSheet,
-  Platform,
-  Pressable,
-  Keyboard,
-} from "react-native";
+import { Dimensions, StyleSheet, Pressable, Keyboard } from "react-native";
 
 import {
   Dialog,
@@ -28,28 +22,61 @@ export default function UpdateNoteDialog(props: AppProps) {
   const [textInputErrorArray, updateTextInputErrorArray] = React.useState<
     string[]
   >([]);
-  const [screenWidth, changeScreenWidth] = React.useState<number>(
-    Dimensions.get("window").width
-  );
+  const [dialogContainerMargins, setDialogContainerMargins] = React.useState({
+    marginLeft: 0,
+    marginRight: 0,
+  });
+  const [keyboardOpen, setKeyboardOpen] = React.useState<boolean>(false);
+  const [dialogTopProperty, setDialogTopProperty] = React.useState<number>(0);
+  const [isLandscape, setIsLandscape] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     updateText(props.updateNoteTextState.text);
     updateNoteId(props.updateNoteTextState.noteID);
 
+    changeDialogDimensions();
     Dimensions.addEventListener("change", () => {
-      changeScreenWidth(Dimensions.get("window").width);
+      changeDialogDimensions();
     });
+    Keyboard.addListener("keyboardDidShow", (e) => keyboardDidShowFunction(e));
+    Keyboard.addListener("keyboardDidHide", (e) => keyboardDidHideFunction(e));
 
     return function cleanup() {
       Dimensions.removeEventListener("change", () => {
-        changeScreenWidth(Dimensions.get("window").width);
+        changeDialogDimensions();
       });
+      Keyboard.removeListener("keyboardDidShow", (e) =>
+        keyboardDidShowFunction(e)
+      );
+      Keyboard.removeListener("keyboardDidHide", (e) =>
+        keyboardDidHideFunction(e)
+      );
     };
-  }, [
-    props.updateNoteTextState.text,
-    props.updateNoteTextState.noteID,
-    screenWidth,
-  ]);
+  }, [props.updateNoteTextState.text, props.updateNoteTextState.noteID]);
+
+  const keyboardDidShowFunction = (e) => {
+    setKeyboardOpen(true);
+    if (Dimensions.get("window").height < Dimensions.get("window").width) {
+      setDialogTopProperty(
+        Math.abs(
+          (Dimensions.get("window").height - e.endCoordinates.height - 70) / 2
+        )
+      );
+      setIsLandscape(true);
+    } else {
+      setDialogTopProperty(
+        Math.abs(
+          (Dimensions.get("window").height - e.endCoordinates.height - 300) / 2
+        )
+      );
+      setIsLandscape(false);
+    }
+  };
+
+  const keyboardDidHideFunction = (e) => {
+    setKeyboardOpen(false);
+    setDialogTopProperty(0);
+  };
 
   const submitUpdatedNote = async () => {
     try {
@@ -71,17 +98,13 @@ export default function UpdateNoteDialog(props: AppProps) {
     updateTextInputErrorArray([]);
   };
 
-  const iPadCentering = () => {
-    let leftAndRightDimensions = {
-      marginLeft: 0,
-      marginRight: 0,
-    };
+  const changeDialogDimensions = () => {
+    let screenWidth = Dimensions.get("window").width;
     if (screenWidth > 700) {
-      leftAndRightDimensions.marginLeft = (screenWidth - 700) / 2;
-      leftAndRightDimensions.marginRight = (screenWidth - 700) / 2;
-      return leftAndRightDimensions;
-    } else {
-      return leftAndRightDimensions;
+      setDialogContainerMargins({
+        marginLeft: (screenWidth - 700) / 2,
+        marginRight: (screenWidth - 700) / 2,
+      });
     }
   };
 
@@ -92,12 +115,11 @@ export default function UpdateNoteDialog(props: AppProps) {
         onDismiss={props.dismissNoteDialog}
         style={{
           ...styles.dialogContainer,
-          marginLeft: iPadCentering().marginLeft,
-          marginRight: iPadCentering().marginRight,
-          maxHeight: !props.keyboardOpen
-            ? Dimensions.get("window").height
-            : Dimensions.get("window").height - props.keyboardHeight,
-          marginBottom: !props.keyboardOpen ? 0 : props.keyboardHeight,
+          position: keyboardOpen ? "absolute" : "relative",
+          top: dialogTopProperty,
+          width: Dimensions.get("window").width >= 700 ? 700 : "90%",
+          marginLeft: dialogContainerMargins.marginLeft,
+          marginRight: dialogContainerMargins.marginRight,
           backgroundColor: props.theme === "light" ? "white" : "#181818",
         }}
       >
@@ -106,7 +128,7 @@ export default function UpdateNoteDialog(props: AppProps) {
             Keyboard.dismiss();
           }}
         >
-          {props.keyboardHeight > 0 ? null : (
+          {keyboardOpen && isLandscape ? null : (
             <Fragment>
               <Dialog.Title>Update Note</Dialog.Title>
               <Divider
@@ -143,9 +165,7 @@ export default function UpdateNoteDialog(props: AppProps) {
               );
             })}
           </Dialog.Content>
-          {Platform.OS === "ios" &&
-          Dimensions.get("window").width > Dimensions.get("window").height &&
-          props.keyboardHeight > 0 ? null : (
+          {keyboardOpen && isLandscape ? null : (
             <Dialog.Actions>
               <Button
                 onPress={props.dismissNoteDialog}
@@ -171,11 +191,12 @@ export default function UpdateNoteDialog(props: AppProps) {
 
 const styles = StyleSheet.create({
   dialogContainer: {
-    maxHeight: Dimensions.get("window").height,
     elevation: 10,
     borderWidth: 1,
     borderColor: "white",
     maxWidth: 700,
+    alignSelf: "center",
+    minHeight: 70,
   },
   dividerStyling: {
     marginTop: 5,

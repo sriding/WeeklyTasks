@@ -3,7 +3,6 @@ import React, { Fragment } from "react";
 import {
   ScrollView,
   Dimensions,
-  Platform,
   StyleSheet,
   Pressable,
   Keyboard,
@@ -32,21 +31,67 @@ export default function NewTaskDialog(props: AppProps) {
   const [inputErrorTextArray, changeInputErrorTextArray] = React.useState<
     string[]
   >([]);
-  const [screenWidth, changeScreenWidth] = React.useState<number>(
-    Dimensions.get("window").width
-  );
+  const [containerMargins, setContainerMargins] = React.useState({
+    marginLeft: 0,
+    marginRight: 0,
+  });
+  const [keyboardOpen, setKeyboardOpen] = React.useState<boolean>(false);
+  const [containerTopProperty, setContainerTopProperty] = React.useState<
+    number
+  >(0);
+  const [isLandscape, setIsLandscape] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    Dimensions.addEventListener("change", () => {
-      changeScreenWidth(Dimensions.get("window").width);
-    });
+    setMarginsBasedOnDeviceWidth();
+    Dimensions.addEventListener("change", setMarginsBasedOnDeviceWidth);
+    Keyboard.addListener("keyboardDidShow", (e) => keyboardDidShowFunction(e));
+    Keyboard.addListener("keyboardDidHide", (e) => keyboardDidHideFunction(e));
 
     return function cleanup() {
-      Dimensions.removeEventListener("change", () => {
-        changeScreenWidth(Dimensions.get("window").width);
-      });
+      Dimensions.removeEventListener("change", setMarginsBasedOnDeviceWidth);
+      Keyboard.removeListener("keyboardDidShow", (e) =>
+        keyboardDidShowFunction(e)
+      );
+      Keyboard.removeListener("keyboardDidHide", (e) =>
+        keyboardDidHideFunction(e)
+      );
     };
-  }, [screenWidth]);
+  }, []);
+
+  const keyboardDidShowFunction = (e) => {
+    setKeyboardOpen(true);
+    if (Dimensions.get("window").height < Dimensions.get("window").width) {
+      setContainerTopProperty(
+        Math.abs(
+          (Dimensions.get("window").height - e.endCoordinates.height - 100) / 2
+        )
+      );
+      setIsLandscape(true);
+    } else {
+      setContainerTopProperty(
+        Math.abs(
+          (Dimensions.get("window").height - e.endCoordinates.height - 300) / 2
+        )
+      );
+      setIsLandscape(false);
+    }
+  };
+
+  const keyboardDidHideFunction = (e) => {
+    setKeyboardOpen(false);
+    setContainerTopProperty(0);
+  };
+
+  const setMarginsBasedOnDeviceWidth = () => {
+    let currentScreenWidth = Dimensions.get("window").width;
+
+    if (currentScreenWidth > 700) {
+      setContainerMargins({
+        marginLeft: (currentScreenWidth - 700) / 2,
+        marginRight: (currentScreenWidth - 700) / 2,
+      });
+    }
+  };
 
   const submitTask = async () => {
     try {
@@ -81,35 +126,6 @@ export default function NewTaskDialog(props: AppProps) {
     changeInputErrorTextArray([]);
   };
 
-  const iPadCentering = () => {
-    let leftAndRightDimensions = {
-      marginLeft: 0,
-      marginRight: 0,
-    };
-    if (screenWidth > 700) {
-      leftAndRightDimensions.marginLeft = (screenWidth - 700) / 2;
-      leftAndRightDimensions.marginRight = (screenWidth - 700) / 2;
-      return leftAndRightDimensions;
-    } else {
-      return leftAndRightDimensions;
-    }
-  };
-
-  const adjustingDialogBasedOffKeyboard = () => {
-    let properties = {
-      maxHeight: Dimensions.get("window").height,
-      marginBottom: 0,
-    };
-
-    if (props.keyboardOpen) {
-      properties.maxHeight =
-        Dimensions.get("window").height - props.keyboardHeight - 50;
-      properties.marginBottom = props.keyboardHeight;
-    }
-
-    return properties;
-  };
-
   return (
     <Portal>
       <Dialog
@@ -117,10 +133,11 @@ export default function NewTaskDialog(props: AppProps) {
         onDismiss={props.dismissDialogToggle}
         style={{
           ...styles.mainDialogContainer,
-          marginLeft: iPadCentering().marginLeft,
-          marginRight: iPadCentering().marginRight,
-          maxHeight: adjustingDialogBasedOffKeyboard().maxHeight,
-          marginBottom: adjustingDialogBasedOffKeyboard().marginBottom,
+          width: Dimensions.get("window").width >= 700 ? 700 : "90%",
+          position: keyboardOpen ? "absolute" : "relative",
+          top: containerTopProperty,
+          marginLeft: containerMargins.marginLeft,
+          marginRight: containerMargins.marginRight,
           backgroundColor: props.theme === "light" ? "white" : "#181818",
         }}
       >
@@ -129,7 +146,7 @@ export default function NewTaskDialog(props: AppProps) {
             Keyboard.dismiss();
           }}
         >
-          {props.keyboardHeight > 0 ? null : (
+          {keyboardOpen && isLandscape ? null : (
             <Fragment>
               <Dialog.Title style={{ marginBottom: 0 }}>Task</Dialog.Title>
               <Divider
@@ -140,13 +157,15 @@ export default function NewTaskDialog(props: AppProps) {
               />
             </Fragment>
           )}
-          <SetReminder
-            reminder={props.reminder}
-            reminderTime={props.reminderTime}
-            changeReminderTime={props.changeReminderTime}
-            theme={props.theme}
-            text="Set Reminder Time: "
-          />
+          {keyboardOpen && isLandscape ? null : (
+            <SetReminder
+              reminder={props.reminder}
+              reminderTime={props.reminderTime}
+              changeReminderTime={props.changeReminderTime}
+              theme={props.theme}
+              text="Set Reminder Time: "
+            />
+          )}
           <Dialog.Content style={{ marginTop: 3 }}>
             <TextInput
               mode="outlined"
@@ -173,9 +192,7 @@ export default function NewTaskDialog(props: AppProps) {
               );
             })}
           </Dialog.Content>
-          {Platform.OS === "ios" &&
-          Dimensions.get("window").width > Dimensions.get("window").height &&
-          props.keyboardHeight > 0 ? null : (
+          {keyboardOpen && isLandscape ? null : (
             <Dialog.Content>
               <List.Accordion
                 title={props.dayOfTheWeek}
@@ -210,9 +227,7 @@ export default function NewTaskDialog(props: AppProps) {
               </List.Accordion>
             </Dialog.Content>
           )}
-          {Platform.OS === "ios" &&
-          Dimensions.get("window").width > Dimensions.get("window").height &&
-          props.keyboardHeight > 0 ? null : (
+          {keyboardOpen && isLandscape ? null : (
             <Dialog.Actions style={{ marginTop: 0 }}>
               <Button
                 onPress={cancelTask}
@@ -240,6 +255,8 @@ const styles = StyleSheet.create({
     elevation: 10,
     borderWidth: 1,
     borderColor: "white",
+    alignSelf: "center",
+    minHeight: 100,
   },
   dividerStyle: {
     marginTop: 5,

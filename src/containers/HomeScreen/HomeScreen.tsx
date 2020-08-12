@@ -429,8 +429,8 @@ const styles = StyleSheet.create({
   fabButton: {
     position: "absolute",
     margin: 10,
-    right: 43,
-    bottom: 140,
+    right: 10,
+    bottom: 150,
   },
 });
 

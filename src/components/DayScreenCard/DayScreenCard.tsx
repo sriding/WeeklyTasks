@@ -259,7 +259,15 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               theme={this.props.theme}
               text="New Task Reminder Time: "
             />
-            <View style={styles.addTaskEntry}>
+            <View
+              style={{
+                ...styles.addTaskEntry,
+                justifyContent:
+                  Dimensions.get("window").height > 1000
+                    ? "center"
+                    : "flex-start",
+              }}
+            >
               {this.renderComponent(this.props.theme)}
               <TextInput
                 style={{
@@ -559,11 +567,21 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                 </Fragment>
               ) : (
                 <Fragment>
-                  <View style={styles.addTaskEntry}>
+                  <View
+                    style={{
+                      ...styles.addTaskEntry,
+                      justifyContent:
+                        Dimensions.get("window").height > 1000
+                          ? "center"
+                          : "flex-start",
+                    }}
+                  >
                     {this.renderComponent(this.props.theme)}
                     <TextInput
                       style={{
                         ...styles.newTaskInput,
+                        backgroundColor:
+                          this.props.theme === "light" ? "white" : "#101010",
                       }}
                       label="New Note"
                       mode="flat"
@@ -590,7 +608,11 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                               text: this.props.Day.note.text,
                               noteID: this.props.Day.note.id,
                             },
-                            paddingBottom: 300,
+                            paddingBottom:
+                              Dimensions.get("window").width >
+                              Dimensions.get("window").height
+                                ? 150
+                                : 300,
                             showNoteButtons: true,
                           },
                           () => {
@@ -707,7 +729,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     alignItems: "center",
     textAlign: "center",
-    width: "89%",
+    width: "95%",
     minHeight: "90%",
     marginTop: 25,
     elevation: 3,
@@ -717,9 +739,9 @@ const styles = StyleSheet.create({
   },
   addTaskEntry: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
     marginBottom: 5,
+    marginLeft: 10,
   },
   plusSign: {
     width: "3%",

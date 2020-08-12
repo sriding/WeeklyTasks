@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: "#F5F5F5",
   },
-  tasksTitleAndTasksContainer: {},
   cardTitleStyle: {
     elevation: 10,
     margin: 27,
