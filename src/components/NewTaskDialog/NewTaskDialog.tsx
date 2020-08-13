@@ -68,11 +68,16 @@ export default function NewTaskDialog(props: AppProps) {
       );
       setIsLandscape(true);
     } else {
-      setContainerTopProperty(
-        Math.abs(
-          (Dimensions.get("window").height - e.endCoordinates.height - 300) / 2
-        )
-      );
+      let spaceBetweenTopOfScreenAndKeyboard =
+        Dimensions.get("window").height - e.endCoordinates.height;
+      if (spaceBetweenTopOfScreenAndKeyboard < 390) {
+        setContainerTopProperty(0);
+      } else {
+        let top = (spaceBetweenTopOfScreenAndKeyboard - 390) / 2;
+        setContainerTopProperty(
+          (spaceBetweenTopOfScreenAndKeyboard - 390 - top) / 2
+        );
+      }
       setIsLandscape(false);
     }
   };
@@ -84,12 +89,19 @@ export default function NewTaskDialog(props: AppProps) {
 
   const setMarginsBasedOnDeviceWidth = () => {
     let currentScreenWidth = Dimensions.get("window").width;
+    let currentScreenHeight = Dimensions.get("window").height;
 
     if (currentScreenWidth > 700) {
       setContainerMargins({
         marginLeft: (currentScreenWidth - 700) / 2,
         marginRight: (currentScreenWidth - 700) / 2,
       });
+    }
+
+    if (currentScreenWidth > currentScreenHeight) {
+      setIsLandscape(true);
+    } else {
+      setIsLandscape(false);
     }
   };
 
@@ -133,7 +145,7 @@ export default function NewTaskDialog(props: AppProps) {
         onDismiss={props.dismissDialogToggle}
         style={{
           ...styles.mainDialogContainer,
-          width: Dimensions.get("window").width >= 700 ? 700 : "90%",
+          width: Dimensions.get("screen").width >= 700 ? 700 : "90%",
           position: keyboardOpen ? "absolute" : "relative",
           top: containerTopProperty,
           marginLeft: containerMargins.marginLeft,
@@ -146,7 +158,7 @@ export default function NewTaskDialog(props: AppProps) {
             Keyboard.dismiss();
           }}
         >
-          {keyboardOpen && isLandscape ? null : (
+          {isLandscape ? null : (
             <Fragment>
               <Dialog.Title style={{ marginBottom: 0 }}>Task</Dialog.Title>
               <Divider
@@ -166,7 +178,7 @@ export default function NewTaskDialog(props: AppProps) {
               text="Set Reminder Time: "
             />
           )}
-          <Dialog.Content style={{ marginTop: 3 }}>
+          <Dialog.Content style={{ marginTop: 6, marginBottom: 6, height: 80 }}>
             <TextInput
               mode="outlined"
               multiline={true}
@@ -193,7 +205,7 @@ export default function NewTaskDialog(props: AppProps) {
             })}
           </Dialog.Content>
           {keyboardOpen && isLandscape ? null : (
-            <Dialog.Content>
+            <Dialog.Content style={{ paddingBottom: 0, marginTop: 0 }}>
               <List.Accordion
                 title={props.dayOfTheWeek}
                 expanded={props.dialogListToggle}
@@ -271,7 +283,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   dropdownScrollView: {
-    maxHeight: Dimensions.get("window").height / 5,
+    maxHeight: Dimensions.get("screen").height / 5,
     marginBottom: 0,
   },
 });

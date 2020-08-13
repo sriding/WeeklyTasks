@@ -7,13 +7,7 @@ import {
   Paragraph,
   Divider,
 } from "react-native-paper";
-import {
-  Dimensions,
-  StyleSheet,
-  Platform,
-  Pressable,
-  Keyboard,
-} from "react-native";
+import { Dimensions, StyleSheet, Pressable, Keyboard } from "react-native";
 
 import SetReminder from "./../SetReminder/SetReminder";
 
