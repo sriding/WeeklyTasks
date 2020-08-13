@@ -55,16 +55,21 @@ export default function UpdateTaskDialog(props: AppProps) {
 
   const keyboardDidShowFunction = (e) => {
     setKeyboardOpen(true);
+    let spaceBetweenTopOfScreenAndKeyboard =
+      Dimensions.get("window").height - e.endCoordinates.height;
+
     if (Dimensions.get("window").height < Dimensions.get("window").width) {
-      setDialogTopProperty(
-        (Dimensions.get("window").height - e.endCoordinates.height - 70) / 2
-      );
-      setIsLandscape(true);
+      if (spaceBetweenTopOfScreenAndKeyboard < 70) {
+        setDialogTopProperty(10);
+      } else {
+        setDialogTopProperty((spaceBetweenTopOfScreenAndKeyboard - 70) / 2);
+      }
     } else {
-      setDialogTopProperty(
-        (Dimensions.get("window").height - e.endCoordinates.height - 300) / 2
-      );
-      setIsLandscape(false);
+      if (spaceBetweenTopOfScreenAndKeyboard < 300) {
+        setDialogTopProperty(10);
+      } else {
+        setDialogTopProperty((spaceBetweenTopOfScreenAndKeyboard - 300) / 2);
+      }
     }
   };
 
@@ -95,18 +100,25 @@ export default function UpdateTaskDialog(props: AppProps) {
   };
 
   const dialogContainerCentering = () => {
-    let screenWidth = Dimensions.get("window").width;
+    let currentScreenWidth = Dimensions.get("window").width;
+    let currentScreenHeight = Dimensions.get("window").height;
 
-    if (screenWidth > 700) {
+    if (currentScreenWidth > 700) {
       setDialogContainerMargins({
-        marginLeft: (screenWidth - 700) / 2,
-        marginRight: (screenWidth - 700) / 2,
+        marginLeft: (currentScreenWidth - 700) / 2,
+        marginRight: (currentScreenWidth - 700) / 2,
       });
     } else {
       setDialogContainerMargins({
         marginLeft: 0,
         marginRight: 0,
       });
+    }
+
+    if (currentScreenWidth > currentScreenHeight) {
+      setIsLandscape(true);
+    } else {
+      setIsLandscape(false);
     }
   };
 
@@ -130,7 +142,7 @@ export default function UpdateTaskDialog(props: AppProps) {
             Keyboard.dismiss();
           }}
         >
-          {keyboardOpen && isLandscape ? null : (
+          {isLandscape ? null : (
             <Fragment>
               <Dialog.Title style={{ marginBottom: 0 }}>
                 Update Task

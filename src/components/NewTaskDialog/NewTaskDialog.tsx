@@ -60,25 +60,21 @@ export default function NewTaskDialog(props: AppProps) {
 
   const keyboardDidShowFunction = (e) => {
     setKeyboardOpen(true);
+    let spaceBetweenTopOfScreenAndKeyboard =
+      Dimensions.get("window").height - e.endCoordinates.height;
+
     if (Dimensions.get("window").height < Dimensions.get("window").width) {
-      setContainerTopProperty(
-        Math.abs(
-          (Dimensions.get("window").height - e.endCoordinates.height - 100) / 2
-        )
-      );
-      setIsLandscape(true);
-    } else {
-      let spaceBetweenTopOfScreenAndKeyboard =
-        Dimensions.get("window").height - e.endCoordinates.height;
-      if (spaceBetweenTopOfScreenAndKeyboard < 390) {
-        setContainerTopProperty(0);
+      if (spaceBetweenTopOfScreenAndKeyboard < 100) {
+        setContainerTopProperty(10);
       } else {
-        let top = (spaceBetweenTopOfScreenAndKeyboard - 390) / 2;
-        setContainerTopProperty(
-          (spaceBetweenTopOfScreenAndKeyboard - 390 - top) / 2
-        );
+        setContainerTopProperty((spaceBetweenTopOfScreenAndKeyboard - 100) / 2);
       }
-      setIsLandscape(false);
+    } else {
+      if (spaceBetweenTopOfScreenAndKeyboard < 390) {
+        setContainerTopProperty(10);
+      } else {
+        setContainerTopProperty((spaceBetweenTopOfScreenAndKeyboard - 390) / 2);
+      }
     }
   };
 
@@ -95,6 +91,11 @@ export default function NewTaskDialog(props: AppProps) {
       setContainerMargins({
         marginLeft: (currentScreenWidth - 700) / 2,
         marginRight: (currentScreenWidth - 700) / 2,
+      });
+    } else {
+      setContainerMargins({
+        marginLeft: 0,
+        marginRight: 0,
       });
     }
 

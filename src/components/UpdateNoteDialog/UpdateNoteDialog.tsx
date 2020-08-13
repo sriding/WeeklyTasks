@@ -56,20 +56,21 @@ export default function UpdateNoteDialog(props: AppProps) {
 
   const keyboardDidShowFunction = (e) => {
     setKeyboardOpen(true);
+    let spaceBetweenTopOfScreenAndKeyboard =
+      Dimensions.get("window").height - e.endCoordinates.height;
+
     if (Dimensions.get("window").height < Dimensions.get("window").width) {
-      setDialogTopProperty(
-        Math.abs(
-          (Dimensions.get("window").height - e.endCoordinates.height - 70) / 2
-        )
-      );
-      setIsLandscape(true);
+      if (spaceBetweenTopOfScreenAndKeyboard < 70) {
+        setDialogTopProperty(10);
+      } else {
+        setDialogTopProperty((spaceBetweenTopOfScreenAndKeyboard - 70) / 2);
+      }
     } else {
-      setDialogTopProperty(
-        Math.abs(
-          (Dimensions.get("window").height - e.endCoordinates.height - 300) / 2
-        )
-      );
-      setIsLandscape(false);
+      if (spaceBetweenTopOfScreenAndKeyboard < 300) {
+        setDialogTopProperty(10);
+      } else {
+        setDialogTopProperty((spaceBetweenTopOfScreenAndKeyboard - 300) / 2);
+      }
     }
   };
 
@@ -100,11 +101,24 @@ export default function UpdateNoteDialog(props: AppProps) {
 
   const changeDialogDimensions = () => {
     let screenWidth = Dimensions.get("window").width;
+    let screenHeight = Dimensions.get("window").height;
+
     if (screenWidth > 700) {
       setDialogContainerMargins({
         marginLeft: (screenWidth - 700) / 2,
         marginRight: (screenWidth - 700) / 2,
       });
+    } else {
+      setDialogContainerMargins({
+        marginLeft: 0,
+        marginRight: 0,
+      });
+    }
+
+    if (screenWidth > screenHeight) {
+      setIsLandscape(true);
+    } else {
+      setIsLandscape(false);
     }
   };
 
@@ -128,7 +142,7 @@ export default function UpdateNoteDialog(props: AppProps) {
             Keyboard.dismiss();
           }}
         >
-          {keyboardOpen && isLandscape ? null : (
+          {isLandscape ? null : (
             <Fragment>
               <Dialog.Title>Update Note</Dialog.Title>
               <Divider
