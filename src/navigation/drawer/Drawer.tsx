@@ -18,11 +18,7 @@ const Drawer = () => {
       initialRouteName="Home"
       drawerContent={(props: any) => <SideBar navigation={props.navigation} />}
     >
-      <DrawerNavigator.Screen
-        name="Home"
-        component={HomeScreen}
-        initialParams={{ notificationClicked: global.notificationClicked }}
-      />
+      <DrawerNavigator.Screen name="Home" component={HomeScreen} />
       <DrawerNavigator.Screen name="Day" component={DayScreen} />
       <DrawerNavigator.Screen name="Settings" component={SettingsScreen} />
     </DrawerNavigator.Navigator>
