@@ -29,8 +29,7 @@ import NewTaskDialog from "../../components/NewTaskDialog/NewTaskDialog";
 import StatusBar from "../../components/StatusBar/StatusBar";
 
 //Functions
-import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
-import { addTask } from "../../controllers/database/Tasks/tasks";
+import { getTask } from "../../controllers/database/Tasks/tasks";
 import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllDaysData/getAllDaysData";
 import { saveLoginDate } from "../../controllers/database/Login/login";
 import { getTheme } from "../../controllers/database/Settings/settings";
@@ -157,7 +156,22 @@ class HomeScreen extends Component<AppProps, AppState> {
       "keyboardDidHide",
       this._keyboardDidHide
     );
+
+    //Should run if the user clicks on a notification to open the app
+    setTimeout(() => {
+      if (global.notificationClicked && this.state.dayInformation) {
+        global.notificationClicked = false;
+        getTask(global.notificationId).then((task) => {
+          console.log(task.day);
+          this.props.navigation.navigate("Day", {
+            id: task.day,
+          });
+        });
+      }
+    }, 500);
   };
+
+  componentDidUpdate = () => {};
 
   componentWillUnmount = (): void => {
     //Removing Event Listeners

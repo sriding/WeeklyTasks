@@ -22,6 +22,7 @@ configure()
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
+      global.notificationClicked = false;
     } catch (err) {
       console.log("Migration: ", err);
     }

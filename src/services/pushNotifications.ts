@@ -12,7 +12,11 @@ import theWeek from "../utilities/theWeek";
 import reminderTimes from "../utilities/reminderTimes";
 
 //Functions
-import { getTask } from "../controllers/database/Tasks/tasks";
+import {
+  getTask,
+  checkTask,
+  deleteTask,
+} from "../controllers/database/Tasks/tasks";
 import {
   getAllUncheckedTaskIdsForASingleDay,
   getAllTaskIdsForASingleDay,
@@ -27,20 +31,36 @@ import {
 const configure = async (): Promise<void> => {
   PushNotification.configure({
     onRegister: function (token: any) {
+      console.log("when is a token generated?");
       //process token
     },
 
-    onNotification: function (notification: {
-      foreground: Boolean;
-      userInteraction: Boolean;
-      message: string;
-      data: Object;
-      finish: any;
-    }) {
+    onNotification: function (notification: any) {
       //console.log("NOTIFICATION:", notification);
+      if (notification.alertAction === "view") {
+        global.notificationClicked = true;
+        global.notificationId = Number(notification.id);
+      }
+
       // process the notification
       // required on iOS only
       notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
+
+    // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
+    onAction: async function (notification: any) {
+      switch (notification.action) {
+        case "CHECK":
+          await checkTask(Number(notification.id), false);
+          break;
+        case "DELETE":
+          await deleteTask(Number(notification.id));
+          break;
+        default:
+          break;
+      }
+
+      // process the action
     },
 
     permissions: {
@@ -56,12 +76,42 @@ const configure = async (): Promise<void> => {
 
 const testLocalNotifications = (): void => {
   try {
-    const show = (data) => {
-      data.forEach((not) => {
-        console.log(moment.utc(not.fireDate).format("MM/DD/YYYY hh:mm A"));
-      });
-    };
-    console.log(PushNotificationIOS.getScheduledLocalNotifications(show));
+    PushNotification.localNotificationSchedule({
+      /* Android Only Properties */
+      ticker: "My Notification Ticker", // (optional)
+      showWhen: true, // (optional) default: true
+      autoCancel: true, // (optional) default: true
+      largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
+      largeIconUrl: undefined, // (optional) default: undefined
+      smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
+      bigText: "Test Message", // (optional) default: "message" prop
+      subText: "", // (optional) default: none
+      bigPictureUrl: undefined, // (optional) default: undefined
+      color: "red", // (optional) default: system default
+      vibrate: true, // (optional) default: true
+      vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
+      ongoing: false, // (optional) set whether this is an "ongoing" notification
+      priority: "high", // (optional) set notification priority, default: high
+      visibility: "private", // (optional) set notification visibility, default: private
+      importance: "high", // (optional) set notification importance, default: high
+      allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
+      ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
+      onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
+      actions: '["CHECK", "DELETE"]', // (Android only) See the doc for notification actions to know more
+      invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+
+      /* iOS only properties */
+      alertAction: "view", // (optional) default: view
+      category: "", // (optional) default: empty string
+      userInfo: {}, // (optional) default: {} (using null throws a JSON value '<null>' error)
+
+      /* iOS and Android properties */
+      title: "Test", // (optional)
+      message: "Test Message", // (required)
+      date: moment().add(10, "s").toDate(), // (required)
+      playSound: true, // (optional) default: true
+      soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+    });
   } catch (err) {
     console.log(err);
   }
@@ -94,7 +144,7 @@ const addARepeatingLocalNotification = async (
           bigText: task.text, // (optional) default: "message" prop
           subText: "", // (optional) default: none
           bigPictureUrl: undefined, // (optional) default: undefined
-          color: "red", // (optional) default: system default
+          color: "#404040", // (optional) default: system default
           vibrate: true, // (optional) default: true
           vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
           ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -104,8 +154,8 @@ const addARepeatingLocalNotification = async (
           allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
           ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
           onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-          actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+          actions: '["CHECK", "DELETE"]', // (Android only) See the doc for notification actions to know more
+          invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
           /* iOS only properties */
           alertAction: "view", // (optional) default: view
@@ -138,7 +188,7 @@ const addARepeatingLocalNotification = async (
           bigText: task.text, // (optional) default: "message" prop
           subText: "", // (optional) default: none
           bigPictureUrl: undefined, // (optional) default: undefined
-          color: "red", // (optional) default: system default
+          color: "#404040", // (optional) default: system default
           vibrate: true, // (optional) default: true
           vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
           ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -148,8 +198,8 @@ const addARepeatingLocalNotification = async (
           allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
           ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
           onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-          actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+          actions: '["CHECK", "DELETE"]', // (Android only) See the doc for notification actions to know more
+          invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
           /* iOS only properties */
           alertAction: "view", // (optional) default: view
@@ -186,7 +236,7 @@ const addARepeatingLocalNotification = async (
             bigText: task.text, // (optional) default: "message" prop
             subText: "", // (optional) default: none
             bigPictureUrl: undefined, // (optional) default: undefined
-            color: "red", // (optional) default: system default
+            color: "#404040", // (optional) default: system default
             vibrate: true, // (optional) default: true
             vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
             ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -196,8 +246,8 @@ const addARepeatingLocalNotification = async (
             allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
             ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
             onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-            actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-            invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+            actions: '["CHECK", "DELETE"]', // (Android only) See the doc for notification actions to know more
+            invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
             /* iOS only properties */
             alertAction: "view", // (optional) default: view
@@ -230,7 +280,7 @@ const addARepeatingLocalNotification = async (
             bigText: task.text, // (optional) default: "message" prop
             subText: "", // (optional) default: none
             bigPictureUrl: undefined, // (optional) default: undefined
-            color: "red", // (optional) default: system default
+            color: "#404040", // (optional) default: system default
             vibrate: true, // (optional) default: true
             vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
             ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -240,8 +290,8 @@ const addARepeatingLocalNotification = async (
             allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
             ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
             onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-            actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-            invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+            actions: '["CHECK", "DELETE"]', // (Android only) See the doc for notification actions to know more
+            invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
             /* iOS only properties */
             alertAction: "view", // (optional) default: view
@@ -363,7 +413,7 @@ const createDailyRepeatingNotification = async (
             ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
             onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
             actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-            invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+            invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
             /* iOS only properties */
             alertAction: "view", // (optional) default: view
@@ -396,7 +446,7 @@ const createDailyRepeatingNotification = async (
             bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
             subText: "", // (optional) default: none
             bigPictureUrl: undefined, // (optional) default: undefined
-            color: "red", // (optional) default: system default
+            color: "#404040", // (optional) default: system default
             vibrate: true, // (optional) default: true
             vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
             ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -406,8 +456,7 @@ const createDailyRepeatingNotification = async (
             allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
             ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
             onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-            actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-            invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+            invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
             /* iOS only properties */
             alertAction: "view", // (optional) default: view
@@ -440,7 +489,7 @@ const createDailyRepeatingNotification = async (
           bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
           subText: "", // (optional) default: none
           bigPictureUrl: undefined, // (optional) default: undefined
-          color: "red", // (optional) default: system default
+          color: "#404040", // (optional) default: system default
           vibrate: true, // (optional) default: true
           vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
           ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -450,8 +499,7 @@ const createDailyRepeatingNotification = async (
           allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
           ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
           onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-          actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+          invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
           /* iOS only properties */
           alertAction: "view", // (optional) default: view
@@ -493,7 +541,7 @@ const createDailyRepeatingNotification = async (
         bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
         subText: "", // (optional) default: none
         bigPictureUrl: undefined, // (optional) default: undefined
-        color: "red", // (optional) default: system default
+        color: "#404040", // (optional) default: system default
         vibrate: true, // (optional) default: true
         vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
         ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -503,8 +551,7 @@ const createDailyRepeatingNotification = async (
         allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
         ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
         onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-        actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-        invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+        invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
         /* iOS only properties */
         alertAction: "view", // (optional) default: view
@@ -575,7 +622,7 @@ const updateADailyRepeatingNotification = async (
         bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
         subText: "", // (optional) default: none
         bigPictureUrl: undefined, // (optional) default: undefined
-        color: "red", // (optional) default: system default
+        color: "#404040", // (optional) default: system default
         vibrate: true, // (optional) default: true
         vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
         ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -585,8 +632,7 @@ const updateADailyRepeatingNotification = async (
         allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
         ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
         onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-        actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-        invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+        invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
         /* iOS only properties */
         alertAction: "view", // (optional) default: view
@@ -618,7 +664,7 @@ const updateADailyRepeatingNotification = async (
         bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
         subText: "", // (optional) default: none
         bigPictureUrl: undefined, // (optional) default: undefined
-        color: "red", // (optional) default: system default
+        color: "#404040", // (optional) default: system default
         vibrate: true, // (optional) default: true
         vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
         ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -628,8 +674,7 @@ const updateADailyRepeatingNotification = async (
         allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
         ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
         onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-        actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-        invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+        invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
         /* iOS only properties */
         alertAction: "view", // (optional) default: view
@@ -667,7 +712,7 @@ const updateADailyRepeatingNotification = async (
           bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
           subText: "", // (optional) default: none
           bigPictureUrl: undefined, // (optional) default: undefined
-          color: "red", // (optional) default: system default
+          color: "#404040", // (optional) default: system default
           vibrate: true, // (optional) default: true
           vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
           ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -677,8 +722,7 @@ const updateADailyRepeatingNotification = async (
           allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
           ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
           onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-          actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+          invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
           /* iOS only properties */
           alertAction: "view", // (optional) default: view
@@ -710,7 +754,7 @@ const updateADailyRepeatingNotification = async (
           bigText: `You have ${taskIdsForADay.length} tasks remaining today.`, // (optional) default: "message" prop
           subText: "", // (optional) default: none
           bigPictureUrl: undefined, // (optional) default: undefined
-          color: "red", // (optional) default: system default
+          color: "#404040", // (optional) default: system default
           vibrate: true, // (optional) default: true
           vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
           ongoing: false, // (optional) set whether this is an "ongoing" notification
@@ -720,8 +764,7 @@ const updateADailyRepeatingNotification = async (
           allowWhileIdle: true, // (optional) set notification to work while on doze, default: false
           ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear)
           onlyAlertOnce: false, //(optional) alert will open only once with sound and notify, default: false
-          actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
-          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+          invokeApp: false, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
           /* iOS only properties */
           alertAction: "view", // (optional) default: view

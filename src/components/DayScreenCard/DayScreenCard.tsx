@@ -343,7 +343,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
               );
             })}
             <View style={{ marginTop: 15 }}>
-              {this.props.Day !== null
+              {this.props.Day && this.props.Day.tasks
                 ? this.props.Day.tasks.map((task, index) => {
                     return task.isChecked ? (
                       <View key={index} style={styles.mapTaskContainer}>
@@ -530,7 +530,7 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
             >
               Note
             </Button>
-            {this.props.Day !== null ? (
+            {this.props.Day && this.props.Day.note ? (
               this.props.Day.note.text !== "" ? (
                 <Fragment>
                   <Paragraph
@@ -547,7 +547,9 @@ export default class DayScreenCard extends Component<AppProps, AppState> {
                       });
                     }}
                   >
-                    {this.props.Day !== null ? this.props.Day.note.text : null}
+                    {this.props.Day && this.props.Day.note
+                      ? this.props.Day.note.text
+                      : null}
                   </Paragraph>
                   <Button
                     mode="outlined"
