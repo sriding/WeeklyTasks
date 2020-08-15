@@ -1,3 +1,4 @@
 import * as pushNotifications from "./pushNotifications";
+import * as backgroundFetch from "./backgroundFetch";
 
-export { pushNotifications };
+export { pushNotifications, backgroundFetch };

@@ -14,15 +14,23 @@ import { currentMigration } from "./src/migrations/currentMigration/currentMigra
 
 import { name as appName } from "./app.json";
 
+import { registerHeadlessFunction } from "./src/services/backgroundFetch";
+
 configure()
   .then(async () => {
     try {
+      //Run Migrations for Realm
       await pastMigrations();
       const expectVoid = await currentMigration();
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
+
+      //Create global for if the user opens the app by clicking on a notification
       global.notificationClicked = false;
+
+      //Register the function that runs if persistent daily notifications is enabled
+      registerHeadlessFunction();
     } catch (err) {
       console.log("Migration: ", err);
     }

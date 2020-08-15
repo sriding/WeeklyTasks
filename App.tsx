@@ -1,11 +1,15 @@
 //React Native modules
 import React from "react";
+import { Platform } from "react-native";
 
 //React Native Paper modules
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
 //Functions
-import { getTheme } from "./src/controllers/database/Settings/settings";
+import {
+  getTheme,
+  getDailyUpdatePersistance,
+} from "./src/controllers/database/Settings/settings";
 import { createInitialDays } from "./src/controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
 
 //React Native Navigation modules
@@ -15,7 +19,11 @@ import { AppProps, AppState } from "./App.interface";
 
 //Utilities
 import DarkTheme from "./src/utilities/darkTheme";
+
+//Services
 import { testLocalNotifications } from "./src/services/pushNotifications";
+import { backgroundFetch } from "./src/services/Index";
+import BackgroundFetch from "react-native-background-fetch";
 
 class App extends React.PureComponent<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -27,6 +35,40 @@ class App extends React.PureComponent<AppProps, AppState> {
 
   componentDidMount = async () => {
     //testLocalNotifications();
+    let dailyUpdate = await getDailyUpdatePersistance();
+    if (Platform.OS === "android" && dailyUpdate) {
+      BackgroundFetch.configure(
+        {
+          minimumFetchInterval: 1440, // <-- minutes (15 is minimum allowed)
+          // Android options
+          forceAlarmManager: false, // <-- Set true to bypass JobScheduler.
+          stopOnTerminate: false,
+          startOnBoot: false,
+          enableHeadless: true,
+        },
+        async (taskId) => {
+          // This is the fetch-event callback.
+          console.log("[BackgroundFetch] taskId: ", taskId);
+
+          // Use a switch statement to route task-handling.
+          switch (taskId) {
+            case "com.foo.customtask":
+              console.log("Received custom task");
+              //scheduleTaskOngoingNotification();
+              break;
+            case "bonkers":
+              console.log("Bonkers!");
+              break;
+            default:
+              console.log("Default fetch task");
+          }
+          // Finish, providing received taskId.
+          BackgroundFetch.finish(taskId);
+        }
+      );
+      backgroundFetch.scheduleTaskInitialNotification();
+    }
+
     try {
       let expectVoid: void = await createInitialDays();
       if (expectVoid !== undefined && expectVoid !== null) {

@@ -41,6 +41,7 @@ import ResetApplicationButton from "../../components/ResetApplicationButton/Rese
 import TextDialog from "../../components/TextDialog/TextDialog";
 import { deleteEverythingInDB } from "../../controllers/database/Miscellaneous/DeleteEverythingInDB/deleteEverythingInDB";
 import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
+import DailyPersistence from "../../components/DailyPersistence/DailyPersistence";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -259,6 +260,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 theme={this.state.theme}
                 text="Daily update reminder at: "
               />
+              <DailyPersistence />
               <View style={styles.switchContainer}>
                 <Switch
                   style={styles.switchButton}

@@ -73,7 +73,6 @@ class SetReminder extends Component<AppProps, AppState> {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
