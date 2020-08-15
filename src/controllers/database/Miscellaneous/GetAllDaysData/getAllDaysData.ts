@@ -3,7 +3,6 @@ import { getSortTasksBy } from "../../Settings/settings";
 import { tasksForADayOrdered } from "../../Tasks/tasks";
 
 export const getAllDaysData = async (): Promise<any> => {
-  //console.log(Realm.defaultPath);
   try {
     let daysContainer = global.realmContainer.objects("Day");
     let customObjectToReturn: {

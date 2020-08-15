@@ -2,13 +2,14 @@
 import moment from "moment";
 
 //Functions
-import { unCheckEveryTaskInTheDatabase } from "../Tasks/tasks";
+import {
+  unCheckEveryTaskInTheDatabase,
+  removeEveryCheckedTaskInTheDatabase,
+} from "../Tasks/tasks";
 
-export const createLoginDate = async (): Promise<string> => {
+export const createLoginDate = (): void => {
   try {
-    let loginDateExists: any = global.realmContainer.objects("Login")[0]
-      ? global.realmContainer.objects("Login")[0]
-      : null;
+    let loginDateExists: string = global.realmContainer.objects("Login")[0];
     let currentDate: string = moment().format("YYYY-MM-DD");
 
     if (!loginDateExists) {
@@ -20,19 +21,24 @@ export const createLoginDate = async (): Promise<string> => {
         });
       });
     }
-
-    return loginDateExists ? loginDateExists.date : currentDate;
   } catch (err) {
     return JSON.stringify(err);
   }
 };
 
-export const saveLoginDate = async (): Promise<string | void> => {
+export const updateLoginDate = async (): Promise<string | void> => {
   try {
-    let loginDateExists: string = await createLoginDate();
+    let loginDateExists: string = global.realmContainer.objects("Login")[0];
     let currentDate: string = moment().format("YYYY-MM-DD");
 
-    if (loginDateExists !== currentDate) {
+    if (!loginDateExists) {
+      createLoginDate();
+      return;
+    }
+
+    if (loginDateExists.date === currentDate) {
+      return;
+    } else {
       global.realmContainer.write(() => {
         global.realmContainer.create(
           "Login",
@@ -44,24 +50,52 @@ export const saveLoginDate = async (): Promise<string | void> => {
           true
         );
       });
+    }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
 
-      let mondayOfThisWeek: string = moment()
-        .startOf("isoWeek")
-        .format("YYYY-MM-DD");
-      let differenceBetweenLoginDateAndThisWeeksMonday: number = moment(
-        loginDateExists,
-        "YYYY-MM-DD"
-      ).diff(mondayOfThisWeek, "days");
+export const determiningIfNewWeek = () => {
+  const loginDate = global.realmContainer.objects("Login")[0].date;
 
-      if (differenceBetweenLoginDateAndThisWeeksMonday < 0) {
-        const expectVoid: void = await unCheckEveryTaskInTheDatabase();
+  let mondayOfThisWeek: string = moment()
+    .startOf("isoWeek")
+    .format("YYYY-MM-DD");
+  let differenceBetweenLoginDateAndThisWeeksMonday: number = moment(
+    loginDate,
+    "YYYY-MM-DD"
+  ).diff(mondayOfThisWeek, "days");
 
-        if (expectVoid !== null && expectVoid !== undefined) {
-          throw expectVoid;
-        }
+  if (differenceBetweenLoginDateAndThisWeeksMonday < 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
-        return "New Week: All Tasks Unchecked!";
-      }
+export const newWeekStandardBehavior = async (): Promise<string | void> => {
+  try {
+    const newWeekTrueOrFalse = determiningIfNewWeek();
+    if (!newWeekTrueOrFalse) {
+      return;
+    } else {
+      await unCheckEveryTaskInTheDatabase();
+      return "New Week: All Tasks Unchecked!";
+    }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
+export const newWeekAlternativeBehavior = (): string | void => {
+  try {
+    const newWeekTrueOrFalse = determiningIfNewWeek();
+    if (!newWeekTrueOrFalse) {
+      return;
+    } else {
+      removeEveryCheckedTaskInTheDatabase();
+      return "New Week: Checked Tasks Deleted!";
     }
   } catch (err) {
     return JSON.stringify(err);

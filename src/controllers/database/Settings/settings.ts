@@ -9,6 +9,18 @@ import {
   changeThemeEH,
 } from "../../../validation/settingsEH";
 
+export const getAppFunctionality = () => {
+  try {
+    if (global.realmContainer.objects("Settings")[0] === undefined) {
+      return true;
+    } else {
+      return global.realmContainer.objects("Settings")[0].appFunctionality;
+    }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
 export const getDailyUpdate = async (): Promise<boolean> => {
   try {
     if (global.realmContainer.objects("Settings")[0] === undefined) {
@@ -65,6 +77,34 @@ export const getTheme = async (): Promise<string> => {
     } else {
       return global.realmContainer.objects("Settings")[0].theme;
     }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
+export const setAppFunctionality = (bool: boolean = true): void => {
+  try {
+    global.realmContainer.write(() => {
+      if (bool) {
+        global.realmContainer.create(
+          "Settings",
+          {
+            id: 0,
+            appFunctionality: "standard",
+          },
+          true
+        );
+      } else {
+        global.realmContainer.create(
+          "Settings",
+          {
+            id: 0,
+            appFunctionality: "alternative",
+          },
+          true
+        );
+      }
+    });
   } catch (err) {
     return JSON.stringify(err);
   }
