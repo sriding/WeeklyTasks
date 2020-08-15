@@ -82,6 +82,34 @@ export const getTheme = async (): Promise<string> => {
   }
 };
 
+export const setAppFunctionality = (bool: boolean = true): void => {
+  try {
+    global.realmContainer.write(() => {
+      if (bool) {
+        global.realmContainer.create(
+          "Settings",
+          {
+            id: 0,
+            appFunctionality: "standard",
+          },
+          true
+        );
+      } else {
+        global.realmContainer.create(
+          "Settings",
+          {
+            id: 0,
+            appFunctionality: "alternative",
+          },
+          true
+        );
+      }
+    });
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
 export const changeDailyUpdate = async (
   bool: boolean = true
 ): Promise<void> => {

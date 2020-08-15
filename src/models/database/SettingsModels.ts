@@ -3,6 +3,7 @@ export const SettingsModel = {
   primaryKey: "id",
   properties: {
     id: "int",
+    appFunctionality: "string",
     dailyUpdate: "bool",
     dailyUpdatePersistance: "bool",
     dailyUpdateTime: "string",

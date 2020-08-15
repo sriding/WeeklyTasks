@@ -1,7 +1,10 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, Switch, Caption } from "react-native-paper";
-import { getAppFunctionality } from "../../controllers/database/Settings/settings";
+import {
+  getAppFunctionality,
+  setAppFunctionality,
+} from "../../controllers/database/Settings/settings";
 import {
   newWeekStandardBehavior,
   newWeekAlternativeBehavior,
@@ -21,16 +24,18 @@ export default function AppFunctionality() {
       const appFunctionality = getAppFunctionality();
 
       switch (appFunctionality) {
-        case "Alternative":
+        case "alternative":
           setAlternativeBehaviorSwitch(true);
           setStandardBehaviorSwitch(false);
           newWeekAlternativeBehavior();
-        case "Standard":
+          break;
+        case "standard":
         default:
           newWeekStandardBehavior().then(() => {
             setStandardBehaviorSwitch(true);
             setAlternativeBehaviorSwitch(false);
           });
+          break;
       }
     } catch (err) {
       console.log(err);
@@ -38,11 +43,13 @@ export default function AppFunctionality() {
   }, []);
 
   const changeStandardBehaviorSwitch = () => {
+    setAppFunctionality(standardBehaviorSwitch ? false : true);
     setStandardBehaviorSwitch(!standardBehaviorSwitch);
     setAlternativeBehaviorSwitch(!alternativeBehaviorSwitch);
   };
 
   const changeAlternativeBehaviorSwitch = () => {
+    setAppFunctionality(alternativeBehaviorSwitch ? true : false);
     setAlternativeBehaviorSwitch(!alternativeBehaviorSwitch);
     setStandardBehaviorSwitch(!standardBehaviorSwitch);
   };

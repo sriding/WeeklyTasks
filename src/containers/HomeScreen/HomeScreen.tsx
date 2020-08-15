@@ -31,10 +31,17 @@ import StatusBar from "../../components/StatusBar/StatusBar";
 //Functions
 import { getTask } from "../../controllers/database/Tasks/tasks";
 import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllDaysData/getAllDaysData";
-import { getTheme } from "../../controllers/database/Settings/settings";
+import {
+  getTheme,
+  getAppFunctionality,
+} from "../../controllers/database/Settings/settings";
 
 //Utilities
 import theWeek from "../../utilities/theWeek";
+import {
+  newWeekAlternativeBehavior,
+  newWeekStandardBehavior,
+} from "../../controllers/database/Login/login";
 
 class HomeScreen extends Component<AppProps, AppState> {
   focusSubscription: any;
@@ -85,6 +92,32 @@ class HomeScreen extends Component<AppProps, AppState> {
       this.setState({
         theme: "light",
       });
+    }
+
+    try {
+      let appFunctionality = getAppFunctionality();
+      let expectString = null;
+      switch (appFunctionality) {
+        case "alternative":
+          expectString = newWeekAlternativeBehavior();
+          if (typeof expectString === "string") {
+            this.setSnackBarTextAndIfError(expectString, false);
+            this.toggleSnackBarVisibility();
+          }
+        case "standard":
+        default:
+          expectString = await newWeekStandardBehavior();
+          if (typeof expectString === "string") {
+            this.setSnackBarTextAndIfError(expectString, false);
+            this.toggleSnackBarVisibility();
+          }
+      }
+    } catch (err) {
+      this.setSnackBarTextAndIfError(
+        "Issue setting up app functionality.",
+        true
+      );
+      this.toggleSnackBarVisibility();
     }
 
     try {
@@ -148,7 +181,6 @@ class HomeScreen extends Component<AppProps, AppState> {
       if (global.notificationClicked && this.state.dayInformation) {
         global.notificationClicked = false;
         getTask(global.notificationId).then((task) => {
-          console.log(task.day);
           this.props.navigation.navigate("Day", {
             id: task.day,
           });

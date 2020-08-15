@@ -19,6 +19,7 @@ export const createInitialDays = async (
       global.realmContainer.write(() => {
         global.realmContainer.create("Settings", {
           id: 0,
+          appFunctionality: "standard",
           dailyUpdate: true,
           dailyUpdatePersistance: false,
           dailyUpdateTime: "9:00 AM",

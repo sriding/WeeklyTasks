@@ -77,7 +77,9 @@ export const determiningIfNewWeek = () => {
 export const newWeekStandardBehavior = async (): Promise<string | void> => {
   try {
     const newWeekTrueOrFalse = determiningIfNewWeek();
-    if (newWeekTrueOrFalse) {
+    if (!newWeekTrueOrFalse) {
+      return;
+    } else {
       await unCheckEveryTaskInTheDatabase();
       return "New Week: All Tasks Unchecked!";
     }
@@ -89,7 +91,9 @@ export const newWeekStandardBehavior = async (): Promise<string | void> => {
 export const newWeekAlternativeBehavior = (): string | void => {
   try {
     const newWeekTrueOrFalse = determiningIfNewWeek();
-    if (newWeekTrueOrFalse) {
+    if (!newWeekTrueOrFalse) {
+      return;
+    } else {
       removeEveryCheckedTaskInTheDatabase();
       return "New Week: Checked Tasks Deleted!";
     }
