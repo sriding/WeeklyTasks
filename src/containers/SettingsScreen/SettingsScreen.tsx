@@ -41,6 +41,7 @@ import ResetApplicationButton from "../../components/ResetApplicationButton/Rese
 import TextDialog from "../../components/TextDialog/TextDialog";
 import { deleteEverythingInDB } from "../../controllers/database/Miscellaneous/DeleteEverythingInDB/deleteEverythingInDB";
 import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
+import AppFunctionality from "../../components/AppFunctionality/AppFunctionality";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -295,7 +296,12 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 Tasks
               </Headline>
               <View
-                style={{ ...styles.switchContainer, justifyContent: "center" }}
+                style={{
+                  ...styles.switchContainer,
+                  justifyContent: "center",
+                  marginTop: 10,
+                  marginBottom: 20,
+                }}
               >
                 <Subheading style={{ fontSize: 22 }}>
                   Sort tasks by:{" "}
@@ -348,6 +354,7 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                   />
                 </Menu>
               </View>
+              <AppFunctionality />
             </View>
             <Divider
               style={{

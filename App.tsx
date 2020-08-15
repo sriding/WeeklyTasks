@@ -7,6 +7,10 @@ import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 //Functions
 import { getTheme } from "./src/controllers/database/Settings/settings";
 import { createInitialDays } from "./src/controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
+import {
+  createLoginDate,
+  updateLoginDate,
+} from "./src/controllers/database/Login/login";
 
 //React Native Navigation modules
 import { NavigationContainer } from "@react-navigation/native";
@@ -15,6 +19,8 @@ import { AppProps, AppState } from "./App.interface";
 
 //Utilities
 import DarkTheme from "./src/utilities/darkTheme";
+
+//Services
 import { testLocalNotifications } from "./src/services/pushNotifications";
 
 class App extends React.PureComponent<AppProps, AppState> {
@@ -34,6 +40,24 @@ class App extends React.PureComponent<AppProps, AppState> {
       }
     } catch (err) {
       console.log("Creating initial days: ", err);
+    }
+
+    try {
+      let expectVoid: void = await createLoginDate();
+      if (expectVoid !== undefined && expectVoid !== null) {
+        throw expectVoid;
+      }
+    } catch (err) {
+      console.log("Error creating login date: ", err);
+    }
+
+    try {
+      let expectVoid: void = await updateLoginDate();
+      if (expectVoid !== undefined && expectVoid !== null) {
+        throw expectVoid;
+      }
+    } catch (err) {
+      console.log("Error creating login date: ", err);
     }
 
     try {

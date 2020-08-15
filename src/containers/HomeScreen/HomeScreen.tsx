@@ -31,7 +31,6 @@ import StatusBar from "../../components/StatusBar/StatusBar";
 //Functions
 import { getTask } from "../../controllers/database/Tasks/tasks";
 import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllDaysData/getAllDaysData";
-import { saveLoginDate } from "../../controllers/database/Login/login";
 import { getTheme } from "../../controllers/database/Settings/settings";
 
 //Utilities
@@ -86,19 +85,6 @@ class HomeScreen extends Component<AppProps, AppState> {
       this.setState({
         theme: "light",
       });
-    }
-
-    try {
-      const expectStringOrVoid: string | void = await saveLoginDate();
-      if (expectStringOrVoid && typeof expectStringOrVoid !== "string") {
-        throw expectStringOrVoid;
-      }
-    } catch (err) {
-      this.setSnackBarTextAndIfError(
-        "Issue saving the login date. Could affect notification functionality.",
-        true
-      );
-      this.toggleSnackBarVisibility();
     }
 
     try {

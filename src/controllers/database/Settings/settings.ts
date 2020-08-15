@@ -9,6 +9,18 @@ import {
   changeThemeEH,
 } from "../../../validation/settingsEH";
 
+export const getAppFunctionality = () => {
+  try {
+    if (global.realmContainer.objects("Settings")[0] === undefined) {
+      return true;
+    } else {
+      return global.realmContainer.objects("Settings")[0].appFunctionality;
+    }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
 export const getDailyUpdate = async (): Promise<boolean> => {
   try {
     if (global.realmContainer.objects("Settings")[0] === undefined) {
