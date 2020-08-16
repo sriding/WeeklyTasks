@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useRef } from "react";
 import { Dimensions, StyleSheet, Pressable, Keyboard } from "react-native";
 
 import {
@@ -29,6 +29,8 @@ export default function UpdateNoteDialog(props: AppProps) {
   const [keyboardOpen, setKeyboardOpen] = React.useState<boolean>(false);
   const [dialogTopProperty, setDialogTopProperty] = React.useState<number>(0);
   const [isLandscape, setIsLandscape] = React.useState<boolean>(false);
+
+  const inputEl = useRef(null);
 
   React.useEffect(() => {
     updateText(props.updateNoteTextState.text);
@@ -81,7 +83,10 @@ export default function UpdateNoteDialog(props: AppProps) {
 
   const submitUpdatedNote = async () => {
     try {
-      let expectVoid: void | string = await updateNote(text, noteId);
+      let expectVoid: void | string = await updateNote(
+        inputEl.current?.state.value,
+        noteId
+      );
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
@@ -156,15 +161,13 @@ export default function UpdateNoteDialog(props: AppProps) {
           <Dialog.Content>
             <TextInput
               mode="outlined"
-              value={text}
               multiline={true}
               numberOfLines={3}
               style={styles.textInputStyle}
               error={textInputErrorExists}
               selectionColor={props.theme === "light" ? "black" : "white"}
-              onChangeText={(text) => {
-                updateText(text);
-              }}
+              ref={inputEl}
+              defaultValue={props.updateNoteTextState.text}
             ></TextInput>
             {textInputErrorArray.map((errors, index) => {
               return (

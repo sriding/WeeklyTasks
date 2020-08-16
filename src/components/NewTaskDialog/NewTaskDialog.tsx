@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useRef } from "react";
 
 import {
   ScrollView,
@@ -40,6 +40,8 @@ export default function NewTaskDialog(props: AppProps) {
     number
   >(0);
   const [isLandscape, setIsLandscape] = React.useState<boolean>(false);
+
+  const inputEl = useRef(null);
 
   React.useEffect(() => {
     setMarginsBasedOnDeviceWidth();
@@ -109,7 +111,7 @@ export default function NewTaskDialog(props: AppProps) {
   const submitTask = async () => {
     try {
       let expectVoid = await addTask(
-        textInput,
+        inputEl.current?.state.value,
         props.dayOfTheWeek,
         props.reminder,
         props.reminderTime
@@ -179,7 +181,9 @@ export default function NewTaskDialog(props: AppProps) {
               text="Set Reminder Time: "
             />
           )}
-          <Dialog.Content style={{ marginTop: 6, marginBottom: 6, height: 80 }}>
+          <Dialog.ScrollArea
+            style={{ marginTop: 6, marginBottom: 6, height: 80 }}
+          >
             <TextInput
               mode="outlined"
               multiline={true}
@@ -188,9 +192,8 @@ export default function NewTaskDialog(props: AppProps) {
               placeholderTextColor="gray"
               error={inputErrorExists}
               style={styles.textInputStyle}
-              onChangeText={(text) => changeTextInput(text)}
-              value={textInput}
               selectionColor={props.theme === "light" ? "black" : "white"}
+              ref={inputEl}
             />
             {inputErrorTextArray.map((errors, index) => {
               return (
@@ -204,7 +207,7 @@ export default function NewTaskDialog(props: AppProps) {
                 </Paragraph>
               );
             })}
-          </Dialog.Content>
+          </Dialog.ScrollArea>
           {keyboardOpen && isLandscape ? null : (
             <Dialog.Content style={{ paddingBottom: 0, marginTop: 0 }}>
               <List.Accordion

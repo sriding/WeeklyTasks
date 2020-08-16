@@ -409,7 +409,6 @@ class HomeScreen extends Component<AppProps, AppState> {
             toggleDialogList={this.toggleDialogList}
             setDayOfTheWeek={this.setDayOfTheWeek}
             dayOfTheWeek={this.state.dayOfTheWeek}
-            keyboardHeight={this.state.keyboardHeight}
             keyboardOpen={this.state.keyboardOpen}
             reminder={this.state.reminder}
             reminderTime={this.state.reminderTime}

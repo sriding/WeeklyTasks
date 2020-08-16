@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useRef } from "react";
 import {
   Dialog,
   Portal,
@@ -28,6 +28,8 @@ export default function UpdateTaskDialog(props: AppProps) {
     marginRight: 0,
   });
   const [isLandscape, setIsLandscape] = React.useState<boolean>(false);
+
+  let inputEl = useRef(null);
 
   React.useEffect(() => {
     updateText(props.updateTaskTextState.text);
@@ -81,7 +83,7 @@ export default function UpdateTaskDialog(props: AppProps) {
   const submitTask = async () => {
     try {
       let expectVoid: void = await updateTask(
-        text,
+        inputEl.current?.state.value,
         taskId,
         props.reminder,
         props.reminderTime
@@ -167,15 +169,13 @@ export default function UpdateTaskDialog(props: AppProps) {
           <Dialog.Content style={{ marginTop: 5 }}>
             <TextInput
               mode="outlined"
-              value={text}
               multiline={true}
               numberOfLines={3}
               style={styles.textInputStyling}
               error={textErrorExists}
               selectionColor={props.theme === "light" ? "black" : "white"}
-              onChangeText={(text) => {
-                updateText(text);
-              }}
+              ref={inputEl}
+              defaultValue={props.updateTaskTextState.text}
             ></TextInput>
             {textErrorText.map((errors, index) => {
               return (
