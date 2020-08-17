@@ -21,7 +21,10 @@ import { AppProps, AppState } from "./App.interface";
 import DarkTheme from "./src/utilities/darkTheme";
 
 //Services
-import { testLocalNotifications } from "./src/services/pushNotifications";
+import {
+  testLocalNotifications,
+  setApplicationIconBadgeNumber,
+} from "./src/services/pushNotifications";
 
 class App extends React.PureComponent<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -79,6 +82,9 @@ class App extends React.PureComponent<AppProps, AppState> {
         theme: DefaultTheme,
       });
     }
+
+    //Removes application badge
+    setApplicationIconBadgeNumber(0);
   };
 
   componentWillUnmount = () => {

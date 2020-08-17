@@ -128,6 +128,10 @@ const addARepeatingLocalNotification = async (
       return;
     } else {
       let task = await getTask(taskId);
+      if (task.reminderTime === "N/A" || task.isChecked === true) {
+        return;
+      }
+
       let currentDayComparator = moment().isoWeekday();
       let taskDayComparator: number = theWeekNumericalValues[task.day];
       let validId = task.id.toString();
@@ -315,11 +319,11 @@ const addARepeatingLocalNotification = async (
         }
 
         //Handle daily notification updating
-        await updateADailyRepeatingNotification(task.day);
       } else {
         throw "Something went wrong.";
       }
     }
+    await updateADailyRepeatingNotification(task.day);
   } catch (err) {
     console.log(err);
   }
@@ -851,6 +855,10 @@ const setApplicationIconBadgeNumber = (number: number): void => {
   }
 };
 
+const removeDeliveredNotifications = () => {
+  PushNotificationIOS.removeAllDeliveredNotifications();
+};
+
 export {
   configure,
   testLocalNotifications,
@@ -859,6 +867,7 @@ export {
   removeALocalScheduledNotification,
   removeAllLocalNotifications,
   setApplicationIconBadgeNumber,
+  removeDeliveredNotifications,
   createDailyRepeatingNotification,
   removeDailyRepeatingNotifications,
   updateADailyRepeatingNotification,

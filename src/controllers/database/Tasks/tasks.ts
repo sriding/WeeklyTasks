@@ -250,7 +250,9 @@ export const deleteAllTasks = async (day: string): Promise<void | string> => {
 
 export const removeEveryCheckedTaskInTheDatabase = () => {
   global.realmContainer.write(() => {
-    let tasks = realm.objects("Task").filtered(`isChecked == ${true}`);
+    let tasks = global.realmContainer
+      .objects("Task")
+      .filtered(`isChecked == ${true}`);
     global.realmContainer.delete(tasks);
   });
 };

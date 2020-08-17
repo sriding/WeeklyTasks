@@ -181,9 +181,7 @@ export default function NewTaskDialog(props: AppProps) {
               text="Set Reminder Time: "
             />
           )}
-          <Dialog.ScrollArea
-            style={{ marginTop: 6, marginBottom: 6, height: 80 }}
-          >
+          <Dialog.Content style={{ marginTop: 6, marginBottom: 6, height: 80 }}>
             <TextInput
               mode="outlined"
               multiline={true}
@@ -207,7 +205,7 @@ export default function NewTaskDialog(props: AppProps) {
                 </Paragraph>
               );
             })}
-          </Dialog.ScrollArea>
+          </Dialog.Content>
           {keyboardOpen && isLandscape ? null : (
             <Dialog.Content style={{ paddingBottom: 0, marginTop: 0 }}>
               <List.Accordion

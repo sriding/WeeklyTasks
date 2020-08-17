@@ -103,6 +103,7 @@ class HomeScreen extends Component<AppProps, AppState> {
             this.setSnackBarTextAndIfError(expectString, false);
             this.toggleSnackBarVisibility();
           }
+          break;
         case "standard":
         default:
           expectString = await newWeekStandardBehavior();
