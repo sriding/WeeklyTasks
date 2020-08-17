@@ -43,7 +43,7 @@ class App extends React.PureComponent<AppProps, AppState> {
     }
 
     try {
-      let expectVoid: void = await createLoginDate();
+      let expectVoid: void = createLoginDate();
       if (expectVoid !== undefined && expectVoid !== null) {
         throw expectVoid;
       }
@@ -57,7 +57,7 @@ class App extends React.PureComponent<AppProps, AppState> {
         throw expectVoid;
       }
     } catch (err) {
-      console.log("Error creating login date: ", err);
+      console.log("Error updating login date: ", err);
     }
 
     try {

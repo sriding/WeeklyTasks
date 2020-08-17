@@ -4,9 +4,7 @@ import theWeek from "../../../../utilities/theWeek";
 //Services
 import { pushNotifications } from "../../../../services/Index";
 
-export const createInitialDays = async (
-  path: null | string = null
-): Promise<void> => {
+export const createInitialDays = async (): Promise<void> => {
   try {
     if (
       global.realmContainer.objects("Settings")[0] &&

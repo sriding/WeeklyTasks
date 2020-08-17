@@ -8,7 +8,6 @@ import {
   Keyboard,
   Platform,
   EmitterSubscription,
-  TextInput,
 } from "react-native";
 
 //React Native Paper Modules
@@ -180,11 +179,22 @@ class HomeScreen extends Component<AppProps, AppState> {
     setTimeout(() => {
       if (global.notificationClicked && this.state.dayInformation) {
         global.notificationClicked = false;
-        getTask(global.notificationId).then((task) => {
+        if (
+          global.notificationId >= 1000000 &&
+          global.notificationId <= 1000006
+        ) {
+          global.notificationId = null;
+          const day = theWeek[moment().isoWeekday() - 1];
           this.props.navigation.navigate("Day", {
-            id: task.day,
+            id: day,
           });
-        });
+        } else {
+          getTask(global.notificationId).then((task) => {
+            this.props.navigation.navigate("Day", {
+              id: task.day,
+            });
+          });
+        }
       }
     }, 500);
   };

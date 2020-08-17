@@ -17,12 +17,14 @@ import { name as appName } from "./app.json";
 configure()
   .then(async () => {
     try {
+      global.migration = false;
       await pastMigrations();
       const expectVoid = await currentMigration();
       if (expectVoid !== null && expectVoid !== undefined) {
         throw expectVoid;
       }
       global.notificationClicked = false;
+      global.notificationId = null;
     } catch (err) {
       console.log("Migration: ", err);
     }

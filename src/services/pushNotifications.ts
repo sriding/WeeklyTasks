@@ -49,6 +49,7 @@ const configure = async (): Promise<void> => {
 
     // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
     onAction: async function (notification: any) {
+      //console.log("NOTIFICATION:", notification);
       switch (notification.action) {
         case "CHECK":
           await checkTask(Number(notification.id), false);
@@ -358,7 +359,7 @@ const removeAllLocalNotifications = async (): Promise<void> => {
 };
 
 const createDailyRepeatingNotification = async (
-  reminderTime: string,
+  reminderTime: string = "9:00 AM",
   id: number = 1000000
 ): Promise<void> => {
   const areDailyNotificationsEnabled = await getDailyUpdate();

@@ -16,6 +16,7 @@ export const pastMigrations = async (): Promise<void> => {
       schemaVersion: 5,
       migration: (oldRealm: any, newRealm: any) => {
         if (oldRealm.schemaVersion < 5) {
+          global.migration = true;
           const oldObjects = oldRealm.objects("Task");
           const newObjects = newRealm.objects("Task");
 
@@ -26,6 +27,7 @@ export const pastMigrations = async (): Promise<void> => {
         }
       },
     }).then((realm: any) => {
+      //global.realmContainer = realm;
       realm.close();
     });
   } catch (err) {

@@ -42,6 +42,8 @@ import TextDialog from "../../components/TextDialog/TextDialog";
 import { deleteEverythingInDB } from "../../controllers/database/Miscellaneous/DeleteEverythingInDB/deleteEverythingInDB";
 import { createInitialDays } from "../../controllers/database/Miscellaneous/CreateInitialDays/createInitialDays";
 import AppFunctionality from "../../components/AppFunctionality/AppFunctionality";
+import { createLoginDate } from "../../controllers/database/Login/login";
+import { createDailyRepeatingNotification } from "../../services/pushNotifications";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -203,8 +205,10 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
   //WILL COMPLETELY RESET APP
   resetApplicationToDefault = async () => {
     await deleteEverythingInDB();
-    this.toggleTextDialog();
     await createInitialDays();
+    createLoginDate();
+    await createDailyRepeatingNotification();
+    this.toggleTextDialog();
     this.props.navigation.navigate("Home");
   };
 
