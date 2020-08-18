@@ -30,7 +30,7 @@ import {
   checkTask,
   deleteTask,
   checkAllTasks,
-  deleteAllTasks,
+  deleteAllTasksForADay,
 } from "../../controllers/database/Tasks/tasks";
 import { deleteNote } from "../../controllers/database/Notes/notes";
 import { getTheme } from "../../controllers/database/Settings/settings";
@@ -306,7 +306,7 @@ export default class DayScreen extends Component<AppProps, AppState> {
 
   deleteAllTasks = async (): Promise<void> => {
     try {
-      let expectVoid: void = await deleteAllTasks(this.state.id);
+      let expectVoid: void = await deleteAllTasksForADay(this.state.id);
       if (expectVoid !== undefined && expectVoid !== null) {
         throw expectVoid;
       }

@@ -28,7 +28,10 @@ import NewTaskDialog from "../../components/NewTaskDialog/NewTaskDialog";
 import StatusBar from "../../components/StatusBar/StatusBar";
 
 //Functions
-import { getTask } from "../../controllers/database/Tasks/tasks";
+import {
+  getTask,
+  deleteAllTasks,
+} from "../../controllers/database/Tasks/tasks";
 import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllDaysData/getAllDaysData";
 import {
   getTheme,
@@ -43,6 +46,9 @@ import {
   newWeekStandardBehavior,
   newWeekAlternativeBehaviorNotes,
 } from "../../controllers/database/Login/login";
+import DeleteTasks from "../../components/DeleteTasks/DeleteTasks";
+import DeleteNotes from "../../components/DeleteNotes/DeleteNotes";
+import { removeEveryNoteInTheDatabase } from "../../controllers/database/Notes/notes";
 
 class HomeScreen extends Component<AppProps, AppState> {
   focusSubscription: any;
@@ -355,6 +361,30 @@ class HomeScreen extends Component<AppProps, AppState> {
     });
   };
 
+  deleteTasks = async () => {
+    try {
+      await deleteAllTasks();
+      await this.getDataForAllDays();
+      this.setSnackBarTextAndIfError("All tasks deleted.", false);
+      this.toggleSnackBarVisibility();
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
+  };
+
+  deleteNotes = async () => {
+    try {
+      removeEveryNoteInTheDatabase();
+      await this.getDataForAllDays();
+      this.setSnackBarTextAndIfError("All notes deleted.", false);
+      this.toggleSnackBarVisibility();
+    } catch (err) {
+      this.setSnackBarTextAndIfError(err, true);
+      this.toggleSnackBarVisibility();
+    }
+  };
+
   render() {
     return (
       <SafeAreaView
@@ -397,6 +427,17 @@ class HomeScreen extends Component<AppProps, AppState> {
                 />
               );
             })}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                marginTop: 20,
+                marginBottom: 20,
+              }}
+            >
+              <DeleteTasks deleteTasks={this.deleteTasks} />
+              <DeleteNotes deleteNotes={this.deleteNotes} />
+            </View>
           </ScrollView>
           <ScrollView
             style={styles.rightPaneContainer}

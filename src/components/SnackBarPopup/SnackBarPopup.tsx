@@ -44,12 +44,6 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
             style={{
               backgroundColor: "#C00000",
             }}
-            action={{
-              label: "FAIL",
-              onPress: () => {
-                // Do something
-              },
-            }}
           >
             <Text style={{ color: "white" }}>{this.props.snackBarText}</Text>
           </Snackbar>
@@ -62,12 +56,7 @@ export default class SnackBarPopup extends Component<AppProps, AppState> {
             duration={3000}
             style={{
               backgroundColor: "#6200ee",
-            }}
-            action={{
-              label: "PASS",
-              onPress: () => {
-                // Do something
-              },
+              alignSelf: "center",
             }}
           >
             <Text style={{ color: "white" }}>{this.props.snackBarText}</Text>

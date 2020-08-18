@@ -18,6 +18,11 @@ import { getDailyUpdateTime } from "../Settings/settings";
 
 //Interfaces
 import { getTaskReturnType } from "./tasks.interface";
+import {
+  addingAllTasksNotifications,
+  removingAllTasksNotifications,
+  createDailyRepeatingNotification,
+} from "../../../services/pushNotifications";
 
 export const getTask = async (
   taskId: number
@@ -223,7 +228,9 @@ export const checkAllTasks = async (day: string): Promise<void | string> => {
   }
 };
 
-export const deleteAllTasks = async (day: string): Promise<void | string> => {
+export const deleteAllTasksForADay = async (
+  day: string
+): Promise<void | string> => {
   try {
     const errorObject = checkAllDeleteAllGetDayTaskIdsEH(day);
     if (errorObject.errorsExist) {
@@ -405,6 +412,22 @@ export const tasksForADayOrdered = async (
 
         return sortedTasksArray;
     }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
+export const deleteAllTasks = async () => {
+  try {
+    await removingAllTasksNotifications();
+    global.realmContainer.write(() => {
+      let tasks = global.realmContainer.objects("Task");
+      global.realmContainer.delete(tasks);
+    });
+
+    //Update daily repeating notification
+    const dailyUpdateTime = await getDailyUpdateTime();
+    await createDailyRepeatingNotification(dailyUpdateTime);
   } catch (err) {
     return JSON.stringify(err);
   }
