@@ -30,6 +30,7 @@ export const currentMigration = async (): Promise<void> => {
 
           for (let i = 0; i < oldObjects.length; i++) {
             newObjects[i].appFunctionality = "standard";
+            newObjects[i].noteFunctionality = "standard";
           }
         }
       },

@@ -33,6 +33,7 @@ import { getAllDaysData } from "../../controllers/database/Miscellaneous/GetAllD
 import {
   getTheme,
   getAppFunctionality,
+  getNotesFunctionality,
 } from "../../controllers/database/Settings/settings";
 
 //Utilities
@@ -40,6 +41,7 @@ import theWeek from "../../utilities/theWeek";
 import {
   newWeekAlternativeBehavior,
   newWeekStandardBehavior,
+  newWeekAlternativeBehaviorNotes,
 } from "../../controllers/database/Login/login";
 
 class HomeScreen extends Component<AppProps, AppState> {

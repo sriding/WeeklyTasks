@@ -6,6 +6,8 @@ import {
   unCheckEveryTaskInTheDatabase,
   removeEveryCheckedTaskInTheDatabase,
 } from "../Tasks/tasks";
+import { removeEveryNoteInTheDatabase } from "../Notes/notes";
+import { getNotesFunctionality } from "../Settings/settings";
 
 export const createLoginDate = (): void => {
   try {
@@ -80,11 +82,20 @@ export const determiningIfNewWeek = () => {
 
 export const newWeekStandardBehavior = async (): Promise<string | null> => {
   try {
-    const newWeekTrueOrFalse = determiningIfNewWeek();
+    let newWeekTrueOrFalse = determiningIfNewWeek();
     if (!newWeekTrueOrFalse) {
       return null;
     } else {
       await unCheckEveryTaskInTheDatabase();
+      let notesFunctionality = getNotesFunctionality();
+      switch (notesFunctionality) {
+        case "alternative":
+          newWeekAlternativeBehaviorNotes();
+          break;
+        case "standard":
+        default:
+          break;
+      }
       return "New Week: All Tasks Unchecked!";
     }
   } catch (err) {
@@ -94,13 +105,30 @@ export const newWeekStandardBehavior = async (): Promise<string | null> => {
 
 export const newWeekAlternativeBehavior = (): string | null => {
   try {
-    const newWeekTrueOrFalse = determiningIfNewWeek();
+    let newWeekTrueOrFalse = determiningIfNewWeek();
     if (!newWeekTrueOrFalse) {
       return null;
     } else {
       removeEveryCheckedTaskInTheDatabase();
+      let notesFunctionality = getNotesFunctionality();
+      switch (notesFunctionality) {
+        case "alternative":
+          newWeekAlternativeBehaviorNotes();
+          break;
+        case "standard":
+        default:
+          break;
+      }
       return "New Week: Checked Tasks Deleted!";
     }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
+export const newWeekAlternativeBehaviorNotes = (): string | null => {
+  try {
+    removeEveryNoteInTheDatabase();
   } catch (err) {
     return JSON.stringify(err);
   }

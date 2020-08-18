@@ -21,6 +21,7 @@ export const createInitialDays = async (): Promise<void> => {
           dailyUpdate: true,
           dailyUpdatePersistance: false,
           dailyUpdateTime: "9:00 AM",
+          noteFunctionality: "standard",
           taskReminders: true,
           sortTasksBy: "Reminder Time",
           theme: "light",

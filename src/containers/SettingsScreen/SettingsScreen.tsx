@@ -44,6 +44,7 @@ import { createInitialDays } from "../../controllers/database/Miscellaneous/Crea
 import AppFunctionality from "../../components/AppFunctionality/AppFunctionality";
 import { createLoginDate } from "../../controllers/database/Login/login";
 import { createDailyRepeatingNotification } from "../../services/pushNotifications";
+import NoteFunctionality from "../../components/NoteFunctionality/NoteFunctionality";
 
 export default class SettingsScreen extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -359,6 +360,26 @@ export default class SettingsScreen extends Component<AppProps, AppState> {
                 </Menu>
               </View>
               <AppFunctionality />
+            </View>
+            <Divider
+              style={{
+                ...styles.dividerStyling,
+                backgroundColor:
+                  this.state.theme === "light" ? "silver" : "white",
+              }}
+            />
+            <View style={styles.cardChunkContainer}>
+              <Headline
+                style={{
+                  ...styles.cardTitleStyle,
+                  color: this.state.theme === "light" ? "white" : "black",
+                  backgroundColor:
+                    this.state.theme === "light" ? "#6200ee" : "#c2c2f0",
+                }}
+              >
+                Notes
+              </Headline>
+              <NoteFunctionality />
             </View>
             <Divider
               style={{

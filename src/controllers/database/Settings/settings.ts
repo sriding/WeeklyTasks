@@ -272,3 +272,42 @@ export const changeTheme = async (string: string = "light"): Promise<void> => {
     return JSON.stringify(err);
   }
 };
+
+export const getNotesFunctionality = () => {
+  try {
+    if (global.realmContainer.objects("Settings")[0] === undefined) {
+      return "standard";
+    } else {
+      return global.realmContainer.objects("Settings")[0].noteFunctionality;
+    }
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};
+
+export const setNotesFunctionality = (name: string = "standard") => {
+  global.realmContainer.write(() => {
+    switch (name) {
+      case "alternative":
+        global.realmContainer.create(
+          "Settings",
+          {
+            id: 0,
+            noteFunctionality: "alternative",
+          },
+          true
+        );
+        break;
+      case "standard":
+      default:
+        global.realmContainer.create(
+          "Settings",
+          {
+            id: 0,
+            noteFunctionality: "standard",
+          },
+          true
+        );
+    }
+  });
+};

@@ -72,3 +72,16 @@ export const deleteNote = async (noteID: number): Promise<void> => {
     return JSON.stringify(err);
   }
 };
+
+export const removeEveryNoteInTheDatabase = () => {
+  try {
+    global.realmContainer.write(() => {
+      let notes = global.realmContainer.objects("Note");
+      notes.forEach((note) => {
+        note.text = "";
+      });
+    });
+  } catch (err) {
+    return JSON.stringify(err);
+  }
+};

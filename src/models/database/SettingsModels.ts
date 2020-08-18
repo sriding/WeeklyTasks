@@ -7,6 +7,7 @@ export const SettingsModel = {
     dailyUpdate: "bool",
     dailyUpdatePersistance: "bool",
     dailyUpdateTime: "string",
+    noteFunctionality: "string",
     taskReminders: "bool",
     sortTasksBy: "string",
     theme: "string",
