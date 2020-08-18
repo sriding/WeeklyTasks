@@ -19,10 +19,7 @@ configure()
     try {
       global.migration = false;
       await pastMigrations();
-      const expectVoid = await currentMigration();
-      if (expectVoid !== null && expectVoid !== undefined) {
-        throw expectVoid;
-      }
+      await currentMigration();
       global.notificationClicked = false;
       global.notificationId = null;
     } catch (err) {

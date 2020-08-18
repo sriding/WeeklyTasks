@@ -67,7 +67,7 @@ export const addTask = async (
 
     const trimmedText = text.trim();
 
-    let arrayOfTaskIds: number[] = [];
+    let arrayOfTaskIds: number[] = [0];
     global.realmContainer.objects("Task").forEach((task: any) => {
       arrayOfTaskIds.push(task.id);
     });
@@ -173,8 +173,7 @@ export const deleteTask = async (taskID: number): Promise<void | string> => {
 
     //Before deleting the task
     const task = await getTask(taskID);
-    await pushNotifications.removeALocalScheduledNotification(taskID);
-    await pushNotifications.updateADailyRepeatingNotification(task.day);
+    const taskDay = task.day;
 
     global.realmContainer.write(() => {
       let taskToDelete = global.realmContainer.create(
@@ -184,6 +183,9 @@ export const deleteTask = async (taskID: number): Promise<void | string> => {
       );
       global.realmContainer.delete(taskToDelete);
     });
+
+    await pushNotifications.removeALocalScheduledNotification(taskID);
+    await pushNotifications.updateADailyRepeatingNotification(taskDay);
   } catch (err) {
     return JSON.stringify(err);
   }

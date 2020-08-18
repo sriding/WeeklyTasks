@@ -123,11 +123,13 @@ const addARepeatingLocalNotification = async (
   delay: boolean = false
 ): Promise<void> => {
   try {
+    let task = await getTask(taskId);
+    await updateADailyRepeatingNotification(task.day);
+
     const showingTasks = await getTaskReminders();
     if (!showingTasks) {
       return;
     } else {
-      let task = await getTask(taskId);
       if (task.reminderTime === "N/A" || task.isChecked === true) {
         return;
       }
@@ -323,7 +325,6 @@ const addARepeatingLocalNotification = async (
         throw "Something went wrong.";
       }
     }
-    await updateADailyRepeatingNotification(task.day);
   } catch (err) {
     console.log(err);
   }
