@@ -50,5 +50,6 @@ const styles = StyleSheet.create({
   },
   switchText: {
     fontSize: 17,
+    marginLeft: 5,
   },
 });

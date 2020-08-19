@@ -6,12 +6,13 @@ import { pushNotifications } from "../../../../services/Index";
 
 export const createInitialDays = async (): Promise<void> => {
   try {
-    if (
+    /*if (
       global.realmContainer.objects("Settings")[0] &&
       global.realmContainer.objects("Day")[0]
     ) {
+      console.log("This shouldn't run?");
       return;
-    }
+    }*/
 
     if (!global.realmContainer.objects("Settings")[0]) {
       global.realmContainer.write(() => {
