@@ -190,7 +190,7 @@ class HomeScreen extends Component<AppProps, AppState> {
         global.notificationClicked = false;
         if (
           global.notificationId >= 1000000 &&
-          global.notificationId <= 1000006
+          global.notificationId <= 1000013
         ) {
           global.notificationId = null;
           const day = theWeek[moment().isoWeekday() - 1];

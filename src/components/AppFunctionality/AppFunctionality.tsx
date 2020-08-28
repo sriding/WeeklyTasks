@@ -4,11 +4,13 @@ import { Text, Switch, Caption } from "react-native-paper";
 import {
   getAppFunctionality,
   setAppFunctionality,
+  getDailyUpdateTime,
 } from "../../controllers/database/Settings/settings";
 import {
   newWeekStandardBehavior,
   newWeekAlternativeBehavior,
 } from "../../controllers/database/Login/login";
+import { createDailyRepeatingNotification } from "../../services/pushNotifications";
 
 export default function AppFunctionality() {
   const [standardBehaviorSwitch, setStandardBehaviorSwitch] = React.useState(
@@ -42,16 +44,22 @@ export default function AppFunctionality() {
     }
   }, []);
 
-  const changeStandardBehaviorSwitch = () => {
+  const changeStandardBehaviorSwitch = async () => {
     setAppFunctionality(standardBehaviorSwitch ? false : true);
     setStandardBehaviorSwitch(!standardBehaviorSwitch);
     setAlternativeBehaviorSwitch(!alternativeBehaviorSwitch);
+
+    let dailyUpdateTime = await getDailyUpdateTime();
+    await createDailyRepeatingNotification(dailyUpdateTime);
   };
 
-  const changeAlternativeBehaviorSwitch = () => {
+  const changeAlternativeBehaviorSwitch = async () => {
     setAppFunctionality(alternativeBehaviorSwitch ? true : false);
     setAlternativeBehaviorSwitch(!alternativeBehaviorSwitch);
     setStandardBehaviorSwitch(!standardBehaviorSwitch);
+
+    let dailyUpdateTime = await getDailyUpdateTime();
+    await createDailyRepeatingNotification(dailyUpdateTime);
   };
 
   return (

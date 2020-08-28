@@ -12,7 +12,7 @@ import {
 export const getAppFunctionality = () => {
   try {
     if (global.realmContainer.objects("Settings")[0] === undefined) {
-      return true;
+      return "standard";
     } else {
       return global.realmContainer.objects("Settings")[0].appFunctionality;
     }
@@ -29,7 +29,7 @@ export const getDailyUpdate = async (): Promise<boolean> => {
       return global.realmContainer.objects("Settings")[0].dailyUpdate;
     }
   } catch (err) {
-    return JSON.stringify(err);
+    return true;
   }
 };
 
@@ -50,7 +50,7 @@ export const getDailyUpdateTime = async (): Promise<string> => {
       return global.realmContainer.objects("Settings")[0].dailyUpdateTime;
     }
   } catch (err) {
-    return JSON.stringify(err);
+    return "9:00 AM";
   }
 };
 
