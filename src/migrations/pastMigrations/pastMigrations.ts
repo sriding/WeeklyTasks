@@ -8,15 +8,14 @@ import { SettingsModel } from "../../models/database/SettingsModels";
 
 import reminderTimes from "../../utilities/reminderTimes";
 
-//Version 5
 export const pastMigrations = async (): Promise<void> => {
+  //Version 5
   try {
     Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
       schemaVersion: 5,
       migration: (oldRealm: any, newRealm: any) => {
         if (oldRealm.schemaVersion < 5) {
-          global.migration = true;
           const oldObjects = oldRealm.objects("Task");
           const newObjects = newRealm.objects("Task");
 
@@ -27,8 +26,30 @@ export const pastMigrations = async (): Promise<void> => {
         }
       },
     }).then((realm: any) => {
-      //global.realmContainer = realm;
       realm.close();
+
+      //Version 6
+      try {
+        Realm.open({
+          schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
+          schemaVersion: 6,
+          migration: (oldRealm: any, newRealm: any) => {
+            if (oldRealm.schemaVersion < 6) {
+              const oldObjects = oldRealm.objects("Settings");
+              const newObjects = newRealm.objects("Settings");
+
+              for (let i = 0; i < oldObjects.length; i++) {
+                newObjects[i].appFunctionality = "standard";
+                newObjects[i].noteFunctionality = "standard";
+              }
+            }
+          },
+        }).then((realm: any) => {
+          realm.close();
+        });
+      } catch (err) {
+        return JSON.stringify(err);
+      }
     });
   } catch (err) {
     return JSON.stringify(err);

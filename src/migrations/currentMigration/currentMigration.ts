@@ -21,27 +21,16 @@ export const currentMigration = async (): Promise<void> => {
   try {
     Realm.open({
       schema: [DayModel, TaskModel, NoteModel, LoginModel, SettingsModel],
-      schemaVersion: 6,
+      schemaVersion: 7,
       migration: (oldRealm: any, newRealm: any) => {
-        if (oldRealm.schemaVersion < 6) {
+        if (oldRealm.schemaVersion < 7) {
           global.migration = true;
-          const oldObjects = oldRealm.objects("Settings");
-          const newObjects = newRealm.objects("Settings");
-
-          for (let i = 0; i < oldObjects.length; i++) {
-            newObjects[i].appFunctionality = "standard";
-            newObjects[i].noteFunctionality = "standard";
-          }
         }
       },
     }).then(async (realm: any) => {
       //console.log(Realm.defaultPath);
       global.realmContainer = realm;
-      if (
-        global.migration &&
-        realm.objects("Settings")[0] &&
-        realm.objects("Day")[0]
-      ) {
+      if (realm.objects("Settings")[0] && realm.objects("Day")[0]) {
         console.log("migration code necessary!");
         await pushNotifications.removeAllLocalNotifications();
         const dailyNotifications = await getDailyUpdate();
