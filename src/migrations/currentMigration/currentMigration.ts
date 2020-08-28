@@ -30,7 +30,11 @@ export const currentMigration = async (): Promise<void> => {
     }).then(async (realm: any) => {
       //console.log(Realm.defaultPath);
       global.realmContainer = realm;
-      if (realm.objects("Settings")[0] && realm.objects("Day")[0]) {
+      if (
+        global.migration &&
+        realm.objects("Settings")[0] &&
+        realm.objects("Day")[0]
+      ) {
         console.log("migration code necessary!");
         await pushNotifications.removeAllLocalNotifications();
         const dailyNotifications = await getDailyUpdate();
