@@ -760,7 +760,7 @@
 			baseConfigurationReference = 61B58D9162E72F914C77E767 /* Pods-WeeklyTasks.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = J273HX96Y4;
 				HEADER_SEARCH_PATHS = (
@@ -787,7 +787,7 @@
 			baseConfigurationReference = 1AB632F4968511C4E8D2F480 /* Pods-WeeklyTasks.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = J273HX96Y4;
 				HEADER_SEARCH_PATHS = (
