@@ -28,7 +28,7 @@
     "react-native-vector-icons": "^7.0.0",
     "react-navigation": "^4.4.0",
     "realm": "^6.0.3",
-    "ws": "^7.3.1"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
